@@ -67,6 +67,14 @@
         .url-link:hover {
             text-decoration: underline;
         }
+        .note {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -82,34 +90,37 @@
             <p><strong>💾 Table Storage:</strong> almacenamientoivan (tabla "Estudiantes")</p>
             <p><strong>🌐 Static Web App:</strong> crud-final-ivan</p>
             <p><strong>📍 Región:</strong> Brazil South</p>
+            <p><strong>📁 Resource Group:</strong> AzureCosmo</p>
         </div>
         
-        <h2>🔗 ENDPOINTS DEL BACKEND</h2>
+        <div class="note">
+            <strong>⚠️ NOTA:</strong> Las URLs ahora están corregidas y usan el resource group correcto (AzureCosmo)
+        </div>
+        
+        <h2>🔗 ENDPOINTS DEL BACKEND (URLS CORRECTAS)</h2>
         
         <div class="endpoint-card">
             <strong>GET - Obtener estudiantes:</strong><br>
-            <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getEstudiantes" target="_blank">
-                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getEstudiantes
+            <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
+                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes
             </a>
+            <p><em>✅ Auth: anonymous (acceso público)</em></p>
         </div>
         
         <div class="endpoint-card">
-            <strong>POST - Crear estudiante:</strong><br>
-            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/createEstudiante</span>
+            <strong>POST - Registrar estudiante:</strong><br>
+            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante</span>
+            <p><em>⚠️ Auth: function (puede necesitar clave)</em></p>
         </div>
         
         <div class="endpoint-card">
             <strong>PUT - Actualizar estudiante:</strong><br>
-            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/updateEstudiante</span>
-        </div>
-        
-        <div class="endpoint-card">
-            <strong>DELETE - Eliminar estudiante:</strong><br>
-            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/deleteEstudiante</span>
+            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/actualizarestudiante</span>
+            <p><em>✅ Auth: anonymous (acceso público)</em></p>
         </div>
         
         <h2>🚀 ACCIONES RÁPIDAS</h2>
-        <a class="btn" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getEstudiantes" target="_blank">
+        <a class="btn" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
             🔍 Probar Endpoint GET
         </a>
         <a class="btn" href="https://portal.azure.com" target="_blank">
@@ -120,9 +131,20 @@
         </a>
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <h3>📊 ESTADO TÉCNICO</h3>
             <p><strong>📅 Estado del despliegue:</strong> <span style="color: #4CAF50;">✅ Completado</span></p>
             <p><strong>📊 Arquitectura:</strong> Static Web App → Azure Functions → Table Storage</p>
-            <p><strong>🔒 Acceso:</strong> Totalmente funcional con CRUD completo</p>
+            <p><strong>🔒 Authentication:</strong> 
+                <br>• GET y PUT: Anonymous (público)
+                <br>• POST: Function (puede requerir clave)
+            </p>
+            <p><strong>🔗 CI/CD:</strong> GitHub Actions → Azure Static Web Apps (automático)</p>
+        </div>
+        
+        <div class="note" style="margin-top: 20px;">
+            <strong>💡 CONSEJO:</strong> Para probar los endpoints POST y PUT, usa herramientas como Postman, curl o JavaScript fetch.
+            Ejemplo curl:<br>
+            <code>curl -X POST https://func-backend-ivan.../api/registrarestudiante -H "Content-Type: application/json" -d '{"PartitionKey":"Estudiantes","RowKey":"1001","Nombre":"Ejemplo"}'</code>
         </div>
     </div>
 </body>
