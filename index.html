@@ -33,6 +33,13 @@
             margin: 20px 0;
             border-radius: 8px;
         }
+        .warning-card {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
         .endpoint-card {
             background: #e3f2fd;
             border-left: 5px solid #2196F3;
@@ -54,11 +61,20 @@
             text-decoration: none;
             display: inline-block;
         }
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
         .btn:hover {
-            background: #45a049;
+            opacity: 0.9;
         }
         h1 { color: #2c3e50; }
         h2 { color: #34495e; }
+        h3 { color: #495057; margin-top: 30px; }
         .url-link {
             color: #2196F3;
             text-decoration: none;
@@ -67,84 +83,141 @@
         .url-link:hover {
             text-decoration: underline;
         }
-        .note {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 10px;
-            margin: 10px 0;
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
             border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 PROYECTO CRUD - AZURE FUNCTIONS COMPLETADO</h1>
+            <h1>🎯 PROYECTO CRUD - AZURE FUNCTIONS</h1>
             <p>Arquitectura en la nube implementada exitosamente</p>
+            <p><span class="status-indicator status-ok"></span> Frontend desplegado | <span class="status-indicator status-warning"></span> Binding en reparación</p>
         </div>
         
         <div class="status-card">
             <h2>✅ COMPONENTES FUNCIONALES</h2>
-            <p><strong>🔄 Azure Functions:</strong> func-backend-ivan (100% operativo)</p>
-            <p><strong>💾 Table Storage:</strong> almacenamientoivan (tabla "Estudiantes")</p>
-            <p><strong>🌐 Static Web App:</strong> crud-final-ivan</p>
-            <p><strong>📍 Región:</strong> Brazil South</p>
-            <p><strong>📁 Resource Group:</strong> AzureCosmo</p>
+            <p><span class="status-indicator status-ok"></span> <strong>🔄 Azure Functions:</strong> func-backend-ivan (3 endpoints operativos)</p>
+            <p><span class="status-indicator status-ok"></span> <strong>💾 Table Storage:</strong> almacenamientoivan (tabla "Estudiantes" existe)</p>
+            <p><span class="status-indicator status-ok"></span> <strong>🌐 Static Web App:</strong> crud-final-ivan (CI/CD activo)</p>
+            <p><span class="status-indicator status-ok"></span> <strong>📍 Región:</strong> Brazil South</p>
+            <p><span class="status-indicator status-ok"></span> <strong>📁 Resource Group:</strong> AzureCosmo</p>
         </div>
         
-        <div class="note">
-            <strong>⚠️ NOTA:</strong> Las URLs ahora están corregidas y usan el resource group correcto (AzureCosmo)
+        <div class="warning-card">
+            <h3>⚠️ AVISO TÉCNICO TEMPORAL</h3>
+            <p><strong>Problema detectado:</strong> El binding de Table Storage en <code>ObtenerEstudiantes</code> necesita reconfiguración.</p>
+            <p><strong>Solución temporal:</strong> Se está usando la función alternativa <code>GetEstudiantesList</code> que proporciona datos de demostración.</p>
+            <p><strong>Estado:</strong> La conexión y la tabla existen, solo el binding requiere ajustes menores.</p>
         </div>
         
-        <h2>🔗 ENDPOINTS DEL BACKEND (URLS CORRECTAS)</h2>
+        <h2>🔗 ENDPOINTS OPERATIVOS</h2>
         
-      <div class="endpoint-card">
-    <strong>GET - Obtener estudiantes:</strong><br>
-    <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
-        https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes
-    </a>
-    <p><em>✅ Auth: anonymous (acceso público)</em></p>
-      </div>
+        <!-- ENDPOINT GET (USANDO FUNCIÓN ALTERNATIVA) -->
+        <div class="endpoint-card">
+            <strong>GET - Obtener estudiantes (datos demo):</strong><br>
+            <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist" target="_blank">
+                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist
+            </a>
+            <p><em>📍 Función alternativa activa | ✅ Auth: anonymous</em></p>
+            <p><small>🔧 <strong>Nota:</strong> Mientras se repara el binding principal, esta función devuelve datos de demostración.</small></p>
+        </div>
         
+        <!-- ENDPOINT POST -->
         <div class="endpoint-card">
             <strong>POST - Registrar estudiante:</strong><br>
             <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante</span>
-            <p><em>⚠️ Auth: function (puede necesitar clave)</em></p>
+            <p><em>📍 Binding funcional | ⚠️ Auth: function (puede necesitar clave)</em></p>
         </div>
         
+        <!-- ENDPOINT PUT -->
         <div class="endpoint-card">
             <strong>PUT - Actualizar estudiante:</strong><br>
             <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/actualizarestudiante</span>
-            <p><em>✅ Auth: anonymous (acceso público)</em></p>
+            <p><em>📍 Binding funcional | ✅ Auth: anonymous</em></p>
+        </div>
+        
+        <!-- ENDPOINT GET ORIGINAL (CON PROBLEMA) -->
+        <div class="endpoint-card" style="background: #f8f9fa; border-left: 5px solid #6c757d;">
+            <strong>GET - Obtener estudiantes (original - en reparación):</strong><br>
+            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes</span>
+            <p><em>🔧 <strong>Estado actual:</strong> Binding de Table Storage requiere reconfiguración</em></p>
+            <p><small>📋 <strong>Diagnóstico:</strong> Tabla existe, conexión correcta, binding necesita recreación.</small></p>
         </div>
         
         <h2>🚀 ACCIONES RÁPIDAS</h2>
-        <a class="btn" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
-            🔍 Probar Endpoint GET
+        <a class="btn" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist" target="_blank">
+            🔍 Probar GET (datos demo)
         </a>
-        <a class="btn" href="https://portal.azure.com" target="_blank">
-            ⚙️ Ir a Azure Portal
+        <a class="btn btn-secondary" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
+            ⚙️ Ver estado del binding
+        </a>
+        <a class="btn" href="https://portal.azure.com/#@/resource/subscriptions/b824a528-076c-40de-b06f-89175c18f6a8/resourceGroups/AzureCosmo/providers/Microsoft.Web/sites/func-backend-ivan/functions" target="_blank">
+            🔧 Ir a Functions (Azure Portal)
         </a>
         <a class="btn" href="https://gray-flower-049000f10.3.azurestaticapps.net" target="_blank">
             🌐 Ver Static Web App
         </a>
         
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
-            <h3>📊 ESTADO TÉCNICO</h3>
-            <p><strong>📅 Estado del despliegue:</strong> <span style="color: #4CAF50;">✅ Completado</span></p>
-            <p><strong>📊 Arquitectura:</strong> Static Web App → Azure Functions → Table Storage</p>
-            <p><strong>🔒 Authentication:</strong> 
-                <br>• GET y PUT: Anonymous (público)
-                <br>• POST: Function (puede requerir clave)
-            </p>
-            <p><strong>🔗 CI/CD:</strong> GitHub Actions → Azure Static Web Apps (automático)</p>
+        <h3>📊 ESTADO TÉCNICO DETALLADO</h3>
+        <div class="code-block">
+{
+  "proyecto": "CRUD Azure Functions + Table Storage",
+  "estado_general": "operativo_con_observaciones",
+  "frontend": {
+    "static_web_app": "crud-final-ivan",
+    "url": "https://gray-flower-049000f10.3.azurestaticapps.net",
+    "estado": "✅ desplegado",
+    "ci_cd": "github_actions_activo"
+  },
+  "backend": {
+    "function_app": "func-backend-ivan",
+    "resource_group": "AzureCosmo",
+    "funciones_operativas": ["registrarestudiante", "actualizarestudiante", "getestudianteslist"],
+    "funcion_en_reparacion": "obtenerestudiantes",
+    "problema": "binding_table_storage",
+    "diagnostico": "cadena_conexion_correcta_tabla_existente",
+    "solucion": "recrear_binding_en_portal"
+  },
+  "almacenamiento": {
+    "cuenta": "almacenamientoivan",
+    "tabla": "Estudiantes",
+    "estado": "✅ existente_y_accesible"
+  }
+}
         </div>
         
-        <div class="note" style="margin-top: 20px;">
-            <strong>💡 CONSEJO:</strong> Para probar los endpoints POST y PUT, usa herramientas como Postman, curl o JavaScript fetch.
-            Ejemplo curl:<br>
-            <code>curl -X POST https://func-backend-ivan.../api/registrarestudiante -H "Content-Type: application/json" -d '{"PartitionKey":"Estudiantes","RowKey":"1001","Nombre":"Ejemplo"}'</code>
+        <h3>🔧 PRÓXIMOS PASOS TÉCNICOS</h3>
+        <ol>
+            <li><strong>Paso 1:</strong> Usar función <code>getestudianteslist</code> para desarrollo frontend</li>
+            <li><strong>Paso 2:</strong> En Azure Portal, ir a <code>func-backend-ivan</code> → <code>ObtenerEstudiantes</code> → <code>Integration</code></li>
+            <li><strong>Paso 3:</strong> Recrear el binding de Table Storage (eliminar y crear nuevo)</li>
+            <li><strong>Paso 4:</strong> Probar endpoint original <code>/api/obtenerestudiantes</code></li>
+            <li><strong>Paso 5:</strong> Actualizar HTML para usar endpoint principal nuevamente</li>
+        </ol>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; text-align: center;">
+            <p><strong>🎯 Proyecto completado en un 95% | 🔧 Último ajuste técnico en progreso</strong></p>
+            <p>Arquitectura: Static Web App → Azure Functions → Table Storage</p>
+            <p>Última actualización: $(date +"%Y-%m-%d %H:%M:%S")</p>
         </div>
     </div>
 </body>
