@@ -1,176 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>✅ CRUD Azure Functions - PROYECTO COMPLETADO</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        .container { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            max-width: 1000px;
-            margin: 40px auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #4CAF50;
-        }
-        .completion-badge {
-            background: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 24px;
-            display: inline-block;
-            margin: 10px 0;
-        }
-        .status-card {
-            background: #e8f5e9;
-            border-left: 5px solid #4CAF50;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .endpoint-card {
-            background: #e3f2fd;
-            border-left: 5px solid #2196F3;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-        }
-        .btn {
-            background: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px 5px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
-        h1 { color: #2c3e50; }
-        h2 { color: #34495e; }
-        .url-link {
-            color: #2196F3;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .url-link:hover {
-            text-decoration: underline;
-        }
-        .architecture {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-            font-family: monospace;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="completion-badge">✅ PROYECTO COMPLETADO</div>
-            <h1>🎯 CRUD AZURE FUNCTIONS + TABLE STORAGE</h1>
-            <p>Arquitectura serverless en la nube implementada exitosamente</p>
-        </div>
-        
-        <div class="status-card">
-            <h2>🏆 LOGROS TÉCNICOS</h2>
-            <p>✅ <strong>Static Web App:</strong> Desplegado con CI/CD GitHub Actions</p>
-            <p>✅ <strong>Azure Functions:</strong> 4 endpoints CRUD operativos</p>
-            <p>✅ <strong>Table Storage:</strong> Datos persistentes con 4 registros</p>
-            <p>✅ <strong>Arquitectura:</strong> Frontend → Functions → Storage implementada</p>
-            <p>✅ <strong>Integración:</strong> Todos los componentes conectados y funcionales</p>
-        </div>
-        
-        <div class="architecture">
-            <strong>ARQUITECTURA IMPLEMENTADA:</strong><br>
-            🌐 Static Web App → 🔄 Azure Functions → 💾 Table Storage
-        </div>
-        
-        <h2>🔗 ENDPOINTS CRUD OPERATIVOS</h2>
-        
-        <!-- ENDPOINT 1: GET con redirección -->
-        <div class="endpoint-card">
-            <strong>GET - Consultar estudiantes (endpoint principal):</strong><br>
-            <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
-                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes
+<div class="endpoint-card" style="border-left: 5px solid #4CAF50;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong style="font-size: 18px;">📝 POST - Crear Estudiante (CREATE)</strong><br>
+            <a class="url-link" href="#" onclick="testPostEndpoint()">
+                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante
             </a>
-            <p><em>📍 Redirige al endpoint funcional | ✅ HTTP 200</em></p>
         </div>
-        
-        <!-- ENDPOINT 2: GET datos demo -->
-        <div class="endpoint-card">
-            <strong>GET - Consultar estudiantes (datos demo):</strong><br>
-            <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist" target="_blank">
-                https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist
-            </a>
-            <p><em>📍 Endpoint funcional completo | 📊 Datos de demostración</em></p>
-        </div>
-        
-        <!-- ENDPOINT 3: POST crear -->
-        <div class="endpoint-card">
-            <strong>POST - Crear nuevo estudiante:</strong><br>
-            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante</span>
-            <p><em>📍 Create operation | ⚠️ Puede requerir clave de función</em></p>
-        </div>
-        
-        <!-- ENDPOINT 4: PUT actualizar -->
-        <div class="endpoint-card">
-            <strong>PUT - Actualizar estudiante:</strong><br>
-            <span>https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/actualizarestudiante</span>
-            <p><em>📍 Update operation | ✅ Acceso anonymous</em></p>
-        </div>
-        
-        <h2>🚀 ACCESO RÁPIDO</h2>
-        <a class="btn" href="https://gray-flower-049000f10.3.azurestaticapps.net" target="_blank">
-            🌐 Ver Frontend
+        <a class="btn btn-test" href="#" onclick="testPostEndpoint()">
+            🔍 Probar
         </a>
-        <a class="btn" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/getestudianteslist" target="_blank">
-            🔍 Probar Endpoint GET
-        </a>
-        <a class="btn" href="https://github.com/riveraivan942-design/mi-sitio-web" target="_blank">
-            📂 Ver Código GitHub
-        </a>
-        <a class="btn" href="https://portal.azure.com" target="_blank">
-            ⚙️ Azure Portal
-        </a>
-        
-        <h2>📋 DETALLES TÉCNICOS</h2>
-        <div class="endpoint-card" style="background: #f8f9fa;">
-            <strong>Recursos Azure:</strong><br>
-            • <strong>Static Web App:</strong> crud-final-ivan (Resource Group: Estudiante)<br>
-            • <strong>Function App:</strong> func-backend-ivan (Resource Group: AzureCosmo)<br>
-            • <strong>Storage Account:</strong> almacenamientoivan (Tabla: Estudiantes)<br>
-            • <strong>Región:</strong> Brazil South<br>
-            • <strong>Plan:</strong> Free Tier
-        </div>
-        
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #4CAF50; text-align: center;">
-            <h3>🏁 PROYECTO COMPLETADO Y EN PRODUCCIÓN</h3>
-            <p><strong>Estado:</strong> ✅ 100% funcional | 📅 Desplegado: Diciembre 2025</p>
-            <p><strong>Arquitectura Cloud:</strong> Serverless, escalable, con CI/CD automático</p>
-        </div>
     </div>
-</body>
-</html>
+    
+    <div style="background: #e8f5e9; padding: 12px; border-radius: 6px; margin-top: 10px;">
+        <strong>✅ ACCESO PÚBLICO (anonymous)</strong>
+        <p style="margin: 5px 0; font-size: 14px;">
+            • <strong>Sin clave requerida</strong> - Configuración segura<br>
+            • <strong>Crea directamente</strong> en Table Storage<br>
+            • <strong>Total verificados:</strong> 8+ estudiantes
+        </p>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 13px;">
+        <strong>📝 Ejemplo funcional:</strong>
+        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 4px; overflow-x: auto;">
+fetch('https://func-backend-ivan.../api/registrarestudiante', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    PartitionKey: 'TI',
+    RowKey: 'EST-' + Date.now(),
+    Nombre: 'Nuevo',
+    Edad: '20',
+    Carrera: 'Ejemplo'
+  })
+})</pre>
+    </div>
+</div>
