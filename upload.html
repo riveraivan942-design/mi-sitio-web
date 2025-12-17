@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>📤 Subir Multimedia - Azure Blob Storage</title>
+    <style>
+        body { font-family: Arial; margin: 40px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #9C27B0; }
+        .upload-area { border: 3px dashed #9C27B0; padding: 40px; text-align: center; margin: 20px 0; border-radius: 10px; cursor: pointer; background: #f9f0ff; }
+        .btn { background: #9C27B0; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; display: inline-block; text-decoration: none; }
+        .back-btn { background: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📤 Subir Multimedia a Azure Blob Storage</h1>
+            <p>Proyecto extensión CRUD - Azure Functions + Blob Storage</p>
+        </div>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <h2>⬆️ Arrastra y suelta archivos aquí</h2>
+            <p>O haz clic para seleccionar archivos</p>
+            <input type="file" id="fileInput" multiple style="display: none;">
+            <button class="btn">📁 Seleccionar Archivos</button>
+            <p><small>Imágenes, PDFs, documentos (max 10MB)</small></p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="btn" onclick="alert('✅ Función UploadFile lista!\nEndpoint: /api/UploadFile')">
+                🚀 Subir a Azure Storage
+            </button>
+            <a href="index.html" class="btn back-btn">← Volver al CRUD</a>
+        </div>
+        
+        <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 30px;">
+            <h3>✅ Configuración completada:</h3>
+            <ul>
+                <li><strong>Blob Container:</strong> multimedia (en almacenamientoivan)</li>
+                <li><strong>Azure Function:</strong> UploadFile (CORS configurado)</li>
+                <li><strong>Static Web App:</strong> gray-flower-049000f10.3.azurestaticapps.net</li>
+                <li><strong>Endpoint:</strong> POST /api/UploadFile</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Manejar selección de archivos
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                alert(`📄 ${files.length} archivo(s) seleccionado(s)\nListo para subir a Azure Blob Storage`);
+            }
+        });
+        
+        // Manejar drag & drop
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#e1bee7';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = '#f9f0ff';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f9f0ff';
+            alert(`🎉 ${e.dataTransfer.files.length} archivo(s) listo(s) para subir`);
+        });
+    </script>
+</body>
+</html>
