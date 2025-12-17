@@ -60,6 +60,9 @@
         .btn-test {
             background: linear-gradient(90deg, #4CAF50, #388E3C);
         }
+        .btn-multimedia {
+            background: linear-gradient(90deg, #9C27B0, #7B1FA2);
+        }
         .url-link {
             color: #2196F3;
             text-decoration: none;
@@ -110,13 +113,14 @@
                 <p><span class="status-indicator status-success"></span> <strong>Static Web App</strong></p>
                 <p><strong>URL:</strong> <a class="url-link" href="https://gray-flower-049000f10.3.azurestaticapps.net" target="_blank">gray-flower-049000f10.3.azurestaticapps.net</a></p>
                 <p><strong>Estado:</strong> ✅ Desplegado y operativo</p>
+                <p><strong>Multimedia:</strong> <a class="url-link" href="upload.html">upload.html</a></p>
             </div>
             
             <div class="component-card">
                 <h3>🔄 Backend</h3>
                 <p><span class="status-indicator status-success"></span> <strong>Azure Functions</strong></p>
                 <p><strong>App:</strong> func-backend-ivan</p>
-                <p><strong>Funciones:</strong> 3 endpoints CRUD</p>
+                <p><strong>Funciones:</strong> 4 endpoints (CRUD + Upload)</p>
                 <p><strong>Región:</strong> Brazil South</p>
             </div>
             
@@ -126,6 +130,7 @@
                 <p><strong>Cuenta:</strong> almacenamientoivan</p>
                 <p><strong>Tabla:</strong> Estudiantes</p>
                 <p><strong>Datos:</strong> 8+ registros reales</p>
+                <p><strong>Blob:</strong> Contenedor "multimedia"</p>
             </div>
         </div>
         
@@ -156,16 +161,11 @@
                     <strong style="font-size: 18px;">📝 POST - Crear Estudiante (CREATE)</strong><br>
                     <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante" target="_blank">
                         https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante
-                        <!-- Busca la sección de botones y agrega: -->
                     </a>
                 </div>
                 <a class="btn btn-test" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante" target="_blank">
                     🔍 Probar
                 </a>
-
-                 <a class="btn" href="upload.html" style="background: #9C27B0;">
-                       📤 Subir Multimedia
-                    </a>
             </div>
             <p style="margin-top: 10px;">
                 <em>📍 Función: RegistrarEstudiante | ✅ HTTP 200 OK | 💾 Crea en Table Storage real</em>
@@ -215,6 +215,9 @@
             <a class="btn btn-test" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
                 🔍 Probar Endpoint GET
             </a>
+            <a class="btn" href="upload.html" target="_blank">
+                📤 Subir Multimedia
+            </a>
             <a class="btn" href="https://gray-flower-049000f10.3.azurestaticapps.net" target="_blank">
                 🌐 Ver Frontend
             </a>
@@ -230,7 +233,7 @@
             <h2>🏁 PROYECTO COMPLETADO Y EN PRODUCCIÓN</h2>
             <p><strong>✅ 100% Funcional | 🌐 En producción | 🔄 CI/CD Automático</strong></p>
             <p><strong>Fecha despliegue:</strong> Diciembre 2025 | <strong>Arquitectura:</strong> Serverless Azure</p>
-            <p><strong>Logros:</strong> CRUD completo + Table Storage + Static Web App + GitHub Actions</p>
+            <p><strong>Logros:</strong> CRUD completo + Table Storage + Static Web App + GitHub Actions + Blob Storage</p>
         </div>
     </div>
     
