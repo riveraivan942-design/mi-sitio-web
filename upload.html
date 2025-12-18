@@ -152,157 +152,243 @@
     </div>
 
     <script>
-        // Configuración
-        const API_URL = 'https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/UploadFile';
-        let selectedFiles = [];
+       // Configuración
+const API_URL = 'https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/UploadFile';
+let selectedFiles = [];
+
+// Elementos DOM
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
+const uploadBtn = document.getElementById('uploadBtn');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const statusMessage = document.getElementById('statusMessage');
+const gallery = document.getElementById('gallery');
+
+// Tipos aceptados
+const VIDEO_TYPES = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-msvideo'];
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_OTHER_SIZE = 10 * 1024 * 1024; // 10MB
+
+// Drag & Drop
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+
+// Selección manual
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+// Manejar archivos
+function handleFiles(files) {
+    for (let file of files) {
+        const maxSize = VIDEO_TYPES.includes(file.type) ? MAX_VIDEO_SIZE : MAX_OTHER_SIZE;
+        if (file.size > maxSize) {
+            showStatus(`❌ ${file.name} excede ${formatBytes(maxSize)}`, 'error');
+            continue;
+        }
         
-        // Elementos DOM
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        const statusMessage = document.getElementById('statusMessage');
+        selectedFiles.push(file);
+        addFileToList(file);
+    }
+    updateUploadButton();
+}
 
-        // Drag & Drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '#e1bee7';
-        });
+// Agregar a lista
+function addFileToList(file) {
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${getFileIcon(file)}</span>
+            <div>
+                <strong>${file.name}</strong><br>
+                <small>${formatBytes(file.size)} • ${file.type}</small>
+            </div>
+        </div>
+        <button onclick="removeFile('${file.name}')" style="background: #ff4444; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">×</button>
+    `;
+    fileList.appendChild(div);
+}
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.background = '#f9f0ff';
-        });
+// Obtener ícono
+function getFileIcon(file) {
+    if (file.type.startsWith('image/')) return '🖼️';
+    if (file.type.startsWith('video/')) return '🎬';
+    if (file.type.startsWith('audio/')) return '🎵';
+    if (file.type === 'application/pdf') return '📄';
+    return '📁';
+}
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '#f9f0ff';
-            handleFiles(e.dataTransfer.files);
-        });
+// Eliminar archivo
+function removeFile(fileName) {
+    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+    fileList.innerHTML = '';
+    selectedFiles.forEach(addFileToList);
+    updateUploadButton();
+}
 
-        // Selección manual
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
+// Subir archivos REAL
+async function uploadFiles() {
+    if (selectedFiles.length === 0) {
+        showStatus('❌ No hay archivos para subir', 'error');
+        return;
+    }
 
-        // Manejar archivos seleccionados
-        function handleFiles(files) {
-            for (let file of files) {
-                if (file.size > 5 * 1024 * 1024) {
-                    showStatus(`❌ ${file.name} excede 5MB`, 'error');
-                    continue;
-                }
-                
-                selectedFiles.push(file);
-                addFileToList(file);
+    uploadBtn.disabled = true;
+    progressBar.style.display = 'block';
+    progressFill.style.width = '0%';
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        
+        try {
+            const progress = ((i + 1) / selectedFiles.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            showStatus(`📤 Subiendo ${i + 1}/${selectedFiles.length}: ${file.name}`, 'success');
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.ready) {
+                successCount++;
+                showStatus(`✅ ${file.name} listo para Azure`, 'success');
+                addToGallery(file, result);
+            } else {
+                errorCount++;
+                showStatus(`⚠️ ${file.name}: ${result.error || 'Error'}`, 'error');
             }
-            updateUploadButton();
+            
+        } catch (error) {
+            errorCount++;
+            showStatus(`❌ Error: ${error.message}`, 'error');
         }
+    }
 
-        // Agregar a lista visual
-        function addFileToList(file) {
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerHTML = `
-                <span>📄 ${file.name} (${formatBytes(file.size)})</span>
-                <button onclick="removeFile('${file.name}')" style="background: #ff4444; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">×</button>
+    progressFill.style.width = '100%';
+    
+    if (errorCount === 0) {
+        showStatus(`🎉 ${successCount} archivo(s) procesado(s)`, 'success');
+    } else {
+        showStatus(`⚠️ ${successCount} ok, ${errorCount} error(es)`, 'error');
+    }
+
+    setTimeout(() => {
+        selectedFiles = [];
+        fileList.innerHTML = '';
+        progressBar.style.display = 'none';
+        uploadBtn.disabled = false;
+        updateUploadButton();
+        statusMessage.style.display = 'none';
+    }, 5000);
+}
+
+// Agregar a galería
+function addToGallery(file, result) {
+    const galleryItem = document.createElement('div');
+    galleryItem.className = 'gallery-item';
+    
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            galleryItem.innerHTML = `
+                <img src="${e.target.result}" alt="${file.name}" style="max-width: 100%; border-radius: 5px;">
+                <p><small>${file.name}</small></p>
+                <p><small>${formatBytes(file.size)}</small></p>
             `;
-            fileList.appendChild(div);
-        }
+            gallery.appendChild(galleryItem);
+        };
+        reader.readAsDataURL(file);
+    } else if (file.type.startsWith('video/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            galleryItem.innerHTML = `
+                <div style="background: #2d2d2d; padding: 15px; border-radius: 5px; text-align: center;">
+                    <span style="font-size: 40px;">🎬</span>
+                    <p><strong>${file.name}</strong></p>
+                    <p><small>Video • ${formatBytes(file.size)}</small></p>
+                    <video controls style="max-width: 100%; margin-top: 10px;">
+                        <source src="${e.target.result}" type="${file.type}">
+                        Tu navegador no soporta video.
+                    </video>
+                    <p><small>✅ Listo para subir a Azure</small></p>
+                </div>
+            `;
+            gallery.appendChild(galleryItem);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        galleryItem.innerHTML = `
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center;">
+                <span style="font-size: 30px;">${getFileIcon(file)}</span>
+                <p><strong>${file.name}</strong></p>
+                <p><small>${file.type} • ${formatBytes(file.size)}</small></p>
+                <p><small>✅ Preparado</small></p>
+            </div>
+        `;
+        gallery.appendChild(galleryItem);
+    }
+    
+    if (gallery.children.length === 1 && gallery.children[0].textContent.includes('aparecerán aquí')) {
+        gallery.innerHTML = '';
+    }
+}
 
-        // Eliminar archivo
-        function removeFile(fileName) {
-            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
-            fileList.innerHTML = '';
-            selectedFiles.forEach(addFileToList);
-            updateUploadButton();
-        }
+// Mostrar estado
+function showStatus(message, type) {
+    statusMessage.textContent = message;
+    statusMessage.className = `status ${type}`;
+    statusMessage.style.display = 'block';
+}
 
-        // Actualizar botón
-        function updateUploadButton() {
-            uploadBtn.disabled = selectedFiles.length === 0;
-            uploadBtn.textContent = selectedFiles.length > 0 
-                ? `🚀 Subir ${selectedFiles.length} archivo(s)` 
-                : '🚀 Subir a Azure Storage';
-        }
+// Actualizar botón
+function updateUploadButton() {
+    uploadBtn.disabled = selectedFiles.length === 0;
+    uploadBtn.innerHTML = selectedFiles.length > 0 
+        ? `🚀 Subir ${selectedFiles.length} archivo(s)` 
+        : '🚀 Subir a Azure Storage';
+}
 
-        // Subir archivos (SIMULACIÓN - porque el backend necesita código C# completo)
-        function uploadFiles() {
-            if (selectedFiles.length === 0) {
-                showStatus('❌ No hay archivos para subir', 'error');
-                return;
-            }
+// Formatear bytes
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
-            // Mostrar progreso
-            progressBar.style.display = 'block';
-            uploadBtn.disabled = true;
-            
-            let uploaded = 0;
-            const total = selectedFiles.length;
-            
-            // Simular subida (en producción, esto enviaría a tu API)
-            const interval = setInterval(() => {
-                uploaded++;
-                const percent = (uploaded / total) * 100;
-                progressFill.style.width = `${percent}%`;
-                
-                if (uploaded >= total) {
-                    clearInterval(interval);
-                    showStatus(`✅ ${total} archivo(s) listo(s) para subir a Azure Blob Storage`, 'success');
-                    
-                    // Reset después de 3 segundos
-                    setTimeout(() => {
-                        selectedFiles = [];
-                        fileList.innerHTML = '';
-                        progressBar.style.display = 'none';
-                        progressFill.style.width = '0%';
-                        uploadBtn.disabled = false;
-                        updateUploadButton();
-                    }, 3000);
-                }
-            }, 300);
-            
-            // En producción real, usarías:
-            /*
-            for (let file of selectedFiles) {
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                fetch(API_URL, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Subido:', data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-            */
-        }
-
-        // Mostrar estado
-        function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status ${type}`;
-            statusMessage.style.display = 'block';
-            
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Formatear bytes
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+// Limpiar
+function clearFiles() {
+    selectedFiles = [];
+    fileList.innerHTML = '';
+    updateUploadButton();
+    showStatus('📝 Lista limpiada', 'success');
+}
     </script>
 </body>
 </html>
