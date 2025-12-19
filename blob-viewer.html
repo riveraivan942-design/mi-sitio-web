@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 Azure Blob Storage - Visualizador en Tiempo Real</title>
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-dark: #005a9e;
+            --azure-light: #e3f2fd;
+            --success: #107c10;
+            --warning: #ff8c00;
+            --error: #d13438;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1f2937;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* HEADER */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 120, 212, 0.1);
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--azure-blue), var(--azure-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6b7280;
+            max-width: 800px;
+            margin: 0 auto 25px;
+        }
+        
+        .azure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(90deg, var(--azure-blue), var(--azure-dark));
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 10px;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
+        }
+        
+        .badge-icon {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 35px 0;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--azure-blue), var(--azure-dark));
+            color: white;
+            box-shadow: 0 4px 14px rgba(0, 120, 212, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--azure-blue);
+            border: 2px solid var(--azure-blue);
+        }
+        
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 120, 212, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin: 35px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid var(--azure-blue);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--azure-blue);
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* MEDIA CONTAINER */
+        .media-section {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            margin: 40px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            color: var(--azure-blue);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--azure-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+        }
+        
+        .media-item {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+            height: 340px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .media-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 120, 212, 0.15);
+            border-color: var(--azure-blue);
+        }
+        
+        .media-preview {
+            height: 200px;
+            width: 100%;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .media-preview img,
+        .media-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .file-indicator {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 2;
+        }
+        
+        .media-info {
+            padding: 22px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .media-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .media-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .media-type {
+            background: var(--azure-light);
+            color: var(--azure-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        /* LOADING */
+        .loading-container {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--azure-light);
+            border-top: 4px solid var(--azure-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        
+        .loading-text {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        /* CONSOLE */
+        .console {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 40px;
+            font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #374151;
+        }
+        
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .console-title {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .log-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .log-entry {
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .log-success {
+            background: rgba(16, 124, 16, 0.1);
+            border-left-color: var(--success);
+            color: #34d399;
+        }
+        
+        .log-info {
+            background: rgba(0, 120, 212, 0.1);
+            border-left-color: var(--azure-blue);
+            color: #60a5fa;
+        }
+        
+        .log-warning {
+            background: rgba(255, 140, 0, 0.1);
+            border-left-color: var(--warning);
+            color: #fbbf24;
+        }
+        
+        .log-error {
+            background: rgba(209, 52, 56, 0.1);
+            border-left-color: var(--error);
+            color: #f87171;
+        }
+        
+        .log-timestamp {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-right: 12px;
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-top: 50px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .azure-link {
+            color: var(--azure-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .azure-link:hover {
+            color: var(--azure-dark);
+            text-decoration: underline;
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .title { font-size: 2rem; }
+            .media-grid { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 300px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* UTILITIES */
+        .hidden { display: none; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 class="title">🔗 Azure Blob Storage</h1>
+            <p class="subtitle">
+                Visualizador en tiempo real de archivos multimedia subidos automáticamente desde Python.
+                Conexión directa al contenedor Azure.
+            </p>
+            <div class="azure-badge">
+                <span class="badge-icon">⚡</span>
+                CONECTADO EN TIEMPO REAL
+            </div>
+        </div>
+        
+        <!-- CONTROLS -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="loadFromAzure()">
+                <span>🔄</span>
+                Cargar desde Azure
+            </button>
+            <button class="btn btn-secondary" onclick="simulatePythonUpload()">
+                <span>🐍</span>
+                Simular Subida Python
+            </button>
+            <button class="btn btn-secondary" onclick="clearConsole()">
+                <span>🧹</span>
+                Limpiar Consola
+            </button>
+        </div>
+        
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div id="totalFiles" class="stat-number">0</div>
+                <div class="stat-label">Archivos Totales</div>
+            </div>
+            <div class="stat-card">
+                <div id="videoCount" class="stat-number">0</div>
+                <div class="stat-label">Videos</div>
+            </div>
+            <div class="stat-card">
+                <div id="imageCount" class="stat-number">0</div>
+                <div class="stat-label">Imágenes</div>
+            </div>
+            <div class="stat-card">
+                <div id="otherCount" class="stat-number">0</div>
+                <div class="stat-label">Otros Archivos</div>
+            </div>
+        </div>
+        
+        <!-- MEDIA CONTAINER -->
+        <div class="media-section">
+            <h2 class="section-title">
+                <span>🎬</span>
+                Archivos en Azure Storage
+            </h2>
+            
+            <!-- LOADING -->
+            <div id="loading" class="loading-container">
+                <div class="spinner"></div>
+                <p class="loading-text">Conectando con Azure Blob Storage...</p>
+            </div>
+            
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon">📭</div>
+                <h3>No hay archivos en el contenedor</h3>
+                <p class="mt-4">
+                    Ejecuta el script Python para subir archivos:<br>
+                    <code>python upload_blob.py</code>
+                </p>
+            </div>
+            
+            <!-- MEDIA GRID -->
+            <div id="mediaGrid" class="media-grid hidden">
+                <!-- Archivos cargados dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- CONSOLE -->
+        <div class="console">
+            <div class="console-header">
+                <h3 class="console-title">📝 Log de Actividad</h3>
+                <span style="color: #9ca3af; font-size: 0.9rem;">
+                    <span id="logCount">0</span> registros
+                </span>
+            </div>
+            <div id="logContent" class="log-entries">
+                <div class="log-entry log-info">
+                    <span class="log-timestamp" id="currentTime">--:--:--</span>
+                    Sistema de visualización inicializado
+                </div>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>
+                <strong>🔗 Contenedor Azure:</strong> 
+                <a href="https://almacenamientoivan.blob.core.windows.net/multimedia" 
+                   class="azure-link" target="_blank">
+                   almacenamientoivan.blob.core.windows.net/multimedia
+                </a>
+            </p>
+            <p class="mt-4">
+                <strong>🔄 Última actualización:</strong> 
+                <span id="lastUpdate">--:--:--</span> | 
+                <strong>📁 Total archivos:</strong> 
+                <span id="totalFilesFooter">0</span>
+            </p>
+            <p class="mt-4">
+                Este visualizador se conecta directamente a Azure Blob Storage para mostrar
+                archivos subidos automáticamente desde Python.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // CONFIGURACIÓN - REEMPLAZA ESTOS VALORES CON TUS ARCHIVOS REALES
+        // ============================================================================
+        
+        // LISTA DE TUS ARCHIVOS REALES EN AZURE
+        // Agrega aquí TODOS los nombres de archivo que subiste
+        const REAL_AZURE_FILES = [
+            "2025-12-04 web static app.mp4",
+            // Agrega más archivos aquí:
+            // "video2.mp4",
+            // "imagen1.jpg",
+            // "documento.pdf",
+            // "screenshot.png"
+        ];
+        
+        // URL base de tu contenedor Azure
+        const AZURE_CONTAINER_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia";
+        
+        // ============================================================================
+        // FIN DE CONFIGURACIÓN
+        // ============================================================================
+        
+        // Variables globales
+        let mediaFiles = [];
+        let logEntries = [];
+        
+        // Tipos de archivo
+        const FILE_TYPES = {
+            'video': { icon: '🎬', color: '#0078d4', label: 'VIDEO' },
+            'image': { icon: '🖼️', color: '#107c10', label: 'IMAGEN' },
+            'pdf': { icon: '📄', color: '#d13438', label: 'PDF' },
+            'audio': { icon: '🎵', color: '#9b2dd2', label: 'AUDIO' },
+            'document': { icon: '📝', color: '#ff8c00', label: 'DOC' },
+            'archive': { icon: '🗜️', color: '#8661c5', label: 'ZIP' },
+            'other': { icon: '📁', color: '#6b7280', label: 'OTRO' }
+        };
+        
+        // ============================================================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================================================
+        
+        // Detectar tipo de archivo por extensión
+        function getFileType(filename) {
+            const ext = filename.toLowerCase().split('.').pop();
+            
+            // Videos
+            if (['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm', 'flv'].includes(ext)) {
+                return 'video';
+            }
+            // Imágenes
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico'].includes(ext)) {
+                return 'image';
+            }
+            // PDF
+            if (['pdf'].includes(ext)) {
+                return 'pdf';
+            }
+            // Audio
+            if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext)) {
+                return 'audio';
+            }
+            // Documentos
+            if (['doc', 'docx', 'txt', 'rtf', 'odt', 'md'].includes(ext)) {
+                return 'document';
+            }
+            // Archivos comprimidos
+            if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
+                return 'archive';
+            }
+            
+            return 'other';
+        }
+        
+        // Crear URL Azure
+        function createAzureUrl(filename) {
+            return `${AZURE_CONTAINER_URL}/${encodeURIComponent(filename)}`;
+        }
+        
+        // Formatear fecha
+        function formatTime(date) {
+            return date.toLocaleTimeString('es-ES', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        // ============================================================================
+        // FUNCIONES DE LOG
+        // ============================================================================
+        
+        // Añadir entrada al log
+        function addLog(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const timestamp = formatTime(new Date());
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `
+                <span class="log-timestamp">${timestamp}</span>
+                ${message}
+            `;
+            
+            logContent.prepend(logEntry); // Nuevos arriba
+            logEntries.push({ timestamp, message, type });
+            
+            // Actualizar contador
+            document.getElementById('logCount').textContent = logEntries.length;
+            
+            // Limitar a 50 entradas
+            if (logContent.children.length > 50) {
+                logContent.removeChild(logContent.lastChild);
+            }
+        }
+        
+        // Limpiar consola
+        function clearConsole() {
+            document.getElementById('logContent').innerHTML = '';
+            logEntries = [];
+            document.getElementById('logCount').textContent = '0';
+            addLog('Consola limpiada', 'info');
+        }
+        
+        // ============================================================================
+        // FUNCIONES DE CARGA DESDE AZURE
+        // ============================================================================
+        
+        // Intentar conexión real a Azure
+        async function tryRealAzureConnection() {
+            try {
+                const url = `${AZURE_CONTAINER_URL}?restype=container&comp=list`;
+                addLog('🔍 Consultando Azure Blob Storage API...', 'info');
+                
+                const response = await fetch(url);
+                
+                if (response.ok) {
+                    const xmlText = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                    const blobs = xmlDoc.getElementsByTagName("Blob");
+                    
+                    if (blobs.length > 0) {
+                        const files = [];
+                        for (let i = 0; i < blobs.length; i++) {
+                            const nameElement = blobs[i].getElementsByTagName("Name")[0];
+                            if (nameElement) {
+                                files.push(nameElement.textContent);
+                            }
+                        }
+                        addLog(`✅ Azure API respondió: ${files.length} archivos encontrados`, 'success');
+                        return files;
+                    }
+                }
+                addLog('⚠️ Azure API no devolvió archivos', 'warning');
+                return null;
+            } catch (error) {
+                addLog(`❌ Error API Azure: ${error.message}`, 'error');
+                return null;
+            }
+        }
+        
+        // Cargar archivos desde Azure (método principal)
+        async function loadFromAzure() {
+            addLog('🚀 Iniciando carga desde Azure...', 'info');
+            
+            const loading = document.getElementById('loading');
+            const mediaGrid = document.getElementById('mediaGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            loading.classList.remove('hidden');
+            mediaGrid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            
+            try {
+                // 1. Intentar conexión REAL a Azure
+                const azureFiles = await tryRealAzureConnection();
+                
+                // 2. Si falla, usar lista de respaldo (tus archivos)
+                let filesToShow = azureFiles || REAL_AZURE_FILES;
+                
+                // 3. Si no hay archivos, mostrar estado vacío
+                if (!filesToShow || filesToShow.length === 0) {
+                    loading.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    addLog('📭 No se encontraron archivos en el contenedor', 'warning');
+                    return;
+                }
+                
+                // 4. Procesar archivos
+                mediaFiles = filesToShow.map(filename => {
+                    const type = getFileType(filename);
+                    const fileType = FILE_TYPES[type];
+                    
+                    return {
+                        name: filename,
+                        type: type,
+                        icon: fileType.icon,
+                        color: fileType.color,
+                        label: fileType.label,
+                        url: createAzureUrl(filename),
+                        size: Math.floor(Math.random() * 10000000) + 100000, // Simulado
+                        uploaded: new Date().toLocaleDateString('es-ES')
+                    };
+                });
+                
+                // 5. Renderizar
+                renderMediaFiles();
+                updateStats();
+                updateLastUpdate();
+                
+                loading.classList.add('hidden');
+                mediaGrid.classList.remove('hidden');
+                
+                const source = azureFiles ? 'Azure API' : 'Lista de respaldo';
+                addLog(`✅ Carga completada: ${mediaFiles.length} archivos (${source})`, 'success');
+                
+            } catch (error) {
+                loading.classList.add('hidden');
+                addLog(`❌ Error crítico: ${error.message}`, 'error');
+            }
+        }
+        
+        // ============================================================================
+        // FUNCIONES DE RENDERIZADO
+        // ============================================================================
+        
+        // Renderizar archivos en la grid
+        function renderMediaFiles() {
+            const mediaGrid = document.getElementById('mediaGrid');
+            mediaGrid.innerHTML = '';
+            
+            mediaFiles.forEach((file, index) => {
+                const mediaItem = document.createElement('div');
+                mediaItem.className = 'media-item';
+                
+                // Generar preview basado en tipo
+                let previewContent = '';
+                if (file.type === 'video') {
+                    previewContent = `
+                        <video controls style="width: 100%; height: 100%; object-fit: cover;">
+                            <source src="${file.url}" type="video/mp4">
+                            Tu navegador no soporta el elemento de video.
+                        </video>
+                    `;
+                } else if (file.type === 'image') {
+                    previewContent = `
+                        <img src="${file.url}" alt="${file.name}" 
+                             style="width: 100%; height: 100%; object-fit: cover;"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj4kew                            ZpbGUuaWNvbn0gSU1BR0VOPC90ZXh0Pjwvc3ZnPg==';">
+                    `;
+                } else if (file.type === 'pdf') {
+                    previewContent = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #fdf2f2, #fce7f3);">
+                            <div style="text-align: center;">
+                                <span style="font-size: 3rem;">📄</span>
+                                <p style="margin-top: 10px; color: #6b7280; font-size: 0.9rem;">PDF Document</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    previewContent = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                            <div style="text-align: center;">
+                                <span style="font-size: 3rem;">${file.icon}</span>
+                                <p style="margin-top: 10px; color: #6b7280; font-size: 0.9rem;">${file.label}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                mediaItem.innerHTML = `
+                    <div class="media-preview">
+                        <div class="file-indicator">${file.label}</div>
+                        ${previewContent}
+                    </div>
+                    <div class="media-info">
+                        <div class="media-name" title="${file.name}">
+                            ${file.icon} ${file.name}
+                        </div>
+                        <div class="media-meta">
+                            <span>${formatFileSize(file.size)}</span>
+                            <span class="media-type" style="background: ${file.color}20; color: ${file.color};">
+                                ${file.label}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                // Agregar evento click para abrir en nueva pestaña
+                mediaItem.addEventListener('click', () => {
+                    window.open(file.url, '_blank');
+                });
+                
+                mediaGrid.appendChild(mediaItem);
+            });
+        }
+        
+        // Actualizar estadísticas
+        function updateStats() {
+            const videos = mediaFiles.filter(f => f.type === 'video').length;
+            const images = mediaFiles.filter(f => f.type === 'image').length;
+            const others = mediaFiles.filter(f => !['video', 'image'].includes(f.type)).length;
+            
+            document.getElementById('totalFiles').textContent = mediaFiles.length;
+            document.getElementById('videoCount').textContent = videos;
+            document.getElementById('imageCount').textContent = images;
+            document.getElementById('otherCount').textContent = others;
+            document.getElementById('totalFilesFooter').textContent = mediaFiles.length;
+        }
+        
+        // Formatear tamaño de archivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        // Actualizar última actualización
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeString = formatTime(now);
+            const dateString = now.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('lastUpdate').textContent = `${dateString} ${timeString}`;
+        }
+        
+        // ============================================================================
+        // FUNCIONES DE SIMULACIÓN
+        // ============================================================================
+        
+        // Simular subida desde Python
+        function simulatePythonUpload() {
+            addLog('🐍 Simulando ejecución de Python upload_blob.py...', 'info');
+            
+            const newFiles = [
+                'python-upload-' + Date.now() + '.mp4',
+                'screenshot-' + Date.now() + '.png',
+                'data-' + Date.now() + '.json'
+            ];
+            
+            const newFile = newFiles[Math.floor(Math.random() * newFiles.length)];
+            const type = getFileType(newFile);
+            const fileType = FILE_TYPES[type];
+            
+            const newFileData = {
+                name: newFile,
+                type: type,
+                icon: fileType.icon,
+                color: fileType.color,
+                label: fileType.label,
+                url: createAzureUrl(newFile),
+                size: Math.floor(Math.random() * 5000000) + 1000000,
+                uploaded: 'Justo ahora'
+            };
+            
+            mediaFiles.unshift(newFileData);
+            renderMediaFiles();
+            updateStats();
+            updateLastUpdate();
+            
+            addLog(`📤 Archivo simulado subido: ${newFile}`, 'success');
+            addLog('💻 Ejecuta en terminal: <code>python upload_blob.py</code>', 'info');
+        }
+        
+        // ============================================================================
+        // INICIALIZACIÓN
+        // ============================================================================
+        
+        // Actualizar hora actual en tiempo real
+        function updateCurrentTime() {
+            document.getElementById('currentTime').textContent = formatTime(new Date());
+        }
+        
+        // Inicializar aplicación
+        function init() {
+            addLog('🚀 Visualizador Azure Blob Storage inicializado', 'info');
+            updateCurrentTime();
+            updateLastUpdate();
+            
+            // Actualizar hora cada segundo
+            setInterval(updateCurrentTime, 1000);
+            
+            // Cargar automáticamente después de 1 segundo
+            setTimeout(() => {
+                loadFromAzure();
+            }, 1000);
+            
+            // Actualizar automáticamente cada 2 minutos
+            setInterval(() => {
+                if (mediaFiles.length > 0) {
+                    addLog('🔄 Actualización automática programada', 'info');
+                    loadFromAzure();
+                }
+            }, 120000);
+        }
+        
+        // Iniciar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
