@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✅ CRUD Azure Functions - PROYECTO COMPLETADO</title>
+    <title>✅ CRUD Azure Functions + Blob Storage - PROYECTO COMPLETADO</title>
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -18,7 +18,7 @@
             padding: 40px; 
             border-radius: 15px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 40px auto;
         }
         .header {
@@ -56,9 +56,16 @@
             text-decoration: none;
             display: inline-block;
             font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
         }
         .btn-test {
             background: linear-gradient(90deg, #4CAF50, #388E3C);
+        }
+        .btn-python {
+            background: linear-gradient(90deg, #FF9800, #F57C00);
         }
         .btn-multimedia {
             background: linear-gradient(90deg, #9C27B0, #7B1FA2);
@@ -68,6 +75,7 @@
             text-decoration: none;
             font-weight: bold;
             font-family: 'Courier New', monospace;
+            word-break: break-all;
         }
         .status-indicator {
             display: inline-block;
@@ -88,6 +96,10 @@
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #e0e0e0;
+            transition: transform 0.3s;
+        }
+        .component-card:hover {
+            transform: translateY(-5px);
         }
         code, pre {
             font-family: 'Courier New', monospace;
@@ -96,6 +108,20 @@
             padding: 10px;
             border-radius: 5px;
             overflow-x: auto;
+            font-size: 14px;
+        }
+        .video-demo {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #2196F3;
+        }
+        .python-code {
+            background: #f5f5f5;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            margin: 15px 0;
         }
     </style>
 </head>
@@ -103,8 +129,8 @@
     <div class="container">
         <div class="header">
             <div class="completion-badge">✅ PROYECTO COMPLETADO AL 100%</div>
-            <h1>🎯 CRUD AZURE FUNCTIONS + TABLE STORAGE</h1>
-            <p>Arquitectura serverless en la nube de Microsoft Azure</p>
+            <h1>🎯 CRUD AZURE FUNCTIONS + BLOB STORAGE + PYTHON</h1>
+            <p>Arquitectura serverless completa en Microsoft Azure</p>
         </div>
         
         <div class="component-grid">
@@ -126,11 +152,60 @@
             
             <div class="component-card">
                 <h3>💾 Almacenamiento</h3>
-                <p><span class="status-indicator status-success"></span> <strong>Table Storage</strong></p>
+                <p><span class="status-indicator status-success"></span> <strong>Table & Blob Storage</strong></p>
                 <p><strong>Cuenta:</strong> almacenamientoivan</p>
                 <p><strong>Tabla:</strong> Estudiantes</p>
-                <p><strong>Datos:</strong> 8+ registros reales</p>
                 <p><strong>Blob:</strong> Contenedor "multimedia"</p>
+                <p><strong>Archivos:</strong> 7+ subidos automáticamente</p>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN: BLOB STORAGE CON PYTHON -->
+        <h2>🚀 AUTOMATIZACIÓN CON PYTHON - BLOB STORAGE</h2>
+        
+        <div class="video-demo">
+            <h3>🎬 Video Subido Automáticamente</h3>
+            <video width="100%" controls>
+                <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" type="video/mp4">
+                Tu navegador no soporta video HTML5.
+            </video>
+            <p style="text-align: center; margin-top: 10px;">
+                <a class="btn" href="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" target="_blank">
+                    🔗 Ver Video en Azure Storage
+                </a>
+            </p>
+        </div>
+
+        <div class="endpoint-card">
+            <h3>🐍 Script Python - Subida Automatizada</h3>
+            <div class="python-code">
+                <strong>Código ejecutado:</strong>
+                <pre><code>python upload_blob.py
+✅ Conectado a Azure Blob Storage
+📁 Contenedor: multimedia
+📂 Explorando carpeta: archivos_subir
+📄 Encontrados 7 archivo(s)
+
+⬆️ Subiendo: archivo1.jpg
+   ✅ Subido: archivo1.jpg (image/jpeg)
+
+⬆️ Subiendo: video1.mp4
+   ✅ Subido: video1.mp4 (video/mp4)
+
+🎉 Proceso completado!
+📊 Total subidos: 7/7</code></pre>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                <a class="btn btn-python" href="videos.html" target="_blank">
+                    🎬 Ver Todos los Videos
+                </a>
+                <a class="btn" href="https://almacenamientoivan.blob.core.windows.net/multimedia/" target="_blank">
+                    📂 Ver Contenedor Multimedia
+                </a>
+                <button class="btn" onclick="testBlobAccess()">
+                    🔍 Probar Acceso Blob
+                </button>
             </div>
         </div>
         
@@ -138,8 +213,8 @@
         
         <!-- ENDPOINT GET -->
         <div class="endpoint-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1;">
                     <strong style="font-size: 18px;">📖 GET - Consultar Estudiantes (READ)</strong><br>
                     <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
                         https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes
@@ -156,8 +231,8 @@
         
         <!-- ENDPOINT POST -->
         <div class="endpoint-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1;">
                     <strong style="font-size: 18px;">📝 POST - Crear Estudiante (CREATE)</strong><br>
                     <a class="url-link" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante" target="_blank">
                         https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/registrarestudiante
@@ -179,41 +254,15 @@
                     • Total verificados: 8+ estudiantes
                 </p>
             </div>
-            
-            <div style="background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 14px;">
-                <strong>📝 Ejemplo funcional:</strong>
-                <pre><code>fetch('https://func-backend-ivan.../api/registrarestudiante', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({
-    PartitionKey: 'TI',
-    RowKey: 'EST-' + Date.now(),
-    Nombre: 'Nuevo',
-    Edad: '20',
-    Carrera: 'Ejemplo'
-  })
-})</code></pre>
-            </div>
-        </div>
-        
-        <!-- ENDPOINT PUT -->
-        <div class="endpoint-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong style="font-size: 18px;">✏️ PUT - Actualizar Estudiante (UPDATE)</strong><br>
-                    <span class="url-link">https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/actualizarestudiante</span>
-                </div>
-                <span class="btn" style="background: #666; cursor: default;">⚙️ Configurado</span>
-            </div>
-            <p style="margin-top: 10px;">
-                <em>📍 Función: ActualizarEstudiante | ⚠️ Necesita estructura específica</em>
-            </p>
         </div>
         
         <h2>🚀 ACCIONES RÁPIDAS</h2>
         <div style="text-align: center; margin: 30px 0;">
             <a class="btn btn-test" href="https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/obtenerestudiantes" target="_blank">
                 🔍 Probar Endpoint GET
+            </a>
+            <a class="btn btn-python" href="videos.html" target="_blank">
+                🎬 Ver Videos Subidos
             </a>
             <a class="btn" href="upload.html" target="_blank">
                 📤 Subir Multimedia
@@ -224,21 +273,18 @@
             <a class="btn" href="https://portal.azure.com" target="_blank">
                 ⚙️ Ir a Azure Portal
             </a>
-            <a class="btn" href="https://github.com/riveraivan942-design/mi-sitio-web" target="_blank">
-                📂 Ver Código GitHub
-            </a>
         </div>
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 3px solid #4CAF50; text-align: center;">
             <h2>🏁 PROYECTO COMPLETADO Y EN PRODUCCIÓN</h2>
             <p><strong>✅ 100% Funcional | 🌐 En producción | 🔄 CI/CD Automático</strong></p>
-            <p><strong>Fecha despliegue:</strong> Diciembre 2025 | <strong>Arquitectura:</strong> Serverless Azure</p>
-            <p><strong>Logros:</strong> CRUD completo + Table Storage + Static Web App + GitHub Actions + Blob Storage</p>
+            <p><strong>Componentes:</strong> CRUD completo + Table Storage + Blob Storage + Python Automation + Static Web App</p>
+            <p><strong>Logros:</strong> 7 archivos subidos automáticamente + Endpoints operativos + Frontend desplegado</p>
         </div>
     </div>
     
     <script>
-        // Función para probar endpoint POST desde el navegador
+        // Función para probar endpoint POST
         function testPostEndpoint() {
             const data = {
                 PartitionKey: "TI",
@@ -275,6 +321,37 @@
                     alert('❌ Error al obtener estudiantes:\n' + error.message);
                 });
         }
+        
+        // Función para probar acceso a Blob Storage
+        function testBlobAccess() {
+            fetch('https://almacenamientoivan.blob.core.windows.net/multimedia?restype=container&comp=list')
+                .then(response => response.text())
+                .then(xml => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xml, "text/xml");
+                    const blobs = xmlDoc.getElementsByTagName("Blob");
+                    const count = blobs.length;
+                    
+                    if (count > 0) {
+                        let names = [];
+                        for (let i = 0; i < Math.min(3, count); i++) {
+                            const name = blobs[i].getElementsByTagName("Name")[0]?.textContent;
+                            if (name) names.push(name);
+                        }
+                        alert(`✅ Blob Storage accesible\n📁 Archivos encontrados: ${count}\n📄 Ejemplos: ${names.join(', ')}...`);
+                    } else {
+                        alert('✅ Blob Storage accesible, pero no hay archivos');
+                    }
+                })
+                .catch(error => {
+                    alert('❌ Error accediendo a Blob Storage:\n' + error.message);
+                });
+        }
+        
+        // Cargar información del blob al inicio
+        window.onload = function() {
+            testBlobAccess();
+        };
     </script>
 </body>
 </html>
