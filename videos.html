@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mis Videos - Azure Storage</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 { 
+            color: #333; 
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .video-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 10px;
+            border-left: 5px solid #0078d4;
+            transition: transform 0.3s;
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        video {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .download-btn {
+            display: inline-block;
+            background: #0078d4;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .download-btn:hover {
+            background: #005a9e;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Videos en Azure Blob Storage</h1>
+        
+        <div class="info">
+            <strong>📍 URL del Storage:</strong> almacenamientoivan.blob.core.windows.net<br>
+            <strong>📁 Contenedor:</strong> multimedia<br>
+            <strong>🚀 Subida automatizada con Python</strong>
+        </div>
+
+        <!-- VIDEO 1 -->
+        <div class="video-card">
+            <h3>📹 Video de Presentación</h3>
+            <video controls>
+                <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" type="video/mp4">
+                Tu navegador no soporta video HTML5.
+            </video>
+            <p>
+                <a class="download-btn" href="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" target="_blank">
+                    ⬇️ Descargar Video
+                </a>
+            </p>
+        </div>
+
+        <!-- AGREGAR MÁS VIDEOS AQUÍ -->
+        <!-- Copia el bloque de arriba y cambia la URL -->
+
+        <div class="info">
+            <h3>📋 Cómo agregar más videos:</h3>
+            <p>1. Pon videos en la carpeta local "archivos_subir"</p>
+            <p>2. Ejecuta: <code>python upload_blob.py</code></p>
+            <p>3. Los videos aparecerán automáticamente aquí</p>
+        </div>
+    </div>
+</body>
+</html>
