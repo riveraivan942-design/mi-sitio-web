@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 Azure Blob Storage - 7 Videos Subidos desde Python</title>
+    <title>🚀 Azure Blob Storage - Implementaciones Técnicas</title>
     <style>
         :root {
-            --primary: #0078d4;
-            --primary-dark: #005a9e;
-            --primary-light: #e3f2fd;
+            --azure-blue: #0078d4;
+            --azure-dark: #005a9e;
+            --azure-light: #e3f2fd;
             --success: #107c10;
             --background: #f8fafc;
             --text: #1e293b;
             --text-light: #64748b;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -37,12 +38,30 @@
         /* HERO SECTION */
         .hero {
             text-align: center;
-            padding: 60px 30px;
-            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            padding: 60px 40px;
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-dark) 100%);
             color: white;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0, 120, 212, 0.3);
+            border-radius: 24px;
+            margin-bottom: 50px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
         
         .hero-title {
@@ -57,183 +76,290 @@
         
         .hero-subtitle {
             font-size: 1.3rem;
-            opacity: 0.9;
+            opacity: 0.95;
             max-width: 800px;
             margin: 0 auto 30px;
+            line-height: 1.8;
         }
         
-        .badge-grid {
+        .tech-stack {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             margin-top: 30px;
         }
         
-        .badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px 25px;
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
             border-radius: 50px;
             font-weight: 600;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
         }
         
-        /* VIDEO GRID */
+        .tech-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* VIDEO SECTION */
         .video-section {
-            margin: 50px 0;
+            margin: 60px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
         }
         
         .section-title {
-            font-size: 2.2rem;
-            color: var(--primary);
-            margin-bottom: 30px;
-            text-align: center;
+            font-size: 2.5rem;
+            color: var(--azure-blue);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
         }
         
+        .section-description {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 35px;
         }
         
         .video-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid #e2e8f0;
+            position: relative;
         }
         
         .video-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 120, 212, 0.2);
-            border-color: var(--primary);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 120, 212, 0.2);
+            border-color: var(--azure-blue);
+        }
+        
+        .video-header {
+            padding: 25px 25px 0;
+        }
+        
+        .video-number {
+            display: inline-block;
+            background: var(--azure-blue);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .video-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .video-player-container {
+            position: relative;
+            height: 220px;
+            background: #000;
+            overflow: hidden;
         }
         
         .video-player {
             width: 100%;
-            height: 250px;
-            background: #000;
-        }
-        
-        .video-player video {
-            width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
+            transition: transform 0.3s;
+        }
+        
+        .video-card:hover .video-player {
+            transform: scale(1.05);
+        }
+        
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .video-card:hover .play-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            background: rgba(255, 255, 255, 0.9);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .play-button:hover {
+            background: white;
+            transform: scale(1.1);
         }
         
         .video-info {
             padding: 25px;
         }
         
-        .video-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .video-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
         
         .video-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: var(--text-light);
-            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
         }
         
         .video-size {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 5px 12px;
+            background: var(--azure-light);
+            color: var(--azure-blue);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .video-link {
-            display: inline-block;
-            background: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--azure-blue);
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
-            margin-top: 15px;
-            transition: background 0.3s;
+            font-size: 0.95rem;
+            transition: all 0.3s;
         }
         
         .video-link:hover {
-            background: var(--primary-dark);
+            background: var(--azure-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 120, 212, 0.3);
         }
         
-        /* PYTHON DEMO */
-        .demo-section {
+        /* PYTHON SECTION */
+        .python-section {
             background: white;
-            border-radius: 16px;
-            padding: 40px;
-            margin: 50px 0;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            border: 2px solid var(--primary-light);
+            border-radius: 24px;
+            padding: 50px;
+            margin: 70px 0;
+            box-shadow: var(--card-shadow);
+            border: 2px solid var(--azure-light);
         }
         
-        .demo-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 25px;
+        .python-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .python-title {
+            font-size: 2.2rem;
+            color: var(--azure-blue);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
         }
         
-        .python-code {
+        .code-container {
             background: #1e293b;
-            color: #e2e8f0;
-            padding: 25px;
-            border-radius: 12px;
-            font-family: 'Cascadia Code', 'Consolas', monospace;
-            font-size: 0.95rem;
+            border-radius: 16px;
+            padding: 30px;
             overflow-x: auto;
-            margin: 20px 0;
+            margin: 30px 0;
         }
         
         .code-line {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #e2e8f0;
             margin-bottom: 8px;
         }
         
+        .code-prompt { color: #60a5fa; }
+        .code-output { color: #34d399; }
         .code-comment { color: #94a3b8; }
-        .code-string { color: #34d399; }
-        .code-function { color: #60a5fa; }
         .code-number { color: #fbbf24; }
+        .code-file { color: #f87171; }
         
-        /* STATS */
+        /* STATS SECTION */
         .stats-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin: 50px 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
         }
         
         .stat-card {
             background: white;
-            padding: 30px;
-            border-radius: 16px;
+            padding: 40px 30px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--card-shadow);
+            border-top: 5px solid var(--azure-blue);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
         }
         
         .stat-number {
             font-size: 3.5rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--azure-blue);
             margin-bottom: 10px;
             line-height: 1;
         }
@@ -241,456 +367,463 @@
         .stat-label {
             color: var(--text-light);
             font-size: 1.1rem;
-        }
-        
-        /* CTA */
-        .cta-section {
-            text-align: center;
-            padding: 60px 40px;
-            background: linear-gradient(135deg, var(--primary-light) 0%, #dbeafe 100%);
-            border-radius: 20px;
-            margin: 50px 0;
-        }
-        
-        .cta-title {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 30px;
-        }
-        
-        .cta-btn {
-            padding: 18px 35px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .cta-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 6px 20px rgba(0, 120, 212, 0.3);
-        }
-        
-        .cta-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        
-        .cta-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 120, 212, 0.4);
+            font-weight: 500;
         }
         
         /* FOOTER */
         .footer {
             text-align: center;
-            padding: 40px 20px;
+            padding: 50px 20px;
             color: var(--text-light);
-            margin-top: 60px;
+            margin-top: 80px;
             border-top: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .footer-title {
+            font-size: 1.8rem;
+            color: var(--azure-blue);
+            margin-bottom: 20px;
+        }
+        
+        .azure-info {
+            display: inline-block;
+            background: var(--azure-light);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
         }
         
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
+            gap: 25px;
+            margin: 30px 0;
             flex-wrap: wrap;
         }
         
         .footer-link {
-            color: var(--primary);
+            color: var(--azure-blue);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
         }
         
         .footer-link:hover {
-            text-decoration: underline;
+            background: var(--azure-light);
+            transform: translateY(-2px);
         }
         
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .hero-title { font-size: 2.5rem; }
             .hero-subtitle { font-size: 1.1rem; }
-            .section-title { font-size: 1.8rem; }
+            .section-title { font-size: 2rem; }
             .video-grid { grid-template-columns: 1fr; }
-            .cta-buttons { flex-direction: column; }
-            .cta-btn { width: 100%; justify-content: center; }
+            .python-section { padding: 30px 20px; }
+            .tech-stack { gap: 8px; }
+            .tech-badge { padding: 10px 18px; font-size: 0.85rem; }
         }
+        
+        /* UTILITIES */
+        .mt-4 { margin-top: 1.5rem; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- HERO SECTION -->
         <div class="hero">
-            <h1 class="hero-title">
-                <span>🚀</span>
-                Azure Blob Storage
-            </h1>
-            <p class="hero-subtitle">
-                7 videos subidos automáticamente desde Python local directamente a la nube de Azure.
-                Implementación completa con automatización, sin intervención manual.
-            </p>
-            <div class="badge-grid">
-                <div class="badge">✅ 7 Videos Subidos</div>
-                <div class="badge">🐍 Python Automatizado</div>
-                <div class="badge">☁️ Azure Cloud</div>
-                <div class="badge">🚀 Proceso 100% Automático</div>
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span>🚀</span>
+                    Implementaciones Azure Cloud
+                </h1>
+                <p class="hero-subtitle">
+                    6 videos técnicos subidos automáticamente desde Python local a Azure Blob Storage.
+                    Demostración completa de arquitecturas serverless, automatización y despliegue en la nube.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Azure Blob Storage</span>
+                    <span class="tech-badge">Python Automation</span>
+                    <span class="tech-badge">Azure Functions</span>
+                    <span class="tech-badge">Static Web Apps</span>
+                    <span class="tech-badge">Serverless CRUD</span>
+                    <span class="tech-badge">GitHub Actions CI/CD</span>
+                </div>
             </div>
         </div>
         
         <!-- STATISTICS -->
         <div class="stats-section">
             <div class="stat-card">
-                <div class="stat-number">7</div>
-                <div class="stat-label">Videos Totales</div>
+                <div class="stat-icon">🎬</div>
+                <div class="stat-number">6</div>
+                <div class="stat-label">Videos Técnicos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">230+</div>
-                <div class="stat-label">MB de Datos</div>
+                <div class="stat-icon">💾</div>
+                <div class="stat-number">168.35</div>
+                <div class="stat-label">MB Total</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">⚡</div>
                 <div class="stat-number">100%</div>
                 <div class="stat-label">Automatizado</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🔗</div>
                 <div class="stat-number">1</div>
                 <div class="stat-label">Comando Python</div>
             </div>
         </div>
         
-        <!-- VIDEOS SECTION -->
+        <!-- VIDEO SECTION -->
         <div class="video-section">
-            <h2 class="section-title">
-                <span>🎬</span>
-                Videos en Azure Blob Storage
-            </h2>
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>🎬</span>
+                    Implementaciones Técnicas en Azure
+                </h2>
+                <p class="section-description">
+                    Videos subidos automáticamente demostrando arquitecturas cloud completas.
+                    Cada implementación fue desarrollada y desplegada en Azure.
+                </p>
+            </div>
             
             <div class="video-grid">
-                <!-- VIDEO 1 -->
+                <!-- VIDEO 1: AZURITE -->
                 <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+1">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" type="video/mp4">
-                        </video>
+                    <div class="video-header">
+                        <div class="video-number">1</div>
+                        <h3 class="video-title">AZURITE Base de Datos</h3>
                     </div>
-                    <div class="video-info">
-                        <h3 class="video-title">
-                            <span>1.</span>
-                            2025-12-04 Web Static App
-                        </h3>
-                        <div class="video-meta">
-                            <span>📍 Azure Storage</span>
-                            <span class="video-size">31.35 MB</span>
-                        </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- VIDEO 2 -->
-                <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+2">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-15.mp4" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">
-                            <span>2.</span>
-                            2025-12-15 Demo
-                        </h3>
-                        <div class="video-meta">
-                            <span>📍 Azure Storage</span>
-                            <span class="video-size">29.96 MB</span>
-                        </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-15.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- VIDEO 3 -->
-                <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+3">
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=AZURITE+Database">
                             <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/AZURITE%20BASE%20DE%20DATOS.mp4" type="video/mp4">
                         </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
+                        </div>
                     </div>
                     <div class="video-info">
-                        <h3 class="video-title">
-                            <span>3.</span>
-                            AZURITE Base de Datos
-                        </h3>
+                        <p class="video-description">
+                            Implementación y configuración de Azurite como base de datos local para desarrollo
+                            y pruebas de Azure Storage emulado.
+                        </p>
                         <div class="video-meta">
-                            <span>📍 Azure Storage</span>
                             <span class="video-size">12.66 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/AZURITE%20BASE%20DE%20DATOS.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
                         </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/AZURITE%20BASE%20DE%20DATOS.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
                     </div>
                 </div>
                 
-                <!-- VIDEO 4 -->
+                <!-- VIDEO 2: AZURITE DATABASE -->
                 <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+4">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Blob%20Storage.mp4" type="video/mp4">
-                        </video>
+                    <div class="video-header">
+                        <div class="video-number">2</div>
+                        <h3 class="video-title">Base de datos Azurite</h3>
                     </div>
-                    <div class="video-info">
-                        <h3 class="video-title">
-                            <span>4.</span>
-                            Blob Storage Tutorial
-                        </h3>
-                        <div class="video-meta">
-                            <span>📍 Azure Storage</span>
-                            <span class="video-size">39.14 MB</span>
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=Azurite+Database">
+                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Base%20de%20datos%20Azurite.mp4" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
                         </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Blob%20Storage.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- VIDEO 5 -->
-                <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+5">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n1.mp4" type="video/mp4">
-                        </video>
                     </div>
                     <div class="video-info">
-                        <h3 class="video-title">
-                            <span>5.</span>
-                            Presentación 1
-                        </h3>
+                        <p class="video-description">
+                            Configuración avanzada de bases de datos con Azurite para emulación local
+                            de servicios Azure Storage durante el desarrollo.
+                        </p>
                         <div class="video-meta">
-                            <span>📍 Azure Storage</span>
-                            <span class="video-size">35.67 MB</span>
-                        </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n1.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- VIDEO 6 -->
-                <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+6">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n2.mp4" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">
-                            <span>6.</span>
-                            Presentación 2
-                        </h3>
-                        <div class="video-meta">
-                            <span>📍 Azure Storage</span>
-                            <span class="video-size">35.67 MB</span>
-                        </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n2.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- VIDEO 7 -->
-                <div class="video-card">
-                    <div class="video-player">
-                        <video controls poster="https://via.placeholder.com/350x250/0078d4/ffffff?text=Video+7">
-                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/azurite.mp4" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">
-                            <span>7.</span>
-                            Azurite Demo
-                        </h3>
-                        <div class="video-meta">
-                            <span>📍 Azure Storage</span>
                             <span class="video-size">19.57 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Base%20de%20datos%20Azurite.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
                         </div>
-                        <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/azurite.mp4" 
-                           class="video-link" target="_blank">
-                            🔗 Ver en Azure
-                        </a>
+                    </div>
+                </div>
+                
+                <!-- VIDEO 3: AZURE FUNCTIONS -->
+                <div class="video-card">
+                    <div class="video-header">
+                        <div class="video-number">3</div>
+                        <h3 class="video-title">Implementación Azure Functions</h3>
+                    </div>
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=Azure+Functions">
+                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20Azure%20Functions.mp4" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-description">
+                            Despliegue de funciones serverless en Azure Functions con triggers HTTP,
+                            integración con Table Storage y configuración de CORS.
+                        </p>
+                        <div class="video-meta">
+                            <span class="video-size">35.67 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20Azure%20Functions.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VIDEO 4: CRUD + BLOB STORAGE -->
+                <div class="video-card">
+                    <div class="video-header">
+                        <div class="video-number">4</div>
+                        <h3 class="video-title">Implementación CRUD y Blob Storage</h3>
+                    </div>
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=CRUD+Blob+Storage">
+                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD%20y%20Blob%20Storage.mp4" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-description">
+                            Implementación completa de operaciones CRUD combinadas con Azure Blob Storage
+                            para manejo de datos y archivos multimedia.
+                        </p>
+                        <div class="video-meta">
+                            <span class="video-size">39.14 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD%20y%20Blob%20Storage.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VIDEO 5: CRUD IMPLEMENTATION -->
+                <div class="video-card">
+                    <div class="video-header">
+                        <div class="video-number">5</div>
+                        <h3 class="video-title">Implementación CRUD</h3>
+                    </div>
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=CRUD+Implementation">
+                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD.mp4" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-description">
+                            Desarrollo de operaciones CRUD completas con Azure Table Storage,
+                            incluyendo creación, lectura, actualización y eliminación de registros.
+                        </p>
+                        <div class="video-meta">
+                            <span class="video-size">29.96 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VIDEO 6: STATIC WEB APP -->
+                <div class="video-card">
+                    <div class="video-header">
+                        <div class="video-number">6</div>
+                        <h3 class="video-title">Implementación Web Static App</h3>
+                    </div>
+                    <div class="video-player-container">
+                        <video class="video-player" controls preload="metadata" poster="https://via.placeholder.com/380x220/0078d4/ffffff?text=Static+Web+App">
+                            <source src="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20web%20static%20app.mp4" type="video/mp4">
+                        </video>
+                        <div class="play-overlay">
+                            <div class="play-button">▶</div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-description">
+                            Despliegue de aplicación web estática en Azure Static Web Apps con
+                            integración de GitHub Actions para CI/CD automático.
+                        </p>
+                        <div class="video-meta">
+                            <span class="video-size">31.35 MB</span>
+                            <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20web%20static%20app.mp4" 
+                               class="video-link" target="_blank">
+                                <span>🔗</span> Ver en Azure
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- PYTHON DEMO -->
-        <div class="demo-section">
-            <h2 class="demo-title">
-                <span>🐍</span>
-                Automatización con Python
-            </h2>
-            <p style="color: var(--text-light); margin-bottom: 20px;">
-                Todos los videos fueron subidos automáticamente ejecutando un solo comando:
-            </p>
-            
-            <div class="python-code">
-                <div class="code-line"><span class="code-comment"># Subir todos los archivos de la carpeta local a Azure</span></div>
-                <div class="code-line"><span class="code-function">$ python</span> upload_blob.py</div>
-                <div class="code-line"><br></div>
-                <div class="code-line"><span class="code-comment"># Output del proceso automático:</span></div>
-                <div class="code-line"><span class="code-string">✅ Conectado a Azure Blob Storage</span></div>
-                <div class="code-line"><span class="code-string">📁 Contenedor: multimedia</span></div>
-                <div class="code-line"><span class="code-string">📂 Explorando carpeta: archivos_subir</span></div>
-                <div class="code-line"><span class="code-string">📄 Encontrados <span class="code-number">7</span> archivo(s)</span></div>
-                <div class="code-line"><br></div>
-                <div class="code-line"><span class="code-string">⬆️ Subiendo: 2025-12-04 web static app.mp4</span></div>
-                <div class="code-line"><span class="code-string">   ✅ Subido: 2025-12-04 web static app.mp4 (video/mp4)</span></div>
-                <div class="code-line"><span class="code-comment"># ... proceso continúa para los 7 archivos ...</span></div>
-                <div class="code-line"><br></div>
-                <div class="code-line"><span class="code-string">🎉 Proceso completado!</span></div>
-                <div class="code-line"><span class="code-string">📊 Total subidos: <span class="code-number">7</span>/7</span></div>
+        <!-- PYTHON AUTOMATION -->
+        <div class="python-section">
+            <div class="python-header">
+                <h2 class="python-title">
+                    <span>🐍</span>
+                    Automatización con Python
+                </h2>
+                <p class="section-description">
+                    Los 6 videos fueron subidos automáticamente con un solo comando Python
+                </p>
             </div>
             
-            <p style="color: var(--text-light); margin-top: 20px;">
-                El script detecta automáticamente el tipo de archivo, configura los headers correctos
-                y sube todo el contenido de la carpeta local al contenedor Azure.
-            </p>
-        </div>
-        
-        <!-- CTA SECTION -->
-        <div class="cta-section">
-            <h2 class="cta-title">🚀 Implementación Completa</h2>
-            <p style="font-size: 1.2rem; color: var(--text); max-width: 800px; margin: 0 auto;">
-                Azure Blob Storage + Python Automation + Static Web App + GitHub Actions
-            </p>
-            
-            <div class="cta-buttons">
-                <a href="blob-viewer.html" class="cta-btn cta-primary">
-                    <span>🔗</span>
-                    Ver Visualizador Dinámico
-                </a>
-                <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/" 
-                   class="cta-btn cta-secondary" target="_blank">
-                    <span>📂</span>
-                    Ver Contenedor Azure
-                </a>
-                <a href="https://github.com" class="cta-btn cta-secondary" target="_blank">
-                    <span>💻</span>
-                    Ver Código Python
-                </a>
+            <div class="code-container">
+                <div class="code-line"><span class="code-prompt">$</span> <span class="code-output">python upload_blob.py</span></div>
+                <div class="code-line"><span class="code-comment"># ================================================</span></div>
+                <div class="code-line"><span class="code-output">✅ Conectado a Azure Blob Storage</span></div>
+                <div class="code-line"><span class="code-output">📁 Contenedor: multimedia</span></div>
+                <div class="code-line"><span class="code-output">📂 Explorando carpeta: archivos_subir</span></div>
+                <div class="code-line"><span class="code-output">📄 Encontrados <span class="code-number">6</span> archivo(s)</span></div>
+                <div class="code-line"><span class="code-comment"># ------------------------------------------------</span></div>
+                <div class="code-line"><span class="code-output">⬆️ Subiendo: <span class="code-file">Implementación Azure Functions.mp4</span></span></div>
+                <div class="code-line"><span class="code-output">   ✅ Subido: Implementación Azure Functions.mp4 (video/mp4)</span></div>
+                <div class="code-line"><span class="code-output">⬆️ Subiendo: <span class="code-file">Implementación CRUD y Blob Storage.mp4</span></span></div>
+                <div class="code-line"><span class="code-output">   ✅ Subido: Implementación CRUD y Blob Storage.mp4 (video/mp4)</span></div>
+                <div class="code-line"><span class="code-output">⬆️ Subiendo: <span class="code-file">Implementación CRUD.mp4</span></span></div>
+                <div class="code-line"><span class="code-output">   ✅ Subido: Implementación CRUD.mp4 (video/mp4)</span></div>
+                <div class="code-line"><span class="code-comment"># ... proceso continúa para los 6 archivos ...</span></div>
+                <div class="code-line"><span class="code-comment"># ------------------------------------------------</span></div>
+                <div class="code-line"><span class="code-output">🎉 Proceso completado!</span></div>
+                <div class="code-line"><span class="code-output">📊 Total subidos: <span class="code-number">6</span>/6</span></div>
+                <div class="code-line"><span class="code-output">💾 Tamaño total: <span class="code-number">168.35</span> MB</span></div>
             </div>
+            
+            <p class="section-description text-center mt-4">
+                El script Python detecta automáticamente el tipo de contenido, configura los headers correctos
+                y sube toda la carpeta local al contenedor Azure Blob Storage.
+            </p>
         </div>
         
         <!-- FOOTER -->
         <div class="footer">
-            <p>🚀 Proyecto de Automatización Cloud - Azure Blob Storage con Python</p>
-            <p style="margin-top: 10px; color: var(--text-light);">
-                <strong>Cuenta:</strong> almacenamientoivan | <strong>Contenedor:</strong> multimedia | 
-                <strong>Total archivos:</strong> 7 videos | <strong>Tamaño total:</strong> 230+ MB
-            </p>
+            <h3 class="footer-title">🔗 Recursos de Implementación</h3>
             
-            <div class="footer-links">
-                <a href="https://portal.azure.com" class="footer-link" target="_blank">Azure Portal</a>
-                <a href="https://gray-flower-049000f10.3.azurestaticapps.net" class="footer-link" target="_blank">Static Web App</a>
-                <a href="blob-viewer.html" class="footer-link">Visualizador Dinámico</a>
-                <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/" class="footer-link" target="_blank">Blob Container</a>
+            <div class="azure-info">
+                https://almacenamientoivan.blob.core.windows.net/multimedia/
             </div>
             
-            <p style="margin-top: 30px; font-size: 0.9rem; color: var(--text-light);">
-                ✅ Todos los videos se reproducen directamente desde Azure Storage<br>
-                ✅ Subida 100% automatizada desde Python local<br>
-                ✅ Acceso público configurado correctamente
+            <div class="footer-links">
+                <a href="blob-viewer.html" class="footer-link">📊 Visualizador Dinámico</a>
+                <a href="https://almacenamientoivan.blob.core.windows.net/multimedia/" 
+                   class="footer-link" target="_blank">📂 Contenedor Azure</a>
+                <a href="https://portal.azure.com" class="footer-link" target="_blank">⚙️ Azure Portal</a>
+                <a href="https://gray-flower-049000f10.3.azurestaticapps.net" 
+                   class="footer-link" target="_blank">🌐 Static Web App</a>
+            </div>
+            
+            <p class="mt-4" style="color: var(--text-light);">
+                <strong>🏗️ Arquitectura implementada:</strong> Python Local → Azure Blob Storage → Static Web App
+            </p>
+            <p style="color: var(--text-light); margin-top: 10px;">
+                <strong>✅ Características:</strong> 100% Automatizado • 6 Videos Técnicos • 168.35 MB • Acceso Público
             </p>
         </div>
     </div>
 
     <script>
-        // Función para calcular tamaño total
-        function calculateTotalSize() {
-            const sizes = [31.35, 29.96, 12.66, 39.14, 35.67, 35.67, 19.57];
-            const total = sizes.reduce((a, b) => a + b, 0);
-            return total.toFixed(2);
-        }
+        // Configuración de videos
+        const videos = [
+            {
+                title: "AZURITE Base de Datos",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/AZURITE%20BASE%20DE%20DATOS.mp4",
+                size: "12.66 MB",
+                desc: "Implementación de Azurite para emulación local de Azure Storage"
+            },
+            {
+                title: "Base de datos Azurite",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/Base%20de%20datos%20Azurite.mp4",
+                size: "19.57 MB",
+                desc: "Configuración avanzada de bases de datos con Azurite"
+            },
+            {
+                title: "Implementación Azure Functions",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20Azure%20Functions.mp4",
+                size: "35.67 MB",
+                desc: "Despliegue de funciones serverless en Azure Functions"
+            },
+            {
+                title: "Implementación CRUD y Blob Storage",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD%20y%20Blob%20Storage.mp4",
+                size: "39.14 MB",
+                desc: "Operaciones CRUD combinadas con Azure Blob Storage"
+            },
+            {
+                title: "Implementación CRUD",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20CRUD.mp4",
+                size: "29.96 MB",
+                desc: "Desarrollo completo de operaciones CRUD con Table Storage"
+            },
+            {
+                title: "Implementación Web Static App",
+                url: "https://almacenamientoivan.blob.core.windows.net/multimedia/Implementaci%C3%B3n%20web%20static%20app.mp4",
+                size: "31.35 MB",
+                desc: "Despliegue de aplicación web estática con GitHub Actions CI/CD"
+            }
+        ];
         
-        // Actualizar estadísticas
+        // Verificar enlaces al cargar
         document.addEventListener('DOMContentLoaded', () => {
-            // Actualizar tamaño total
-            const totalSize = calculateTotalSize();
-            document.querySelector('.stats-section .stat-card:nth-child(2) .stat-number').textContent = totalSize;
+            console.log('🚀 Videos cargados desde Azure Blob Storage');
+            console.log('📊 Total: 6 videos técnicos');
+            console.log('💾 Tamaño total: 168.35 MB');
+            console.log('🔗 Contenedor: https://almacenamientoivan.blob.core.windows.net/multimedia/');
             
-            // Configurar todos los videos para preload="metadata"
+            // Preload metadata para mejor performance
             document.querySelectorAll('video').forEach(video => {
                 video.preload = 'metadata';
-                video.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (this.paused) {
-                        this.play();
-                    } else {
-                        this.pause();
-                    }
-                });
             });
-            
-            // Mostrar mensaje de carga
-            console.log('🎬 7 videos cargados desde Azure Blob Storage');
-            console.log('📊 Tamaño total: ' + totalSize + ' MB');
-            console.log('🔗 Contenedor: https://almacenamientoivan.blob.core.windows.net/multimedia/');
         });
         
-        // Función para probar todos los enlaces
-        function testAllLinks() {
-            const links = [
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-04%20web%20static%20app.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/2025-12-15.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/AZURITE%20BASE%20DE%20DATOS.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/Blob%20Storage.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n1.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/Presentaci%C3%B3n2.mp4',
-                'https://almacenamientoivan.blob.core.windows.net/multimedia/azurite.mp4'
-            ];
+        // Función para verificar enlaces
+        async function verifyLinks() {
+            const links = videos.map(v => v.url);
+            let verified = 0;
             
-            let working = 0;
-            links.forEach(link => {
-                fetch(link, { method: 'HEAD' })
-                    .then(response => {
-                        if (response.ok) working++;
-                        updateConnectionStatus(working);
-                    })
-                    .catch(() => updateConnectionStatus(working));
-            });
-            
-            function updateConnectionStatus(count) {
-                const badge = document.querySelector('.badge-grid .badge:first-child');
-                if (count === 7) {
-                    badge.innerHTML = '✅ 7/7 Videos Accesibles';
-                    badge.style.background = 'rgba(16, 124, 16, 0.3)';
+            for (let i = 0; i < links.length; i++) {
+                try {
+                    const response = await fetch(links[i], { method: 'HEAD' });
+                    if (response.ok) verified++;
+                } catch (error) {
+                    console.warn(`⚠️ Error verificando: ${links[i]}`);
                 }
+            }
+            
+            if (verified === videos.length) {
+                console.log('✅ Todos los videos están accesibles en Azure');
             }
         }
         
-        // Ejecutar prueba de enlaces después de 3 segundos
-        setTimeout(testAllLinks, 3000);
+        // Ejecutar verificación después de 2 segundos
+        setTimeout(verifyLinks, 2000);
+        
+        // Función para calcular tamaño total
+        function calculateTotalSize() {
+            const sizes = [12.66, 19.57, 35.67, 39.14, 29.96, 31.35];
+            return sizes.reduce((a, b) => a + b, 0).toFixed(2);
+        }
+        
+        // Actualizar tamaño total en estadísticas
+        document.querySelector('.stats-section .stat-card:nth-child(2) .stat-number').textContent = calculateTotalSize();
     </script>
 </body>
 </html>
