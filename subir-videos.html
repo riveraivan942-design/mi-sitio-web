@@ -157,6 +157,17 @@
             font-size: 0.9rem;
             color: #495057;
         }
+        
+        .sas-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            color: #856404;
+            font-size: 0.85rem;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -169,11 +180,17 @@
             Selecciona un video para subirlo directamente al contenedor Azure Storage
         </p>
         
+        <div class="sas-info">
+            <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅<br>
+            <strong>⏰ Expira:</strong> 23/01/2026 08:55 AM<br>
+            <strong>📁 Contenedor:</strong> multimedia
+        </div>
+        
         <div class="file-input-wrapper">
-            <input type="file" id="fileInput" class="file-input" accept="video/*,.mp4,.avi,.mov,.wmv">
+            <input type="file" id="fileInput" class="file-input" accept="video/*,.mp4,.avi,.mov,.wmv,.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt">
             <label for="fileInput" id="fileLabel" class="file-label">
-                📁 Haz clic aquí o arrastra un video<br>
-                <small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>
+                📁 Haz clic aquí o arrastra cualquier archivo<br>
+                <small>(Videos, imágenes, PDFs - Límite: 100MB)</small>
             </label>
         </div>
         
@@ -183,7 +200,7 @@
         </div>
         
         <button id="uploadButton" class="upload-button" disabled>
-            ⏫ Subir Video a Azure
+            ⏫ Subir Archivo a Azure
         </button>
         
         <div id="progressContainer" class="progress-container">
@@ -195,14 +212,20 @@
         
         <div id="successMessage" class="message success"></div>
         <div id="errorMessage" class="message error"></div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <a href="index.html" style="color: #0078d4; text-decoration: none; font-weight: 600;">
+                ← Volver a la página principal
+            </a>
+        </div>
     </div>
 
     <script>
         // ================================================
-        // CONFIGURACIÓN - REEMPLAZA ESTA URL CON TU SAS
+        // TU NUEVO SAS TOKEN - VÁLIDO HASTA 23/01/2026
         // ================================================
-        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-23T00:01:22Z&se=2026-01-20T08:16:22Z&spr=https&sv=2024-11-04&sr=c&sig=gH8u3zprmo7a6pK75%2BQxiy8PLnlRsu2rTH82acyhlc8%3D";
-          
+        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-23T00:40:13Z&se=2026-01-23T08:55:13Z&spr=https&sv=2024-11-04&sr=c&sig=xh3JQCUGNYz1DBIqUoH5%2BG9jKNnZ9pp3%2Bu3EcDj7zrM%3D";
+        // ================================================
         
         // Elementos del DOM
         const fileInput = document.getElementById('fileInput');
@@ -220,6 +243,27 @@
         // Variables
         let selectedFile = null;
         
+        // Función para detectar tipo de archivo
+        function getFileTypeIcon(filename) {
+            const ext = filename.toLowerCase().split('.').pop();
+            
+            if (['mp4', 'avi', 'mov', 'wmv', 'mkv'].includes(ext)) {
+                return { icon: '🎬', type: 'video', color: '#0078d4' };
+            }
+            else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
+                return { icon: '🖼️', type: 'imagen', color: '#4CAF50' };
+            }
+            else if (['pdf'].includes(ext)) {
+                return { icon: '📄', type: 'PDF', color: '#F44336' };
+            }
+            else if (['doc', 'docx', 'txt'].includes(ext)) {
+                return { icon: '📝', type: 'documento', color: '#FF9800' };
+            }
+            else {
+                return { icon: '📁', type: 'archivo', color: '#607D8B' };
+            }
+        }
+        
         // Evento para seleccionar archivo
         fileInput.addEventListener('change', (e) => {
             selectedFile = e.target.files[0];
@@ -231,24 +275,21 @@
                     return;
                 }
                 
-                // Validar tipo
-                const validTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-ms-wmv'];
-                if (!validTypes.includes(selectedFile.type) && !selectedFile.name.match(/\.(mp4|avi|mov|wmv)$/i)) {
-                    showError('Formato no válido. Usa MP4, AVI, MOV o WMV');
-                    resetForm();
-                    return;
-                }
+                // Obtener icono según tipo
+                const fileInfoData = getFileTypeIcon(selectedFile.name);
                 
-                // Mostrar información del archivo
+                // Mostrar información con icono
                 fileName.textContent = selectedFile.name;
                 fileSize.textContent = formatBytes(selectedFile.size);
                 fileInfo.style.display = 'block';
                 
-                // Habilitar botón de subir
+                // Habilitar botón con icono correspondiente
                 uploadButton.disabled = false;
-                fileLabel.innerHTML = `✅ ${selectedFile.name}<br><small>Haz clic para cambiar</small>`;
-                fileLabel.style.borderColor = '#28a745';
-                fileLabel.style.background = '#d4edda';
+                uploadButton.innerHTML = `${fileInfoData.icon} Subir ${fileInfoData.type}`;
+                
+                fileLabel.innerHTML = `${fileInfoData.icon} ${selectedFile.name}<br><small>${fileInfoData.type.toUpperCase()} - Haz clic para cambiar</small>`;
+                fileLabel.style.borderColor = fileInfoData.color;
+                fileLabel.style.background = `${fileInfoData.color}15`;
             }
         });
         
@@ -284,8 +325,16 @@
         
         // Subir archivo
         uploadButton.addEventListener('click', async () => {
-            if (!selectedFile || !SAS_URL || SAS_URL === "TU_URL_SAS_AQUI") {
-                showError('Configura primero la URL SAS en el código');
+            if (!selectedFile) {
+                showError('Selecciona un archivo primero');
+                return;
+            }
+            
+            // Verificar si SAS ha expirado
+            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
+            const expiryTime = new Date(urlParams.get('se'));
+            if (new Date() > expiryTime) {
+                showError('El enlace SAS ha expirado. Solicita uno nuevo.');
                 return;
             }
             
@@ -293,21 +342,24 @@
             uploadButton.disabled = true;
             fileInput.disabled = true;
             progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
             
             try {
                 // Crear nombre único para el archivo
                 const timestamp = Date.now();
+                const randomId = Math.random().toString(36).substring(2, 8);
                 const safeName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-                const blobName = `${timestamp}_${safeName}`;
+                const blobName = `${timestamp}_${randomId}_${safeName}`;
                 
                 // URL completa con nombre de blob
-                const uploadUrl = `${SAS_URL.split('?')[0]}/${encodeURIComponent(blobName)}?${SAS_URL.split('?')[1]}`;
+                const baseUrl = SAS_URL.split('?')[0];
+                const queryParams = SAS_URL.split('?')[1];
+                const uploadUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${queryParams}`;
                 
-                // Crear FormData
-                const formData = new FormData();
-                formData.append('file', selectedFile);
+                console.log('Subiendo a:', uploadUrl);
                 
-                // Configurar XMLHttpRequest para mostrar progreso
+                // Crear XMLHttpRequest para mostrar progreso
                 const xhr = new XMLHttpRequest();
                 
                 xhr.upload.addEventListener('progress', (e) => {
@@ -315,39 +367,57 @@
                         const percentComplete = Math.round((e.loaded / e.total) * 100);
                         progressFill.style.width = `${percentComplete}%`;
                         progressText.textContent = `${percentComplete}%`;
+                        
+                        // Actualizar texto del botón
+                        uploadButton.innerHTML = `⏫ Subiendo... ${percentComplete}%`;
                     }
                 });
                 
                 xhr.addEventListener('load', () => {
+                    console.log('Respuesta:', xhr.status, xhr.statusText);
+                    
                     if (xhr.status === 201) {
-                        showSuccess(`✅ Video subido exitosamente:<br>${blobName}`);
+                        showSuccess(`
+                            ✅ <strong>Archivo subido exitosamente!</strong><br><br>
+                            📁 <strong>Nombre:</strong> ${blobName}<br>
+                            💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
+                            🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
+                            El archivo aparecerá en la galería en unos minutos.
+                        `);
                         resetForm();
                     } else {
-                        showError(`Error ${xhr.status}: ${xhr.statusText}`);
+                        showError(`Error ${xhr.status}: ${xhr.statusText}. Intenta de nuevo.`);
                         uploadButton.disabled = false;
                         fileInput.disabled = false;
+                        uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
                     }
                     progressContainer.style.display = 'none';
                 });
                 
                 xhr.addEventListener('error', () => {
-                    showError('Error de conexión. Verifica tu internet.');
+                    console.error('Error de red');
+                    showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
                     uploadButton.disabled = false;
                     fileInput.disabled = false;
                     progressContainer.style.display = 'none';
+                    uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
                 });
                 
-                // Enviar archivo
+                // Configurar y enviar
                 xhr.open('PUT', uploadUrl);
                 xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
-                xhr.setRequestHeader('Content-Type', selectedFile.type);
+                xhr.setRequestHeader('Content-Type', selectedFile.type || 'application/octet-stream');
+                xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'application/octet-stream');
+                
                 xhr.send(selectedFile);
                 
             } catch (error) {
+                console.error('Error:', error);
                 showError(`Error: ${error.message}`);
                 uploadButton.disabled = false;
                 fileInput.disabled = false;
                 progressContainer.style.display = 'none';
+                uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
             }
         });
         
@@ -365,18 +435,24 @@
             successMessage.style.display = 'block';
             errorMessage.style.display = 'none';
             
-            // Ocultar mensaje después de 10 segundos
+            // Auto-scroll para ver el mensaje
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Ocultar después de 15 segundos
             setTimeout(() => {
                 successMessage.style.display = 'none';
-            }, 10000);
+            }, 15000);
         }
         
         function showError(message) {
-            errorMessage.textContent = message;
+            errorMessage.innerHTML = message;
             errorMessage.style.display = 'block';
             successMessage.style.display = 'none';
             
-            // Ocultar mensaje después de 10 segundos
+            // Auto-scroll para ver el mensaje
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Ocultar después de 10 segundos
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 10000);
@@ -388,17 +464,26 @@
             uploadButton.disabled = true;
             fileInput.disabled = false;
             fileInfo.style.display = 'none';
-            fileLabel.innerHTML = '📁 Haz clic aquí o arrastra un video<br><small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>';
+            fileLabel.innerHTML = '📁 Haz clic aquí o arrastra cualquier archivo<br><small>(Videos, imágenes, PDFs - Límite: 100MB)</small>';
             fileLabel.style.borderColor = '#0078d4';
             fileLabel.style.background = '#f8fafc';
-            progressFill.style.width = '0%';
-            progressText.textContent = '0%';
+            uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
         }
         
-        // Validar que la URL SAS esté configurada
+        // Validar SAS al cargar
         document.addEventListener('DOMContentLoaded', () => {
-            if (!SAS_URL || SAS_URL === "TU_URL_SAS_AQUI") {
-                showError('⚠️ Configura la URL SAS en el código antes de usar');
+            console.log('SAS URL configurada:', SAS_URL ? '✅' : '❌');
+            
+            // Verificar expiración
+            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
+            const expiryTime = new Date(urlParams.get('se'));
+            const now = new Date();
+            
+            if (now > expiryTime) {
+                showError('⚠️ El enlace SAS ha expirado. Solicita uno nuevo.');
+            } else {
+                const daysLeft = Math.round((expiryTime - now) / (1000 * 60 * 60 * 24));
+                console.log(`SAS válido por: ${daysLeft} días`);
             }
         });
     </script>
