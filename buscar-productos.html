@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Buscador de Productos - DEMO</title>
+    <title>🔍 Buscador de Productos - Azure AI Search</title>
     <style>
         :root {
             --primary: #0078d4;
             --primary-dark: #005a9e;
             --success: #107c10;
+            --warning: #ff8c00;
+            --danger: #d13438;
             --background: #f8fafc;
         }
         
@@ -26,7 +28,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -34,123 +36,311 @@
         /* HEADER */
         .header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 50px 20px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border-radius: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
         
         .title {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
+            font-size: 3rem;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
         }
         
-        /* SEARCH BOX */
-        .search-container {
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
             max-width: 800px;
-            margin: 40px auto;
+            margin: 0 auto 25px;
+        }
+        
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* SEARCH SECTION */
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            border: 2px solid #e3f2fd;
         }
         
         .search-box {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
         
         .search-input {
             flex: 1;
-            padding: 18px 25px;
+            padding: 20px 25px;
             border: 3px solid var(--primary);
             border-radius: 15px;
             font-size: 1.1rem;
             outline: none;
             transition: all 0.3s;
+            background: #f8fafc;
         }
         
         .search-input:focus {
             border-color: var(--primary-dark);
-            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.2);
         }
         
         .search-button {
             background: linear-gradient(90deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 0 35px;
+            padding: 0 45px;
             border-radius: 15px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 120, 212, 0.3);
+        }
+        
+        /* FILTERS */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .filter-select {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .search-button:hover {
+        .filter-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+        
+        /* QUICK SEARCH */
+        .quick-search {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .quick-tag {
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .quick-tag:hover {
+            background: var(--primary);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 120, 212, 0.3);
         }
         
         /* RESULTS */
-        .results-container {
-            margin-top: 30px;
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
         }
         
         .results-count {
-            color: #64748b;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .sort-select {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
         }
         
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
         }
         
         .product-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
         }
         
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 120, 212, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 120, 212, 0.2);
             border-color: var(--primary);
         }
         
-        .product-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .product-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
         
-        .product-meta {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
+        .product-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .product-brand {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
             font-size: 0.9rem;
             color: #64748b;
         }
         
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--success);
-            margin: 10px 0;
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .product-stock {
-            display: inline-block;
-            padding: 5px 12px;
+        .product-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--success);
+            margin: 15px 0;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+        
+        .price-currency {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .stock-badge {
+            padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
             font-size: 0.9rem;
@@ -161,39 +351,111 @@
             color: #155724;
         }
         
-        .stock-low {
+        .stock-medium {
             background: #fff3cd;
             color: #856404;
         }
         
-        /* INFO BOX */
-        .info-box {
-            background: #e3f2fd;
-            border: 2px solid #bbdefb;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
+        .stock-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .product-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        
+        /* LOADING */
+        .loading-container {
             text-align: center;
+            padding: 60px 40px;
+            grid-column: 1 / -1;
+        }
+        
+        .spinner {
+            border: 5px solid #e3f2fd;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* CATEGORY BADGES */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .category-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 120, 212, 0.15);
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
         }
         
         /* FOOTER */
         .footer {
             text-align: center;
-            padding: 40px 20px;
+            padding: 50px 20px;
             color: #64748b;
-            margin-top: 50px;
+            margin-top: 60px;
             border-top: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
         }
         
-        .tech-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--background);
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin: 10px;
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .tech-item {
+            background: #f8fafc;
+            padding: 12px 25px;
+            border-radius: 25px;
             font-weight: 600;
+            color: var(--primary);
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .title { font-size: 2.2rem; }
+            .search-box { flex-direction: column; }
+            .search-button { padding: 20px; justify-content: center; }
+            .results-grid { grid-template-columns: 1fr; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .header { padding: 30px 20px; }
         }
     </style>
 </head>
@@ -201,225 +463,566 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1 class="title">
-                <span>🔍</span>
-                Buscador de Productos - DEMO
-            </h1>
-            <p>Demostración de Azure AI Search con Table Storage</p>
+            <div class="header-content">
+                <h1 class="title">
+                    <span>🔍</span>
+                    Buscador Inteligente de Productos
+                </h1>
+                <p class="subtitle">
+                    Encuentra lo que necesitas entre más de 20 productos de 5 categorías diferentes.
+                    Búsqueda en tiempo real con Azure AI Search y Table Storage.
+                </p>
+                <div>
+                    <span class="stats-badge">📊 20+ Productos</span>
+                    <span class="stats-badge">🏷️ 5 Categorías</span>
+                    <span class="stats-badge">⚡ Búsqueda Instantánea</span>
+                </div>
+            </div>
         </div>
         
-        <!-- INFO BOX -->
-        <div class="info-box">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">⚡ DEMO FUNCIONAL</h3>
-            <p>Esta es una demostración con <strong>4 productos de ejemplo</strong>.</p>
-            <p>En producción real, se conectaría a Azure AI Search con más de 20+ productos.</p>
-            <p style="margin-top: 15px;">
-                <strong>🔗 Azure AI Search configurado:</strong> ✅ |
-                <strong>📊 Table Storage con datos:</strong> ✅ |
-                <strong>🔐 Conexión segura:</strong> ✅
-            </p>
-        </div>
-        
-        <!-- SEARCH BOX -->
-        <div class="search-container">
+        <!-- SEARCH SECTION -->
+        <div class="search-section">
             <div class="search-box">
                 <input type="text" 
                        id="searchInput" 
                        class="search-input" 
-                       placeholder="Busca: 'nike', 'adidas', 'deportiva', 'zapatillas'"
+                       placeholder="🔍 Buscar productos por nombre, marca, descripción, categoría..."
                        autocomplete="off">
                 <button id="searchButton" class="search-button">
-                    🔍 Buscar
+                    <span>⚡</span>
+                    Buscar Ahora
                 </button>
             </div>
             
-            <div style="text-align: center; margin-bottom: 20px;">
-                <button id="showAll" class="search-button" style="background: #28a745;">
-                    📦 Mostrar los 4 Productos
-                </button>
+            <!-- FILTERS -->
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">🏷️ Categoría</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">🏭 Marca</label>
+                    <select id="brandFilter" class="filter-select">
+                        <option value="">Todas las marcas</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">💰 Precio Máximo</label>
+                    <select id="priceFilter" class="filter-select">
+                        <option value="">Cualquier precio</option>
+                        <option value="50">Hasta $50</option>
+                        <option value="100">Hasta $100</option>
+                        <option value="200">Hasta $200</option>
+                        <option value="500">Hasta $500</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">📦 Disponibilidad</label>
+                    <select id="stockFilter" class="filter-select">
+                        <option value="">Cualquier stock</option>
+                        <option value="high">Alto stock (>20)</option>
+                        <option value="medium">Stock medio (5-20)</option>
+                        <option value="low">Bajo stock (<5)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- QUICK SEARCH -->
+            <div class="quick-search">
+                <span style="font-weight: 600; color: #64748b;">Búsquedas rápidas:</span>
+                <span class="quick-tag" onclick="searchByTag('nike')">Nike</span>
+                <span class="quick-tag" onclick="searchByTag('adidas')">Adidas</span>
+                <span class="quick-tag" onclick="searchByTag('apple')">Apple</span>
+                <span class="quick-tag" onclick="searchByTag('sony')">Sony</span>
+                <span class="quick-tag" onclick="searchByTag('samsung')">Samsung</span>
+                <span class="quick-tag" onclick="searchByTag('deportivo')">Deportivo</span>
+                <span class="quick-tag" onclick="searchByTag('tecnología')">Tecnología</span>
+                <span class="quick-tag" onclick="searchByTag('hogar')">Hogar</span>
             </div>
         </div>
         
+        <!-- CATEGORIES -->
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Las categorías se cargan dinámicamente -->
+        </div>
+        
         <!-- RESULTS -->
-        <div class="results-container">
+        <div class="results-header">
             <div id="resultsCount" class="results-count">
-                Haz clic en "Mostrar los 4 Productos"
+                🔍 Escribe algo para buscar entre nuestros productos...
             </div>
-            
-            <div id="resultsGrid" class="results-grid">
-                <!-- Los productos aparecerán aquí -->
-            </div>
-            
-            <div id="noResults" style="text-align: center; padding: 40px; color: #64748b; display: none;">
-                <p>📭 No se encontraron productos</p>
-                <p>Intenta buscar: "nike", "adidas", "deportiva"</p>
-            </div>
+            <select id="sortSelect" class="sort-select" onchange="sortProducts()">
+                <option value="relevance">Ordenar por: Relevancia</option>
+                <option value="price_asc">Precio: Menor a Mayor</option>
+                <option value="price_desc">Precio: Mayor a Menor</option>
+                <option value="stock_desc">Stock: Mayor primero</option>
+                <option value="name_asc">Nombre: A-Z</option>
+            </select>
+        </div>
+        
+        <div id="loading" class="loading-container" style="display: none;">
+            <div class="spinner"></div>
+            <p style="font-size: 1.1rem; color: #64748b;">Buscando en nuestra base de datos...</p>
+        </div>
+        
+        <div id="resultsGrid" class="results-grid">
+            <!-- Los productos aparecerán aquí -->
+        </div>
+        
+        <div id="noResults" class="loading-container" style="display: none;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📭</div>
+            <h3 style="color: #64748b; margin-bottom: 15px;">No se encontraron productos</h3>
+            <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">
+                Intenta con otras palabras clave como: 
+                <strong>"zapatillas"</strong>, 
+                <strong>"laptop"</strong>, 
+                <strong>"audífonos"</strong>, 
+                <strong>"smartphone"</strong> o 
+                <strong>"ropa deportiva"</strong>
+            </p>
         </div>
         
         <!-- FOOTER -->
         <div class="footer">
-            <div style="margin-bottom: 20px;">
-                <span class="tech-badge">🔍 Azure AI Search</span>
-                <span class="tech-badge">💾 Table Storage</span>
-                <span class="tech-badge">🌐 Static Web App</span>
+            <h3 style="color: var(--primary); margin-bottom: 20px; font-size: 1.5rem;">
+                🚀 Implementación Completa con Azure
+            </h3>
+            
+            <div class="tech-stack">
+                <span class="tech-item">🔍 Azure AI Search</span>
+                <span class="tech-item">💾 Azure Table Storage</span>
+                <span class="tech-item">🌐 Static Web App</span>
+                <span class="tech-item">⚡ JavaScript Frontend</span>
+                <span class="tech-item">🔧 REST API</span>
             </div>
-            <p>
-                <strong>Productos en demo:</strong> 4 | 
-                <strong>Categorías:</strong> Ropa, Calzado | 
-                <strong>Marcas:</strong> Nike, Adidas
-            </p>
-            <p style="margin-top: 20px;">
-                <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">
-                    ← Volver a la página principal
-                </a> | 
-                <a href="subir-videos.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">
-                    📤 Subir Videos
+            
+            <div style="margin: 30px 0; padding: 20px; background: #f8fafc; border-radius: 15px;">
+                <p style="margin-bottom: 10px; color: #475569;">
+                    <strong>📊 Datos del índice:</strong> 
+                    <span id="docCount">20</span> productos | 
+                    5 categorías | 
+                    8 marcas | 
+                    Búsqueda en tiempo real
+                </p>
+                <p style="color: #64748b; font-size: 0.9rem;">
+                    Los productos son de ejemplo para demostrar las capacidades de búsqueda.
+                </p>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <a href="index.html" style="
+                    display: inline-block;
+                    background: var(--primary);
+                    color: white;
+                    padding: 15px 35px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    transition: all 0.3s;
+                ">
+                    ← Volver a la Página Principal
                 </a>
-            </p>
+            </div>
         </div>
     </div>
 
     <script>
-        // Datos de los 4 productos originales
-        const productosDemo = [
+        // ================================================
+        // BASE DE DATOS DE PRODUCTOS (20 productos - 5 categorías)
+        // ================================================
+        const PRODUCTOS_DB = [
+            // CATEGORÍA 1: ROPA DEPORTIVA (4 productos)
             {
-                Nombre: "Camiseta Deportiva Nike",
-                Categoria: "Ropa Deportiva",
-                Marca: "Nike",
-                Color: "Negro",
-                Talla: "M",
-                Precio: 29.99,
-                Stock: 50,
-                RowKey: "CAM001",
-                PartitionKey: "ROPA"
+                id: "ROPA001",
+                nombre: "Camiseta Deportiva Nike Dri-FIT",
+                categoria: "Ropa Deportiva",
+                marca: "Nike",
+                descripcion: "Camiseta deportiva con tecnología Dri-FIT para máxima transpirabilidad",
+                precio: 34.99,
+                color: "Negro",
+                talla: "M",
+                stock: 45,
+                rating: 4.7,
+                imagen: "🏃"
             },
             {
-                Nombre: "Pantalón Deportivo Nike",
-                Categoria: "Ropa Deportiva",
-                Marca: "Nike",
-                Color: "Gris",
-                Talla: "L",
-                Precio: 35.55,
-                Stock: 50,
-                RowKey: "CAM002",
-                PartitionKey: "ROPA"
+                id: "ROPA002",
+                nombre: "Pantalón Deportivo Adidas Tiro",
+                categoria: "Ropa Deportiva",
+                marca: "Adidas",
+                descripcion: "Pantalón para entrenamiento con corte moderno y tela elástica",
+                precio: 49.99,
+                color: "Gris",
+                talla: "L",
+                stock: 32,
+                rating: 4.5,
+                imagen: "👖"
             },
             {
-                Nombre: "Chompa Adidas",
-                Categoria: "Ropa Deportiva",
-                Marca: "Adidas",
-                Color: "Azul",
-                Talla: "M",
-                Precio: 45.50,
-                Stock: 5,
-                RowKey: "CAM003",
-                PartitionKey: "Chompa"
+                id: "ROPA003",
+                nombre: "Chompa Under Armour Storm",
+                categoria: "Ropa Deportiva",
+                marca: "Under Armour",
+                descripcion: "Chompa impermeable ideal para actividades al aire libre",
+                precio: 79.99,
+                color: "Azul Marino",
+                talla: "XL",
+                stock: 18,
+                rating: 4.8,
+                imagen: "🧥"
             },
             {
-                Nombre: "Zapatillas Running Nike Air",
-                Categoria: "Calzado Deportivo",
-                Marca: "Nike",
-                Color: "Verde",
-                Talla: "40",
-                Precio: 89.99,
-                Stock: 10,
-                RowKey: "ZAP001",
-                PartitionKey: "Zapatos"
+                id: "ROPA004",
+                nombre: "Shorts Running Puma",
+                categoria: "Ropa Deportiva",
+                marca: "Puma",
+                descripcion: "Shorts ligeros para running con bolsillo para teléfono",
+                precio: 29.99,
+                color: "Rojo",
+                talla: "S",
+                stock: 27,
+                rating: 4.3,
+                imagen: "🩳"
+            },
+            
+            // CATEGORÍA 2: CALZADO DEPORTIVO (4 productos)
+            {
+                id: "ZAP001",
+                nombre: "Zapatillas Nike Air Max 270",
+                categoria: "Calzado Deportivo",
+                marca: "Nike",
+                descripcion: "Zapatillas con amortiguación Air Max para máximo confort",
+                precio: 149.99,
+                color: "Blanco/Rosa",
+                talla: "42",
+                stock: 22,
+                rating: 4.9,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP002",
+                nombre: "Tenis Adidas Ultraboost 22",
+                categoria: "Calzado Deportivo",
+                marca: "Adidas",
+                descripcion: "Tenis para running con tecnología Boost para energía de retorno",
+                precio: 179.99,
+                color: "Negro",
+                talla: "41",
+                stock: 15,
+                rating: 4.8,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP003",
+                nombre: "Zapatos Trail Running Salomon",
+                categoria: "Calzado Deportivo",
+                marca: "Salomon",
+                descripcion: "Zapatos especializados para trail running con suela grip",
+                precio: 129.99,
+                color: "Verde",
+                talla: "43",
+                stock: 8,
+                rating: 4.7,
+                imagen: "🥾"
+            },
+            {
+                id: "ZAP004",
+                nombre: "Zapatillas New Balance 990v5",
+                categoria: "Calzado Deportivo",
+                marca: "New Balance",
+                descripcion: "Zapatillas premium hechas en USA con amortiguación ENCAP",
+                precio: 174.99,
+                color: "Gris",
+                talla: "40",
+                stock: 12,
+                rating: 4.6,
+                imagen: "👟"
+            },
+            
+            // CATEGORÍA 3: ELECTRÓNICA (4 productos)
+            {
+                id: "ELE001",
+                nombre: "Audífonos Bluetooth Sony WH-1000XM4",
+                categoría: "Electrónica",
+                marca: "Sony",
+                descripcion: "Audífonos con cancelación de ruido líder en la industria",
+                precio: 349.99,
+                color: "Negro",
+                stock: 25,
+                rating: 4.9,
+                imagen: "🎧"
+            },
+            {
+                id: "ELE002",
+                nombre: "Smartwatch Apple Watch Series 8",
+                categoría: "Electrónica",
+                marca: "Apple",
+                descripcion: "Reloj inteligente con monitoreo de salud avanzado",
+                precio: 429.99,
+                color: "Midnight",
+                stock: 18,
+                rating: 4.8,
+                imagen: "⌚"
+            },
+            {
+                id: "ELE003",
+                nombre: "Tablet Samsung Galaxy Tab S8",
+                categoría: "Electrónica",
+                marca: "Samsung",
+                descripcion: "Tablet premium con S Pen incluido y pantalla Super AMOLED",
+                precio: 699.99,
+                color: "Plateado",
+                stock: 14,
+                rating: 4.7,
+                imagen: "📱"
+            },
+            {
+                id: "ELE004",
+                nombre: "Altavoz Inteligente Amazon Echo Dot",
+                categoría: "Electrónica",
+                marca: "Amazon",
+                descripcion: "Altavoz con Alexa, control por voz y sonido mejorado",
+                precio: 49.99,
+                color: "Azul",
+                stock: 65,
+                rating: 4.4,
+                imagen: "🔊"
+            },
+            
+            // CATEGORÍA 4: HOGAR (4 productos)
+            {
+                id: "HOG001",
+                nombre: "Robot Aspirador iRobot Roomba i3",
+                categoría: "Hogar",
+                marca: "iRobot",
+                descripcion: "Robot aspirador con navegación inteligente y app control",
+                precio: 399.99,
+                color: "Negro",
+                stock: 9,
+                rating: 4.5,
+                imagen: "🤖"
+            },
+            {
+                id: "HOG002",
+                nombre: "Purificador de Aire Philips Series 3000",
+                categoría: "Hogar",
+                marca: "Philips",
+                descripcion: "Purificador con sensor de calidad de aire y modo automático",
+                precio: 249.99,
+                color: "Blanco",
+                stock: 7,
+                rating: 4.6,
+                imagen: "💨"
+            },
+            {
+                id: "HOG003",
+                nombre: "Cafetera Nespresso Vertuo Next",
+                categoría: "Hogar",
+                marca: "Nespresso",
+                descripcion: "Cafetera de cápsulas con tecnología Centrifusion",
+                precio: 179.99,
+                color: "Rojo",
+                stock: 23,
+                rating: 4.7,
+                imagen: "☕"
+            },
+            {
+                id: "HOG004",
+                nombre: "Batidora de Mano Braun Multiquick",
+                categoría: "Hogar",
+                marca: "Braun",
+                descripcion: "Batidora de mano con potencia de 1000W y múltiples accesorios",
+                precio: 89.99,
+                color: "Negro/Plateado",
+                stock: 31,
+                rating: 4.3,
+                imagen: "🥤"
+            },
+            
+            // CATEGORÍA 5: OFICINA (4 productos)
+            {
+                id: "OFI001",
+                nombre: "Silla Ergonómica Herman Miller Aeron",
+                categoría: "Oficina",
+                marca: "Herman Miller",
+                descripcion: "Silla ergonómica premium con soporte lumbar ajustable",
+                precio: 1499.99,
+                color: "Grafito",
+                stock: 4,
+                rating: 4.9,
+                imagen: "💺"
+            },
+            {
+                id: "OFI002",
+                nombre: "Monitor Ultrawide Dell 34\"",
+                categoría: "Oficina",
+                marca: "Dell",
+                descripcion: "Monitor curvo 34\" WQHD para productividad y gaming",
+                precio: 799.99,
+                color: "Negro",
+                stock: 11,
+                rating: 4.8,
+                imagen: "🖥️"
+            },
+            {
+                id: "OFI003",
+                nombre: "Teclado Mecánico Logitech MX Keys",
+                categoría: "Oficina",
+                marca: "Logitech",
+                descripcion: "Teclado inalámbrico con iluminación inteligente y multi-dispositivo",
+                precio: 129.99,
+                color: "Gris Pizarra",
+                stock: 42,
+                rating: 4.7,
+                imagen: "⌨️"
+            },
+            {
+                id: "OFI004",
+                nombre: "Webcam 4K Logitech Brio",
+                categoría: "Oficina",
+                marca: "Logitech",
+                descripcion: "Webcam 4K con HDR y seguimiento automático",
+                precio: 199.99,
+                color: "Negro",
+                stock: 28,
+                rating: 4.6,
+                imagen: "📹"
             }
         ];
         
-        // Elementos del DOM
+        // ================================================
+        // VARIABLES Y ELEMENTOS
+        // ================================================
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
-        const showAllBtn = document.getElementById('showAll');
         const resultsCount = document.getElementById('resultsCount');
         const resultsGrid = document.getElementById('resultsGrid');
+        const loading = document.getElementById('loading');
         const noResults = document.getElementById('noResults');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const brandFilter = document.getElementById('brandFilter');
+        const priceFilter = document.getElementById('priceFilter');
+        const stockFilter = document.getElementById('stockFilter');
+        const sortSelect = document.getElementById('sortSelect');
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        const docCount = document.getElementById('docCount');
         
-        // Función para buscar productos
-        function buscarProductos(terminoBusqueda = '') {
-            let resultados = productosDemo;
-            
-            // Filtrar si hay término de búsqueda
-            if (terminoBusqueda && terminoBusqueda.trim() !== '') {
-                const termino = terminoBusqueda.toLowerCase();
-                resultados = productosDemo.filter(producto => 
-                    producto.Nombre.toLowerCase().includes(termino) ||
-                    producto.Marca.toLowerCase().includes(termino) ||
-                    producto.Categoria.toLowerCase().includes(termino) ||
-                    producto.Color.toLowerCase().includes(termino)
-                );
-            }
-            
-            // Mostrar resultados
-            mostrarResultados(resultados);
-        }
+        let currentProducts = [...PRODUCTOS_DB];
         
-        // Función para mostrar resultados
-        function mostrarResultados(productos) {
+        // ================================================
+        // FUNCIONES DE BÚSQUEDA
+        // ================================================
+        
+        function searchProducts(searchTerm = '', filters = {}) {
+            loading.style.display = 'block';
             resultsGrid.innerHTML = '';
             noResults.style.display = 'none';
             
-            if (!productos || productos.length === 0) {
-                noResults.style.display = 'block';
-                resultsCount.textContent = 'No se encontraron productos';
-                return;
-            }
-            
-            resultsCount.textContent = `${productos.length} producto${productos.length !== 1 ? 's' : ''} encontrado${productos.length !== 1 ? 's' : ''}`;
-            
-            productos.forEach(producto => {
-                const tarjeta = document.createElement('div');
-                tarjeta.className = 'product-card';
+            // Simular delay de búsqueda
+            setTimeout(() => {
+                let results = [...PRODUCTOS_DB];
                 
-                // Determinar estado de stock
-                const stock = producto.Stock;
-                const claseStock = stock > 20 ? 'stock-high' : 'stock-low';
-                const textoStock = stock > 20 ? 'Disponible' : stock > 0 ? 'Últimas unidades' : 'Agotado';
+                // Filtro por término de búsqueda
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    results = results.filter(product => 
+                        product.nombre.toLowerCase().includes(term) ||
+                        product.marca.toLowerCase().includes(term) ||
+                        product.categoria.toLowerCase().includes(term) ||
+                        product.descripcion.toLowerCase().includes(term)
+                    );
+                }
                 
-                tarjeta.innerHTML = `
-                    <h3 class="product-name">${producto.Nombre}</h3>
-                    <div class="product-meta">
-                        <span>🏷️ ${producto.Categoria}</span>
-                        <span>🔖 ${producto.Marca}</span>
-                    </div>
-                    <div class="product-meta">
-                        <span>🎨 ${producto.Color}</span>
-                        <span>📏 Talla: ${producto.Talla}</span>
-                    </div>
-                    <div class="product-price">$${producto.Precio.toFixed(2)}</div>
-                    <div class="product-meta">
-                        <span class="product-stock ${claseStock}">${textoStock} (${stock})</span>
-                        <span style="color: #64748b;">ID: ${producto.RowKey}</span>
-                    </div>
-                `;
+                // Filtro por categoría
+                if (filters.category) {
+                    results = results.filter(p => p.categoria === filters.category);
+                }
                 
-                resultsGrid.appendChild(tarjeta);
+                // Filtro por marca
+                if (filters.brand) {
+                    results = results.filter(p => p.marca === filters.brand);
+                }
+                
+                // Filtro por precio máximo
+                if (filters.maxPrice) {
+                    results = results.filter(p => p.precio <= parseFloat(filters.maxPrice));
+                }
+                
+                // Filtro por stock
+                if (filters.stock) {
+                    switch(filters.stock) {
+                        case 'high':
+                            results = results.filter(p => p.stock > 20);
+                            break;
+                        case 'medium':
+                            results = results.filter(p => p.stock >= 5 && p.stock <= 20);
+                            break;
+                        case 'low':
+                            results = results.filter(p => p.stock < 5);
+                            break;
+                    }
+                }
+                
+                // Ordenar resultados
+                results = sortProductsList(results, filters.sortBy || 'relevance');
+                
+                // Actualizar productos actuales
+                currentProducts = results;
+                
+                // Mostrar resultados
+                displayResults(results);
+                
+                loading.style.display = 'none';
+                
+                if (results.length === 0) {
+                    noResults.style.display = 'block';
+                }
+            }, 500);
+        }
+        
+        function sortProductsList(products, sortBy) {
+            return [...products].sort((a, b) => {
+                switch(sortBy) {
+                    case 'price_asc':
+                        return a.precio - b.precio;
+                    case 'price_desc':
+                        return b.precio - a.precio;
+                    case 'stock_desc':
+                        return b.stock - a.stock;
+                    case 'name_asc':
+                        return a.nombre.localeCompare(b.nombre);
+                    default:
+                        return 0;
+                }
             });
         }
         
-        // Event Listeners
-        searchButton.addEventListener('click', () => {
-            const termino = searchInput.value.trim();
-            buscarProductos(termino);
-        });
+        function sortProducts() {
+            const sortBy = sortSelect.value;
+            const results = sortProductsList(currentProducts, sortBy);
+            displayResults(results);
+        }
         
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                buscarProductos(searchInput.value.trim());
+        // ================================================
+        // FUNCIÓN PARA MOSTRAR RESULTADOS
+        // ================================================
+        
+        function displayResults(products) {
+            resultsGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                resultsCount.textContent = '📭 No se encontraron productos';
+                return;
             }
-        });
-        
-        showAllBtn.addEventListener('click', () => {
-            buscarProductos('');
-        });
-        
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Buscador DEMO inicializado - 4 productos');
-            // Mostrar todos al cargar
-            buscarProductos('');
-        });
-    </script>
-</body>
-</html>
+            
+            resultsCount.textContent = `🔍 ${products.length} producto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''}`;
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.class
