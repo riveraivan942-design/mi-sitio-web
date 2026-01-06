@@ -1025,4 +1025,169 @@
             
             products.forEach(product => {
                 const productCard = document.createElement('div');
-                productCard.class
+                productCard.className = 'product-card';
+                
+                // Determinar clase de stock
+                let stockClass, stockText;
+                if (product.stock > 20) {
+                    stockClass = 'stock-high';
+                    stockText = 'Disponible';
+                } else if (product.stock >= 5) {
+                    stockClass = 'stock-medium';
+                    stockText = 'Stock limitado';
+                } else {
+                    stockClass = 'stock-low';
+                    stockText = 'Últimas unidades';
+                }
+                
+                productCard.innerHTML = `
+                    <div class="product-category">${product.categoria}</div>
+                    <h3 class="product-name">${product.imagen} ${product.nombre}</h3>
+                    <div class="product-brand">${product.marca}</div>
+                    
+                    <div class="product-details">
+                        <div class="detail-item">
+                            <span>🎨</span>
+                            <span>${product.color}</span>
+                        </div>
+                        ${product.talla ? `
+                        <div class="detail-item">
+                            <span>📏</span>
+                            <span>Talla: ${product.talla}</span>
+                        </div>` : ''}
+                        <div class="detail-item">
+                            <span>⭐</span>
+                            <span>${product.rating}/5.0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>📦</span>
+                            <span>${product.stock} unidades</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-price">
+                        <span class="price-currency">$</span>
+                        ${product.precio.toFixed(2)}
+                    </div>
+                    
+                    <p style="color: #64748b; font-size: 0.9rem; margin: 15px 0; line-height: 1.5;">
+                        ${product.descripcion}
+                    </p>
+                    
+                    <div class="product-footer">
+                        <span class="stock-badge ${stockClass}">${stockText}</span>
+                        <span class="product-id">ID: ${product.id}</span>
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(productCard);
+            });
+        }
+        
+        // ================================================
+        // FUNCIONES DE FILTROS
+        // ================================================
+        
+        function loadFilters() {
+            // Extraer categorías únicas
+            const categories = [...new Set(PRODUCTOS_DB.map(p => p.categoria))];
+            const brands = [...new Set(PRODUCTOS_DB.map(p => p.marca))];
+            
+            // Llenar categorías
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Llenar marcas
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+            
+            // Crear tarjetas de categorías
+            const categoryData = {
+                "Ropa Deportiva": { icon: "🏃", count: 4, color: "#0078d4" },
+                "Calzado Deportivo": { icon: "👟", count: 4, color: "#107c10" },
+                "Electrónica": { icon: "📱", count: 4, color: "#ff8c00" },
+                "Hogar": { icon: "🏠", count: 4, color: "#d13438" },
+                "Oficina": { icon: "💼", count: 4, color: "#8661c5" }
+            };
+            
+            Object.entries(categoryData).forEach(([name, data]) => {
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'category-card';
+                categoryCard.style.borderColor = data.color;
+                categoryCard.style.borderWidth = '2px';
+                categoryCard.onclick = () => {
+                    categoryFilter.value = name;
+                    performSearch();
+                };
+                
+                categoryCard.innerHTML = `
+                    <div class="category-icon">${data.icon}</div>
+                    <h4 style="margin-bottom: 8px; color: #1e293b;">${name}</h4>
+                    <p style="color: #64748b; font-size: 0.9rem;">${data.count} productos</p>
+                `;
+                
+                categoriesGrid.appendChild(categoryCard);
+            });
+        }
+        
+        // ================================================
+        // FUNCIONES AUXILIARES
+        // ================================================
+        
+        function searchByTag(tag) {
+            searchInput.value = tag;
+            performSearch();
+        }
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            const filters = {
+                category: categoryFilter.value,
+                brand: brandFilter.value,
+                maxPrice: priceFilter.value,
+                stock: stockFilter.value,
+                sortBy: sortSelect.value
+            };
+            
+            searchProducts(searchTerm, filters);
+        }
+        
+        // ================================================
+        // EVENT LISTENERS
+        // ================================================
+        
+        searchButton.addEventListener('click', performSearch);
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        [categoryFilter, brandFilter, priceFilter, stockFilter].forEach(filter => {
+            filter.addEventListener('change', performSearch);
+        });
+        
+        // ================================================
+        // INICIALIZACIÓN
+        // ================================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFilters();
+            // Mostrar algunos productos al inicio
+            const initialResults = PRODUCTOS_DB.slice(0, 6);
+            displayResults(initialResults);
+            resultsCount.textContent = `🏪 ${PRODUCTOS_DB.length} productos disponibles`;
+            docCount.textContent = PRODUCTOS_DB.length;
+        });
+    </script>
+</body>
+</html>
