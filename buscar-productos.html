@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Buscador de Productos - Azure AI Search</title>
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-dark: #005a9e;
+            --success: #107c10;
+            --background: #f8fafc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--background);
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* SEARCH BOX */
+        .search-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+        }
+        
+        .search-button {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0 35px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 120, 212, 0.3);
+        }
+        
+        /* RESULTS */
+        .results-container {
+            margin-top: 30px;
+        }
+        
+        .results-count {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 120, 212, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success);
+            margin: 10px 0;
+        }
+        
+        .product-stock {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .stock-high {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .stock-low {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--background);
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 class="title">
+                <span>🔍</span>
+                Buscador de Productos
+            </h1>
+            <p>Búsqueda en tiempo real con Azure AI Search + Table Storage</p>
+        </div>
+        
+        <!-- SEARCH BOX -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" 
+                       id="searchInput" 
+                       class="search-input" 
+                       placeholder="Busca productos por nombre, marca, categoría..."
+                       autocomplete="off">
+                <button id="searchButton" class="search-button">
+                    🔍 Buscar
+                </button>
+            </div>
+            
+            <!-- FILTERS -->
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                <select id="categoryFilter" class="search-input" style="flex: 1;">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <select id="brandFilter" class="search-input" style="flex: 1;">
+                    <option value="">Todas las marcas</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- RESULTS -->
+        <div class="results-container">
+            <div id="resultsCount" class="results-count">
+                Escribe algo para buscar productos...
+            </div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Buscando productos...</p>
+            </div>
+            
+            <div id="resultsGrid" class="results-grid">
+                <!-- Los productos aparecerán aquí -->
+            </div>
+            
+            <div id="noResults" class="loading" style="display: none;">
+                <p>📭 No se encontraron productos</p>
+                <p style="margin-top: 10px;">Intenta con otras palabras como: "nike", "deportiva", "zapatillas"</p>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+            <div style="margin-bottom: 20px;">
+                <span class="tech-badge">🔍 Azure AI Search</span>
+                <span class="tech-badge">💾 Table Storage</span>
+                <span class="tech-badge">🌐 Static Web App</span>
+            </div>
+            <p>
+                <strong>Índice:</strong> productos-index | 
+                <strong>Documentos:</strong> <span id="docCount">4</span> productos |
+                <strong>Backend:</strong> Azure Search REST API
+            </p>
+            <p style="margin-top: 20px;">
+                <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                    ← Volver a la página principal
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ================================================
+        // CONFIGURACIÓN - REEMPLAZA ESTOS VALORES
+        // ================================================
+        const SEARCH_SERVICE = "search-productos-ivan";  // Nombre de tu servicio Search
+        const API_KEY = "TU_API_KEY_AQUI";              // Necesitarás obtener la API Key
+        const INDEX_NAME = "productos-index";
+        // ================================================
+        
+        // Elementos del DOM
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const brandFilter = document.getElementById('brandFilter');
+        const docCount = document.getElementById('docCount');
+        
+        // Variables
+        let allProducts = [];
+        let categories = new Set();
+        let brands = new Set();
+        
+        // Función para buscar productos
+        async function searchProducts(searchTerm = '', filters = {}) {
+            // Mostrar loading
+            loading.style.display = 'block';
+            resultsGrid.innerHTML = '';
+            noResults.style.display = 'none';
+            
+            try {
+                // Construir URL de búsqueda
+                let queryParams = [];
+                
+                if (searchTerm) {
+                    queryParams.push(`search=${encodeURIComponent(searchTerm)}`);
+                }
+                
+                if (filters.category) {
+                    queryParams.push(`$filter=Category eq '${encodeURIComponent(filters.category)}'`);
+                }
+                
+                if (filters.brand) {
+                    if (filters.category) {
+                        queryParams[queryParams.length - 1] += ` and Marca eq '${encodeURIComponent(filters.brand)}'`;
+                    } else {
+                        queryParams.push(`$filter=Marca eq '${encodeURIComponent(filters.brand)}'`);
+                    }
+                }
+                
+                // Agregar campos a retornar
+                queryParams.push('$select=Nombre,Categoria,Marca,Color,Talla,Precio,Stock,RowKey');
+                
+                const queryString = queryParams.join('&');
+                const searchUrl = `https://${SEARCH_SERVICE}.search.windows.net/indexes/${INDEX_NAME}/docs?api-version=2023-11-01&${queryString}`;
+                
+                console.log('Buscando en:', searchUrl);
+                
+                // NOTA: Necesitas agregar autenticación aquí
+                // Para desarrollo, puedes usar CORS proxy o habilitar CORS en Azure
+                
+                // Simulación de respuesta (REMPLAZAR CON LLAMADA REAL)
+                const mockResults = [
+                    {
+                        Nombre: "Camiseta Deportiva Nike",
+                        Categoria: "Ropa Deportiva",
+                        Marca: "Nike",
+                        Color: "Negro",
+                        Talla: "M",
+                        Precio: 29.99,
+                        Stock: 50,
+                        RowKey: "CAM001"
+                    },
+                    {
+                        Nombre: "Pantalón Deportivo Nike",
+                        Categoria: "Ropa Deportiva",
+                        Marca: "Nike",
+                        Color: "Gris",
+                        Talla: "L",
+                        Precio: 35.55,
+                        Stock: 50,
+                        RowKey: "CAM002"
+                    },
+                    {
+                        Nombre: "Chompa Adidas",
+                        Categoria: "Ropa Deportiva",
+                        Marca: "Adidas",
+                        Color: "Azul",
+                        Talla: "M",
+                        Precio: 45.50,
+                        Stock: 5,
+                        RowKey: "CAM003"
+                    },
+                    {
+                        Nombre: "Zapatillas Running Nike Air",
+                        Categoria: "Calzado Deportivo",
+                        Marca: "Nike",
+                        Color: "Verde",
+                        Talla: "40",
+                        Precio: 89.99,
+                        Stock: 10,
+                        RowKey: "ZAP001"
+                    }
+                ];
+                
+                // Filtrar resultados simulados
+                let results = mockResults.filter(product => {
+                    if (searchTerm) {
+                        const term = searchTerm.toLowerCase();
+                        return product.Nombre.toLowerCase().includes(term) ||
+                               product.Marca.toLowerCase().includes(term) ||
+                               product.Categoria.toLowerCase().includes(term);
+                    }
+                    return true;
+                });
+                
+                if (filters.category) {
+                    results = results.filter(p => p.Categoria === filters.category);
+                }
+                
+                if (filters.brand) {
+                    results = results.filter(p => p.Marca === filters.brand);
+                }
+                
+                // Mostrar resultados
+                displayResults(results);
+                
+            } catch (error) {
+                console.error('Error buscando:', error);
+                resultsGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #dc3545;">
+                        <h3>❌ Error de conexión</h3>
+                        <p>No se pudo conectar con Azure Search. Verifica la configuración.</p>
+                        <p><small>${error.message}</small></p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Función para mostrar resultados
+        function displayResults(products) {
+            resultsGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                noResults.style.display = 'block';
+                resultsCount.textContent = 'No se encontraron productos';
+                return;
+            }
+            
+            resultsCount.textContent = `${products.length} producto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''}`;
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                const stockClass = product.Stock > 20 ? 'stock-high' : 'stock-low';
+                const stockText = product.Stock > 20 ? 'Disponible' : 'Últimas unidades';
+                
+                productCard.innerHTML = `
+                    <h3 class="product-name">${product.Nombre}</h3>
+                    <div class="product-meta">
+                        <span>🏷️ ${product.Categoria}</span>
+                        <span>🔖 ${product.Marca}</span>
+                    </div>
+                    <div class="product-meta">
+                        <span>🎨 ${product.Color}</span>
+                        <span>📏 Talla: ${product.Talla}</span>
+                    </div>
+                    <div class="product-price">$${product.Precio.toFixed(2)}</div>
+                    <div class="product-meta">
+                        <span class="product-stock ${stockClass}">${stockText} (${product.Stock})</span>
+                        <span style="color: #64748b;">ID: ${product.RowKey}</span>
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(productCard);
+            });
+        }
+        
+        // Función para cargar filtros
+        function loadFilters() {
+            // Simulación - en producción vendría de la API
+            const mockProducts = [
+                { Categoria: "Ropa Deportiva", Marca: "Nike" },
+                { Categoria: "Ropa Deportiva", Marca: "Adidas" },
+                { Categoria: "Calzado Deportivo", Marca: "Nike" }
+            ];
+            
+            mockProducts.forEach(product => {
+                if (product.Categoria) categories.add(product.Categoria);
+                if (product.Marca) brands.add(product.Marca);
+            });
+            
+            // Llenar categorías
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Llenar marcas
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+        }
+        
+        // Event Listeners
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            const filters = {
+                category: categoryFilter.value,
+                brand: brandFilter.value
+            };
+            searchProducts(searchTerm, filters);
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+        
+        categoryFilter.addEventListener('change', () => {
+            if (searchInput.value.trim() || brandFilter.value) {
+                searchButton.click();
+            }
+        });
+        
+        brandFilter.addEventListener('change', () => {
+            if (searchInput.value.trim() || categoryFilter.value) {
+                searchButton.click();
+            }
+        });
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFilters();
+            // Cargar todos los productos al inicio
+            searchProducts();
+        });
+    </script>
+</body>
+</html>
