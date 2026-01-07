@@ -637,7 +637,7 @@
         // BASE DE DATOS DE PRODUCTOS (20 productos - 5 categorías)
         // ================================================
         const PRODUCTOS_DB = [
-            // CATEGORÍA 1: ROPA DEPORTIVA (4 productos)
+            // CATEGORÍA 1: ROPA DEPORTIVA (12 productos)
             {
                 id: "ROPA001",
                 nombre: "Camiseta Deportiva Nike Dri-FIT",
@@ -690,8 +690,112 @@
                 rating: 4.3,
                 imagen: "🩳"
             },
+            {
+                id: "ROPA005",
+                nombre: "Top Deportivo Nike Swoosh",
+                categoria: "Ropa Deportiva",
+                marca: "Nike",
+                descripcion: "Top deportivo con soporte medio y tecnología Dri-FIT",
+                precio: 39.99,
+                color: "Blanco",
+                talla: "S",
+                stock: 31,
+                rating: 4.6,
+                imagen: "🎽"
+            },
+            {
+                id: "ROPA006",
+                nombre: "Leggings Lululemon Align",
+                categoria: "Ropa Deportiva",
+                marca: "Lululemon",
+                descripcion: "Leggings de entrenamiento con tejido Nulu y cintura alta",
+                precio: 98.00,
+                color: "Negro",
+                talla: "M",
+                stock: 24,
+                rating: 4.9,
+                imagen: "🧘"
+            },
+            {
+                id: "ROPA007",
+                nombre: "Chaqueta The North Face Apex Flex",
+                categoria: "Ropa Deportiva",
+                marca: "The North Face",
+                descripcion: "Chaqueta resistente al viento y agua con tecnología WindWall",
+                precio: 129.99,
+                color: "Verde Oliva",
+                talla: "L",
+                stock: 15,
+                rating: 4.7,
+                imagen: "🧥"
+            },
+            {
+                id: "ROPA008",
+                nombre: "Sudadera con Capucha Adidas Trefoil",
+                categoria: "Ropa Deportiva",
+                marca: "Adidas",
+                descripcion: "Sudadera de felpa con capucha y bolsillo canguro",
+                precio: 64.99,
+                color: "Gris Heather",
+                talla: "XL",
+                stock: 28,
+                rating: 4.5,
+                imagen: "👕"
+            },
+            {
+                id: "ROPA009",
+                nombre: "Mallas de Compresión Under Armour HeatGear",
+                categoria: "Ropa Deportiva",
+                marca: "Under Armour",
+                descripcion: "Mallas de compresión con tecnología anti-olor y 4-way stretch",
+                precio: 54.99,
+                color: "Azul Marino",
+                talla: "M",
+                stock: 19,
+                rating: 4.6,
+                imagen: "👖"
+            },
+            {
+                id: "ROPA010",
+                nombre: "Body de Yoga Lorna Jane Lotus",
+                categoria: "Ropa Deportiva",
+                marca: "Lorna Jane",
+                descripcion: "Body sin costuras para yoga y pilates con cobertura completa",
+                precio: 89.99,
+                color: "Rosa",
+                talla: "S",
+                stock: 22,
+                rating: 4.8,
+                imagen: "🧘"
+            },
+            {
+                id: "ROPA011",
+                nombre: "Shorts de Baloncesto Jordan Flight",
+                categoria: "Ropa Deportiva",
+                marca: "Jordan",
+                descripcion: "Shorts de baloncesto con tecnología Dri-FIT y logo Jumpman",
+                precio: 44.99,
+                color: "Negro/Rojo",
+                talla: "L",
+                stock: 17,
+                rating: 4.7,
+                imagen: "🏀"
+            },
+            {
+                id: "ROPA012",
+                nombre: "Chaleco Térmico Patagonia Nano Puff",
+                categoria: "Ropa Deportiva",
+                marca: "Patagonia",
+                descripcion: "Chaleco ligero térmico con relleno PrimaLoft Gold Eco",
+                precio: 199.00,
+                color: "Azul",
+                talla: "M",
+                stock: 11,
+                rating: 4.9,
+                imagen: "🦺"
+            },
             
-            // CATEGORÍA 2: CALZADO DEPORTIVO (4 productos)
+            // CATEGORÍA 2: CALZADO DEPORTIVO (12 productos)
             {
                 id: "ZAP001",
                 nombre: "Zapatillas Nike Air Max 270",
@@ -744,8 +848,111 @@
                 rating: 4.6,
                 imagen: "👟"
             },
-            
-            // CATEGORÍA 3: ELECTRÓNICA (4 productos)
+            {
+                id: "ZAP005",
+                nombre: "Zapatillas Adidas Ultraboost 22",
+                categoria: "Calzado Deportivo",
+                marca: "Adidas",
+                descripcion: "Zapatillas running con tecnología Boost y Primeknit",
+                precio: 189.99,
+                color: "Negro/Blanco",
+                talla: "42",
+                stock: 24,
+                rating: 4.8,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP006",
+                nombre: "Zapatos de Baloncesto Nike LeBron 20",
+                categoria: "Calzado Deportivo",
+                marca: "Nike",
+                descripcion: "Zapatillas de baloncesto con amortiguación Zoom Air y Cushlon",
+                precio: 199.99,
+                color: "Púrpura/Dorado",
+                talla: "44",
+                stock: 9,
+                rating: 4.7,
+                imagen: "🏀"
+            },
+            {
+                id: "ZAP007",
+                nombre: "Zapatillas Hoka One One Clifton 9",
+                categoria: "Calzado Deportivo",
+                marca: "Hoka",
+                descripcion: "Zapatillas running con máxima amortiguación y peso ligero",
+                precio: 149.99,
+                color: "Azul Marino",
+                talla: "41",
+                stock: 16,
+                rating: 4.8,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP008",
+                nombre: "Zapatillas de Fútbol Adidas Predator Edge",
+                categoria: "Calzado Deportivo",
+                marca: "Adidas",
+                descripcion: "Botines de fútbol con tecnología Demonskin para mejor control",
+                precio: 229.99,
+                color: "Rojo/Blanco",
+                talla: "43",
+                stock: 11,
+                rating: 4.9,
+                imagen: "⚽"
+            },
+            {
+                id: "ZAP009",
+                nombre: "Zapatillas Puma Deviate Nitro Elite 2",
+                categoria: "Calzado Deportivo",
+                marca: "Puma",
+                descripcion: "Zapatillas de competición con placa de fibra de carbono",
+                precio: 249.99,
+                color: "Naranja/Negro",
+                talla: "42",
+                stock: 7,
+                rating: 4.6,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP010",
+                nombre: "Zapatillas Under Armour Curry Flow 10",
+                categoria: "Calzado Deportivo",
+                marca: "Under Armour",
+                descripcion: "Zapatillas de baloncesto con tecnología UA Flow sin goma",
+                precio: 159.99,
+                color: "Amarillo/Negro",
+                talla: "45",
+                stock: 14,
+                rating: 4.5,
+                imagen: "🏀"
+            },
+            {
+                id: "ZAP011",
+                nombre: "Zapatillas Asics Gel-Kayano 30",
+                categoria: "Calzado Deportivo",
+                marca: "Asics",
+                descripcion: "Zapatillas running de estabilidad con tecnología Gel y FF Blast+",
+                precio: 169.99,
+                color: "Plateado/Azul",
+                talla: "40",
+                stock: 21,
+                rating: 4.7,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP012",
+                nombre: "Zapatillas On Cloudmonster",
+                categoria: "Calzado Deportivo",
+                marca: "On",
+                descripcion: "Zapatillas running con tecnología CloudTec y Helion superfoam",
+                precio: 179.99,
+                color: "Blanco/Negro",
+                talla: "43",
+                stock: 18,
+                rating: 4.8,
+                imagen: "👟"
+            },
+            // CATEGORÍA 3: ELECTRÓNICA (10 productos)
             {
                 id: "ELE001",
                 nombre: "Audífonos Bluetooth Sony WH-1000XM4",
@@ -794,8 +1001,80 @@
                 rating: 4.4,
                 imagen: "🔊"
             },
+            {
+                id: "ELE005",
+                nombre: "Smartphone Samsung Galaxy S23 Ultra",
+                categoría: "Electrónica",
+                marca: "Samsung",
+                descripcion: "Smartphone flagship con cámara de 200MP y S Pen integrado",
+                precio: 1199.99,
+                color: "Verde",
+                stock: 22,
+                rating: 4.9,
+                imagen: "📱"
+            },
+            {
+                id: "ELE006",
+                nombre: "Laptop Apple MacBook Pro 16\" M2 Pro",
+                categoría: "Electrónica",
+                marca: "Apple",
+                descripcion: "Laptop profesional con chip M2 Pro y pantalla Liquid Retina XDR",
+                precio: 2499.99,
+                color: "Space Gray",
+                stock: 9,
+                rating: 4.9,
+                imagen: "💻"
+            },
+            {
+                id: "ELE007",
+                nombre: "Consola PlayStation 5 + 2 Mandos",
+                categoría: "Electrónica",
+                marca: "Sony",
+                descripcion: "Consola de última generación con SSD ultrarrápido y raytracing",
+                precio: 549.99,
+                color: "Blanco/Negro",
+                stock: 11,
+                rating: 4.8,
+                imagen: "🎮"
+            },
+            {
+                id: "ELE008",
+                nombre: "Cámara Mirrorless Canon EOS R6 Mark II",
+                categoría: "Electrónica",
+                marca: "Canon",
+                descripcion: "Cámara mirrorless full-frame con estabilización 8-stop y 4K 60fps",
+                precio: 2499.99,
+                color: "Negro",
+                stock: 6,
+                rating: 4.9,
+                imagen: "📸"
+            },
+            {
+                id: "ELE009",
+                nombre: "Drone DJI Mavic 3 Pro",
+                categoría: "Electrónica",
+                marca: "DJI",
+                descripcion: "Drone profesional con triple cámara Hasselblad y 46 minutos de vuelo",
+                precio: 2199.99,
+                color: "Gris",
+                stock: 4,
+                rating: 4.8,
+                imagen: "🚁"
+            },
+            {
+                id: "ELE010",
+                nombre: "Tablet Apple iPad Pro 12.9\" M2",
+                categoría: "Electrónica",
+                marca: "Apple",
+                descripcion: "Tablet profesional con pantalla Liquid Retina XDR y chip M2",
+                precio: 1099.99,
+                color: "Space Gray",
+                stock: 15,
+                rating: 4.8,
+                imagen: "📱"
+            },
             
-            // CATEGORÍA 4: HOGAR (4 productos)
+            // CATEGORÍA 4: HOGAR (10 productos)
             {
                 id: "HOG001",
                 nombre: "Robot Aspirador iRobot Roomba i3",
@@ -844,8 +1123,80 @@
                 rating: 4.3,
                 imagen: "🥤"
             },
+            {
+                id: "HOG005",
+                nombre: "Robot Aspirador iRobot Roomba i7+",
+                categoría: "Hogar",
+                marca: "iRobot",
+                descripcion: "Robot aspirador con base de vaciado automático y mapeo inteligente",
+                precio: 999.99,
+                color: "Negro Carbón",
+                stock: 12,
+                rating: 4.8,
+                imagen: "🤖"
+            },
+            {
+                id: "HOG006",
+                nombre: "Purificador de Aire Dyson Pure Cool",
+                categoría: "Hogar",
+                marca: "Dyson",
+                descripcion: "Purificador con tecnología de filtración HEPA y control por app",
+                precio: 549.99,
+                color: "Blanco/Plateado",
+                stock: 8,
+                rating: 4.6,
+                imagen: "💨"
+            },
+            {
+                id: "HOG007",
+                nombre: "Freidora de Aire Philips XXL",
+                categoría: "Hogar",
+                marca: "Philips",
+                descripcion: "Freidora sin aceite de 6.2L con tecnología Rapid Air",
+                precio: 249.99,
+                color: "Negro",
+                stock: 19,
+                rating: 4.5,
+                imagen: "🍟"
+            },
+            {
+                id: "HOG008",
+                nombre: "Máquina de Pan Panasonic SD-ZX2522",
+                categoría: "Hogar",
+                marca: "Panasonic",
+                descripcion: "Máquina de pan automática con 30 programas y gluten free",
+                precio: 299.99,
+                color: "Plateado",
+                stock: 6,
+                rating: 4.7,
+                imagen: "🍞"
+            },
+            {
+                id: "HOG009",
+                nombre: "Lavadora Samsung EcoBubble 9kg",
+                categoría: "Hogar",
+                marca: "Samsung",
+                descripcion: "Lavadora inteligente con tecnología EcoBubble y control WiFi",
+                precio: 699.99,
+                color: "Gris Titanio",
+                stock: 5,
+                rating: 4.8,
+                imagen: "🧺"
+            },
+            {
+                id: "HOG010",
+                nombre: "Cafetera Espresso Breville Barista Pro",
+                categoría: "Hogar",
+                marca: "Breville",
+                descripcion: "Cafetera espresso semiautomática con molino integrado",
+                precio: 799.99,
+                color: "Acero Inoxidable",
+                stock: 9,
+                rating: 4.9,
+                imagen: "☕"
+            },
             
-            // CATEGORÍA 5: OFICINA (4 productos)
+            // CATEGORÍA 5: OFICINA (10 productos)
             {
                 id: "OFI001",
                 nombre: "Silla Ergonómica Herman Miller Aeron",
