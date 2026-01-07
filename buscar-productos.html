@@ -668,154 +668,44 @@
         // ================================================
         // CONFIGURACIÓN AZURE AI SEARCH
         // ================================================
-        const SEARCH_CONFIG = {
-            serviceName: "search-productos-ivan",
-            endpoint: "https://search-productos-ivan.search.windows.net",
-            indexName: "productos-index",
-            apiKey: "" , // Tu clave
-            Versión de API : "2023-11-01"
-        } ;
-        
         // ================================================
-        // VARIABLES Y ELEMENTOS
-        // ================================================
-        const  searchInput = document.getElementById ( ' searchInput ' ) ;
-        const  botonDeBuscar = document.getElementById ( ' botonDeBuscar ' ) ;
-        const  resultsCount = document.getElementById ( ' resultsCount ' ) ;
-        const  resultsGrid = document.getElementById ( ' resultsGrid ' ) ;
-        const  cargando = document.getElementById ( ' cargando ' ) ;
-        const  noResults = documento . getElementById ( 'sinResultados' ) ;
-        const  categoryFilter = document.getElementById ( ' categoryFilter ' ) ;
-        const  brandFilter = documento . getElementById ( 'filtro de marca' ) ;
-        const  priceFilter = document.getElementById ( ' priceFilter ' ) ;
-        const  sortSelect = document.getElementById ( ' sortSelect ' ) ;
-        const  connectionStatus = document.getElementById ( ' connectionStatus ' ) ;
-        const  statusText = document.getElementById ( ' statusText ' ) ;
-        const  realCount = documento . getElementById ( 'realCount' ) ;
-        const  docCount = documento.getElementById ( ' docCount ' ) ;
+// CONFIGURACIÓN SEGURA - SIN CLAVES EXPUESTAS
+// ================================================
+const SEARCH_CONFIG = {
+    // NO pongas la clave aquí
+    functionUrl: "https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/search"
+};
+
+// Función modificada para usar Azure Functions
+async function searchAzure(searchTerm = '', filters = {}) {
+    try {
+        loading.style.display = 'block';
         
-        deje que  todaslasCategorias = nuevo  Conjunto ( ) ;
-        deje que  todasLasMarcas = nuevo  Conjunto ( ) ;
-        deje que  totalDocuments = 0 ;
+        // Llamar a TU Azure Function existente
+        const response = await fetch(SEARCH_CONFIG.functionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                searchTerm: searchTerm,
+                filters: filters
+            })
+        });
         
-        // ================================================
-        // FUNCIONES DE CONEXIÓN A AZURE
-        // ================================================
-        
-        // Función para hacer peticiones a Azure AI Search
-        async function searchAzure(searchTerm = '', filters = {}) {
-            try {
-                loading.style.display = 'block';
-                resultsGrid.innerHTML = '';
-                noResults.style.display = 'none';
-                
-                // Construir URL de búsqueda
-                let url = `${SEARCH_CONFIG.endpoint}/indexes/${SEARCH_CONFIG.indexName}/docs?api-version=${SEARCH_CONFIG.apiVersion}`;
-                
-                // Construir query de búsqueda
-                let searchQuery = '';
-                if (searchTerm) {
-                    searchQuery = `search=${encodeURIComponent(searchTerm)}`;
-                } else {
-                    searchQuery = 'search=*'; // Buscar todo
-                }
-                
-                // Aplicar filtros
-                let filterQuery = '';
-                const filterParts = [];
-                
-                if (filters.category) {
-                    filterParts.push(`Categoria eq '${filters.category}'`);
-                }
-                
-                if (filters.brand) {
-                    filterParts.push(`Marca eq '${filters.brand}'`);
-                }
-                
-                if (filters.maxPrice) {
-                    const price = parseFloat(filters.maxPrice);
-                    filterParts.push(`Precio le ${price}`);
-                }
-                
-                if (filterParts.length > 0) {
-                    filterQuery = `&$filter=${filterParts.join(' and ')}`;
-                }
-                
-                // Ordenar
-                let orderByQuery = '';
-                if (filters.sortBy && filters.sortBy !== 'relevance') {
-                    orderByQuery = `&$orderby=${filters.sortBy}`;
-                }
-                
-                // URL final
-                const fullUrl = `${url}&${searchQuery}${filterQuery}${orderByQuery}&$count=true&$select=PartitionKey,RowKey,Nombre,Categoria,Precio,Color,Talla,Marca,Stock`;
-                
-                console.log('Buscando en Azure:', fullUrl);
-                
-                // Hacer la petición
-                const response = await fetch(fullUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'api-key': SEARCH_CONFIG.apiKey
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Azure error: ${response.status} ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                
-                // Actualizar contador total
-                totalDocuments = data['@odata.count'] || data.value.length;
-                updateCounts();
-                
-                // Extraer categorías y marcas para filtros
-                extractFilters(data.value);
-                
-                // Mostrar resultados
-                displayResults(data.value);
-                
-                loading.style.display = 'none';
-                
-                if (data.value.length === 0) {
-                    noResults.style.display = 'block';
-                }
-                
-                // Actualizar estado de conexión
-                updateConnectionStatus('connected', `Conectado a Azure (${data.value.length} resultados)`);
-                
-            } catch (error) {
-                console.error('Error buscando en Azure:', error);
-                loading.style.display = 'none';
-                updateConnectionStatus('error', `Error: ${error.message}`);
-                
-                // Mostrar mensaje de error
-                resultsGrid.innerHTML = `
-                    <div class="loading-container">
-                        <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
-                        <h3 style="color: #d13438; margin-bottom: 15px;">Error de conexión con Azure</h3>
-                        <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">
-                            No se pudo conectar con Azure AI Search.<br>
-                            Verifica tu conexión o la configuración del servicio.
-                        </p>
-                        <button onclick="testConnection()" style="
-                            margin-top: 20px;
-                            background: var(--primary);
-                            color: white;
-                            padding: 12px 30px;
-                            border-radius: 10px;
-                            border: none;
-                            cursor: pointer;
-                            font-weight: 600;
-                        ">
-                            🔄 Reintentar conexión
-                        </button>
-                    </div>
-                `;
-            }
+        if (!response.ok) {
+            throw new Error(`Error en Function: ${response.status}`);
         }
+        
+        const data = await response.json();
+        displayResults(data.results);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        // Mostrar datos de ejemplo si falla
+        showSampleData();
+    }
+}
         
         // Función para probar conexión
         async function testConnection() {
