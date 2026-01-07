@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Buscador de Productos - Azure AI Search REAL</title>
+    <title>🔍 Buscador de Productos - Azure AI Search</title>
     <style>
         :root {
             --primary: #0078d4;
@@ -419,43 +419,6 @@
             margin-bottom: 15px;
         }
         
-        /* STATUS INDICATOR */
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-        
-        .status-connected {
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .status-disconnected {
-            background: var(--danger);
-        }
-        
         /* FOOTER */
         .footer {
             text-align: center;
@@ -493,17 +456,10 @@
             .results-grid { grid-template-columns: 1fr; }
             .filters-grid { grid-template-columns: 1fr; }
             .header { padding: 30px 20px; }
-            .connection-status { top: 10px; right: 10px; }
         }
     </style>
 </head>
 <body>
-    <!-- STATUS INDICATOR -->
-    <div id="connectionStatus" class="connection-status" style="display: none;">
-        <span class="status-dot status-disconnected"></span>
-        <span id="statusText">Conectando...</span>
-    </div>
-    
     <div class="container">
         <!-- HEADER -->
         <div class="header">
@@ -513,13 +469,13 @@
                     Buscador Inteligente de Productos
                 </h1>
                 <p class="subtitle">
-                    Búsqueda en tiempo real con Azure AI Search conectado a Table Storage.
-                    Todos los productos se actualizan automáticamente desde Azure.
+                    Encuentra lo que necesitas entre más de 20 productos de 5 categorías diferentes.
+                    Búsqueda en tiempo real con Azure AI Search y Table Storage.
                 </p>
                 <div>
-                    <span id="realCount" class="stats-badge">📊 Conectando...</span>
-                    <span class="stats-badge">🏷️ Azure Table Storage</span>
-                    <span class="stats-badge">⚡ Azure AI Search</span>
+                    <span class="stats-badge">📊 20+ Productos</span>
+                    <span class="stats-badge">🏷️ 5 Categorías</span>
+                    <span class="stats-badge">⚡ Búsqueda Instantánea</span>
                 </div>
             </div>
         </div>
@@ -534,7 +490,7 @@
                        autocomplete="off">
                 <button id="searchButton" class="search-button">
                     <span>⚡</span>
-                    Buscar en Azure
+                    Buscar Ahora
                 </button>
             </div>
             
@@ -564,6 +520,16 @@
                         <option value="500">Hasta $500</option>
                     </select>
                 </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">📦 Disponibilidad</label>
+                    <select id="stockFilter" class="filter-select">
+                        <option value="">Cualquier stock</option>
+                        <option value="high">Alto stock (>20)</option>
+                        <option value="medium">Stock medio (5-20)</option>
+                        <option value="low">Bajo stock (<5)</option>
+                    </select>
+                </div>
             </div>
             
             <!-- QUICK SEARCH -->
@@ -571,44 +537,60 @@
                 <span style="font-weight: 600; color: #64748b;">Búsquedas rápidas:</span>
                 <span class="quick-tag" onclick="searchByTag('nike')">Nike</span>
                 <span class="quick-tag" onclick="searchByTag('adidas')">Adidas</span>
-                <span class="quick-tag" onclick="searchByTag('camiseta')">Camiseta</span>
-                <span class="quick-tag" onclick="searchByTag('deportiva')">Deportiva</span>
+                <span class="quick-tag" onclick="searchByTag('apple')">Apple</span>
+                <span class="quick-tag" onclick="searchByTag('sony')">Sony</span>
+                <span class="quick-tag" onclick="searchByTag('samsung')">Samsung</span>
+                <span class="quick-tag" onclick="searchByTag('deportivo')">Deportivo</span>
+                <span class="quick-tag" onclick="searchByTag('tecnología')">Tecnología</span>
+                <span class="quick-tag" onclick="searchByTag('hogar')">Hogar</span>
             </div>
+        </div>
+        
+        <!-- CATEGORIES -->
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Las categorías se cargan dinámicamente -->
         </div>
         
         <!-- RESULTS -->
         <div class="results-header">
             <div id="resultsCount" class="results-count">
-                🔍 Escribe algo para buscar entre los productos de Azure Table Storage...
+                🔍 Escribe algo para buscar entre nuestros productos...
             </div>
-            <select id="sortSelect" class="sort-select" onchange="performSearch()">
+            <select id="sortSelect" class="sort-select" onchange="sortProducts()">
                 <option value="relevance">Ordenar por: Relevancia</option>
-                <option value="price asc">Precio: Menor a Mayor</option>
-                <option value="price desc">Precio: Mayor a Menor</option>
+                <option value="price_asc">Precio: Menor a Mayor</option>
+                <option value="price_desc">Precio: Mayor a Menor</option>
+                <option value="stock_desc">Stock: Mayor primero</option>
+                <option value="name_asc">Nombre: A-Z</option>
             </select>
         </div>
         
         <div id="loading" class="loading-container" style="display: none;">
             <div class="spinner"></div>
-            <p style="font-size: 1.1rem; color: #64748b;">Buscando en Azure AI Search...</p>
+            <p style="font-size: 1.1rem; color: #64748b;">Buscando en nuestra base de datos...</p>
         </div>
         
         <div id="resultsGrid" class="results-grid">
-            <!-- Los productos de Azure aparecerán aquí -->
+            <!-- Los productos aparecerán aquí -->
         </div>
         
         <div id="noResults" class="loading-container" style="display: none;">
             <div style="font-size: 3rem; margin-bottom: 20px;">📭</div>
             <h3 style="color: #64748b; margin-bottom: 15px;">No se encontraron productos</h3>
             <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">
-                Intenta con otras palabras clave o agrega más productos en Azure Table Storage.
+                Intenta con otras palabras clave como: 
+                <strong>"zapatillas"</strong>, 
+                <strong>"laptop"</strong>, 
+                <strong>"audífonos"</strong>, 
+                <strong>"smartphone"</strong> o 
+                <strong>"ropa deportiva"</strong>
             </p>
         </div>
         
         <!-- FOOTER -->
         <div class="footer">
             <h3 style="color: var(--primary); margin-bottom: 20px; font-size: 1.5rem;">
-                🚀 Implementación Completa con Azure Cloud
+                🚀 Implementación Completa con Azure
             </h3>
             
             <div class="tech-stack">
@@ -616,22 +598,23 @@
                 <span class="tech-item">💾 Azure Table Storage</span>
                 <span class="tech-item">🌐 Static Web App</span>
                 <span class="tech-item">⚡ JavaScript Frontend</span>
-                <span class="tech-item">🔗 REST API Real</span>
+                <span class="tech-item">🔧 REST API</span>
             </div>
             
             <div style="margin: 30px 0; padding: 20px; background: #f8fafc; border-radius: 15px;">
                 <p style="margin-bottom: 10px; color: #475569;">
-                    <strong>📊 Datos en tiempo real:</strong> 
-                    <span id="docCount">Cargando...</span> productos | 
-                    Azure Table Storage | 
+                    <strong>📊 Datos del índice:</strong> 
+                    <span id="docCount">20</span> productos | 
+                    5 categorías | 
+                    8 marcas | 
                     Búsqueda en tiempo real
                 </p>
                 <p style="color: #64748b; font-size: 0.9rem;">
-                    Los productos se leen directamente desde tu Table Storage "Productos" en Azure.
+                    Los productos son de ejemplo para demostrar las capacidades de búsqueda.
                 </p>
             </div>
             
-            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+            <div style="margin-top: 30px;">
                 <a href="index.html" style="
                     display: inline-block;
                     background: var(--primary);
@@ -643,106 +626,402 @@
                     font-size: 1.1rem;
                     transition: all 0.3s;
                 ">
-                    ← Página Principal
+                    ← Volver a la Página Principal
                 </a>
-                <button onclick="refreshData()" style="
-                    display: inline-block;
-                    background: #f8fafc;
-                    color: var(--primary);
-                    padding: 15px 35px;
-                    border-radius: 12px;
-                    text-decoration: none;
-                    font-weight: 600;
-                    font-size: 1.1rem;
-                    transition: all 0.3s;
-                    border: 2px solid var(--primary);
-                    cursor: pointer;
-                ">
-                    🔄 Actualizar Datos
-                </button>
             </div>
         </div>
     </div>
 
     <script>
         // ================================================
-        // CONFIGURACIÓN AZURE AI SEARCH
+        // BASE DE DATOS DE PRODUCTOS (20 productos - 5 categorías)
         // ================================================
-        // ================================================
-// CONFIGURACIÓN SEGURA - SIN CLAVES EXPUESTAS
-// ================================================
-const SEARCH_CONFIG = {
-    // NO pongas la clave aquí
-    functionUrl: "https://func-backend-ivan-e4dpd2d8arcahjfz.brazilsouth-01.azurewebsites.net/api/search"
-};
-
-// Función modificada para usar Azure Functions
-async function searchAzure(searchTerm = '', filters = {}) {
-    try {
-        loading.style.display = 'block';
-        
-        // Llamar a TU Azure Function existente
-        const response = await fetch(SEARCH_CONFIG.functionUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+        const PRODUCTOS_DB = [
+            // CATEGORÍA 1: ROPA DEPORTIVA (4 productos)
+            {
+                id: "ROPA001",
+                nombre: "Camiseta Deportiva Nike Dri-FIT",
+                categoria: "Ropa Deportiva",
+                marca: "Nike",
+                descripcion: "Camiseta deportiva con tecnología Dri-FIT para máxima transpirabilidad",
+                precio: 34.99,
+                color: "Negro",
+                talla: "M",
+                stock: 45,
+                rating: 4.7,
+                imagen: "🏃"
             },
-            body: JSON.stringify({
-                searchTerm: searchTerm,
-                filters: filters
-            })
-        });
+            {
+                id: "ROPA002",
+                nombre: "Pantalón Deportivo Adidas Tiro",
+                categoria: "Ropa Deportiva",
+                marca: "Adidas",
+                descripcion: "Pantalón para entrenamiento con corte moderno y tela elástica",
+                precio: 49.99,
+                color: "Gris",
+                talla: "L",
+                stock: 32,
+                rating: 4.5,
+                imagen: "👖"
+            },
+            {
+                id: "ROPA003",
+                nombre: "Chompa Under Armour Storm",
+                categoria: "Ropa Deportiva",
+                marca: "Under Armour",
+                descripcion: "Chompa impermeable ideal para actividades al aire libre",
+                precio: 79.99,
+                color: "Azul Marino",
+                talla: "XL",
+                stock: 18,
+                rating: 4.8,
+                imagen: "🧥"
+            },
+            {
+                id: "ROPA004",
+                nombre: "Shorts Running Puma",
+                categoria: "Ropa Deportiva",
+                marca: "Puma",
+                descripcion: "Shorts ligeros para running con bolsillo para teléfono",
+                precio: 29.99,
+                color: "Rojo",
+                talla: "S",
+                stock: 27,
+                rating: 4.3,
+                imagen: "🩳"
+            },
+            
+            // CATEGORÍA 2: CALZADO DEPORTIVO (4 productos)
+            {
+                id: "ZAP001",
+                nombre: "Zapatillas Nike Air Max 270",
+                categoria: "Calzado Deportivo",
+                marca: "Nike",
+                descripcion: "Zapatillas con amortiguación Air Max para máximo confort",
+                precio: 149.99,
+                color: "Blanco/Rosa",
+                talla: "42",
+                stock: 22,
+                rating: 4.9,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP002",
+                nombre: "Tenis Adidas Ultraboost 22",
+                categoria: "Calzado Deportivo",
+                marca: "Adidas",
+                descripcion: "Tenis para running con tecnología Boost para energía de retorno",
+                precio: 179.99,
+                color: "Negro",
+                talla: "41",
+                stock: 15,
+                rating: 4.8,
+                imagen: "👟"
+            },
+            {
+                id: "ZAP003",
+                nombre: "Zapatos Trail Running Salomon",
+                categoria: "Calzado Deportivo",
+                marca: "Salomon",
+                descripcion: "Zapatos especializados para trail running con suela grip",
+                precio: 129.99,
+                color: "Verde",
+                talla: "43",
+                stock: 8,
+                rating: 4.7,
+                imagen: "🥾"
+            },
+            {
+                id: "ZAP004",
+                nombre: "Zapatillas New Balance 990v5",
+                categoria: "Calzado Deportivo",
+                marca: "New Balance",
+                descripcion: "Zapatillas premium hechas en USA con amortiguación ENCAP",
+                precio: 174.99,
+                color: "Gris",
+                talla: "40",
+                stock: 12,
+                rating: 4.6,
+                imagen: "👟"
+            },
+            
+            // CATEGORÍA 3: ELECTRÓNICA (4 productos)
+            {
+                id: "ELE001",
+                nombre: "Audífonos Bluetooth Sony WH-1000XM4",
+                categoría: "Electrónica",
+                marca: "Sony",
+                descripcion: "Audífonos con cancelación de ruido líder en la industria",
+                precio: 349.99,
+                color: "Negro",
+                stock: 25,
+                rating: 4.9,
+                imagen: "🎧"
+            },
+            {
+                id: "ELE002",
+                nombre: "Smartwatch Apple Watch Series 8",
+                categoría: "Electrónica",
+                marca: "Apple",
+                descripcion: "Reloj inteligente con monitoreo de salud avanzado",
+                precio: 429.99,
+                color: "Midnight",
+                stock: 18,
+                rating: 4.8,
+                imagen: "⌚"
+            },
+            {
+                id: "ELE003",
+                nombre: "Tablet Samsung Galaxy Tab S8",
+                categoría: "Electrónica",
+                marca: "Samsung",
+                descripcion: "Tablet premium con S Pen incluido y pantalla Super AMOLED",
+                precio: 699.99,
+                color: "Plateado",
+                stock: 14,
+                rating: 4.7,
+                imagen: "📱"
+            },
+            {
+                id: "ELE004",
+                nombre: "Altavoz Inteligente Amazon Echo Dot",
+                categoría: "Electrónica",
+                marca: "Amazon",
+                descripcion: "Altavoz con Alexa, control por voz y sonido mejorado",
+                precio: 49.99,
+                color: "Azul",
+                stock: 65,
+                rating: 4.4,
+                imagen: "🔊"
+            },
+            
+            // CATEGORÍA 4: HOGAR (4 productos)
+            {
+                id: "HOG001",
+                nombre: "Robot Aspirador iRobot Roomba i3",
+                categoría: "Hogar",
+                marca: "iRobot",
+                descripcion: "Robot aspirador con navegación inteligente y app control",
+                precio: 399.99,
+                color: "Negro",
+                stock: 9,
+                rating: 4.5,
+                imagen: "🤖"
+            },
+            {
+                id: "HOG002",
+                nombre: "Purificador de Aire Philips Series 3000",
+                categoría: "Hogar",
+                marca: "Philips",
+                descripcion: "Purificador con sensor de calidad de aire y modo automático",
+                precio: 249.99,
+                color: "Blanco",
+                stock: 7,
+                rating: 4.6,
+                imagen: "💨"
+            },
+            {
+                id: "HOG003",
+                nombre: "Cafetera Nespresso Vertuo Next",
+                categoría: "Hogar",
+                marca: "Nespresso",
+                descripcion: "Cafetera de cápsulas con tecnología Centrifusion",
+                precio: 179.99,
+                color: "Rojo",
+                stock: 23,
+                rating: 4.7,
+                imagen: "☕"
+            },
+            {
+                id: "HOG004",
+                nombre: "Batidora de Mano Braun Multiquick",
+                categoría: "Hogar",
+                marca: "Braun",
+                descripcion: "Batidora de mano con potencia de 1000W y múltiples accesorios",
+                precio: 89.99,
+                color: "Negro/Plateado",
+                stock: 31,
+                rating: 4.3,
+                imagen: "🥤"
+            },
+            
+            // CATEGORÍA 5: OFICINA (4 productos)
+            {
+                id: "OFI001",
+                nombre: "Silla Ergonómica Herman Miller Aeron",
+                categoría: "Oficina",
+                marca: "Herman Miller",
+                descripcion: "Silla ergonómica premium con soporte lumbar ajustable",
+                precio: 1499.99,
+                color: "Grafito",
+                stock: 4,
+                rating: 4.9,
+                imagen: "💺"
+            },
+            {
+                id: "OFI002",
+                nombre: "Monitor Ultrawide Dell 34\"",
+                categoría: "Oficina",
+                marca: "Dell",
+                descripcion: "Monitor curvo 34\" WQHD para productividad y gaming",
+                precio: 799.99,
+                color: "Negro",
+                stock: 11,
+                rating: 4.8,
+                imagen: "🖥️"
+            },
+            {
+                id: "OFI003",
+                nombre: "Teclado Mecánico Logitech MX Keys",
+                categoría: "Oficina",
+                marca: "Logitech",
+                descripcion: "Teclado inalámbrico con iluminación inteligente y multi-dispositivo",
+                precio: 129.99,
+                color: "Gris Pizarra",
+                stock: 42,
+                rating: 4.7,
+                imagen: "⌨️"
+            },
+            {
+                id: "OFI004",
+                nombre: "Webcam 4K Logitech Brio",
+                categoría: "Oficina",
+                marca: "Logitech",
+                descripcion: "Webcam 4K con HDR y seguimiento automático",
+                precio: 199.99,
+                color: "Negro",
+                stock: 28,
+                rating: 4.6,
+                imagen: "📹"
+            }
+        ];
         
-        if (!response.ok) {
-            throw new Error(`Error en Function: ${response.status}`);
+        // ================================================
+        // VARIABLES Y ELEMENTOS
+        // ================================================
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const brandFilter = document.getElementById('brandFilter');
+        const priceFilter = document.getElementById('priceFilter');
+        const stockFilter = document.getElementById('stockFilter');
+        const sortSelect = document.getElementById('sortSelect');
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        const docCount = document.getElementById('docCount');
+        
+        let currentProducts = [...PRODUCTOS_DB];
+        
+        // ================================================
+        // FUNCIONES DE BÚSQUEDA
+        // ================================================
+        
+        function searchProducts(searchTerm = '', filters = {}) {
+            loading.style.display = 'block';
+            resultsGrid.innerHTML = '';
+            noResults.style.display = 'none';
+            
+            // Simular delay de búsqueda
+            setTimeout(() => {
+                let results = [...PRODUCTOS_DB];
+                
+                // Filtro por término de búsqueda
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    results = results.filter(product => 
+                        product.nombre.toLowerCase().includes(term) ||
+                        product.marca.toLowerCase().includes(term) ||
+                        product.categoria.toLowerCase().includes(term) ||
+                        product.descripcion.toLowerCase().includes(term)
+                    );
+                }
+                
+                // Filtro por categoría
+                if (filters.category) {
+                    results = results.filter(p => p.categoria === filters.category);
+                }
+                
+                // Filtro por marca
+                if (filters.brand) {
+                    results = results.filter(p => p.marca === filters.brand);
+                }
+                
+                // Filtro por precio máximo
+                if (filters.maxPrice) {
+                    results = results.filter(p => p.precio <= parseFloat(filters.maxPrice));
+                }
+                
+                // Filtro por stock
+                if (filters.stock) {
+                    switch(filters.stock) {
+                        case 'high':
+                            results = results.filter(p => p.stock > 20);
+                            break;
+                        case 'medium':
+                            results = results.filter(p => p.stock >= 5 && p.stock <= 20);
+                            break;
+                        case 'low':
+                            results = results.filter(p => p.stock < 5);
+                            break;
+                    }
+                }
+                
+                // Ordenar resultados
+                results = sortProductsList(results, filters.sortBy || 'relevance');
+                
+                // Actualizar productos actuales
+                currentProducts = results;
+                
+                // Mostrar resultados
+                displayResults(results);
+                
+                loading.style.display = 'none';
+                
+                if (results.length === 0) {
+                    noResults.style.display = 'block';
+                }
+            }, 500);
         }
         
-        const data = await response.json();
-        displayResults(data.results);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        // Mostrar datos de ejemplo si falla
-        showSampleData();
-    }
-}
-        
-        // Función para probar conexión
-        async function testConnection() {
-            try {
-                updateConnectionStatus('connecting', 'Probando conexión con Azure...');
-                
-                const testUrl = `${SEARCH_CONFIG.endpoint}/indexes?api-version=${SEARCH_CONFIG.apiVersion}`;
-                const response = await fetch(testUrl, {
-                    headers: { 'api-key': SEARCH_CONFIG.apiKey }
-                });
-                
-                if (response.ok) {
-                    updateConnectionStatus('connected', '✅ Conectado a Azure AI Search');
-                    return true;
-                } else {
-                    updateConnectionStatus('error', '❌ Error en conexión');
-                    return false;
+        function sortProductsList(products, sortBy) {
+            return [...products].sort((a, b) => {
+                switch(sortBy) {
+                    case 'price_asc':
+                        return a.precio - b.precio;
+                    case 'price_desc':
+                        return b.precio - a.precio;
+                    case 'stock_desc':
+                        return b.stock - a.stock;
+                    case 'name_asc':
+                        return a.nombre.localeCompare(b.nombre);
+                    default:
+                        return 0;
                 }
-            } catch (error) {
-                updateConnectionStatus('error', '❌ Error: ' + error.message);
-                return false;
-            }
+            });
+        }
+        
+        function sortProducts() {
+            const sortBy = sortSelect.value;
+            const results = sortProductsList(currentProducts, sortBy);
+            displayResults(results);
         }
         
         // ================================================
-        // FUNCIONES DE INTERFAZ
+        // FUNCIÓN PARA MOSTRAR RESULTADOS
         // ================================================
         
         function displayResults(products) {
             resultsGrid.innerHTML = '';
             
-            if (!products || products.length === 0) {
+            if (products.length === 0) {
                 resultsCount.textContent = '📭 No se encontraron productos';
                 return;
             }
             
-            resultsCount.textContent = `🔍 ${products.length} producto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''} en Azure`;
+            resultsCount.textContent = `🔍 ${products.length} producto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''}`;
             
             products.forEach(product => {
                 const productCard = document.createElement('div');
@@ -750,11 +1029,10 @@ async function searchAzure(searchTerm = '', filters = {}) {
                 
                 // Determinar clase de stock
                 let stockClass, stockText;
-                const stock = parseFloat(product.Stock) || 0;
-                if (stock > 20) {
+                if (product.stock > 20) {
                     stockClass = 'stock-high';
                     stockText = 'Disponible';
-                } else if (stock >= 5) {
+                } else if (product.stock >= 5) {
                     stockClass = 'stock-medium';
                     stockText = 'Stock limitado';
                 } else {
@@ -762,51 +1040,43 @@ async function searchAzure(searchTerm = '', filters = {}) {
                     stockText = 'Últimas unidades';
                 }
                 
-                // Determinar ícono por categoría
-                let icon = '📦';
-                const cat = (product.Categoria || '').toLowerCase();
-                if (cat.includes('ropa') || cat.includes('vestir')) icon = '👕';
-                if (cat.includes('zapat') || cat.includes('calzado')) icon = '👟';
-                if (cat.includes('electrón')) icon = '📱';
-                if (cat.includes('deport')) icon = '🏃';
-                
                 productCard.innerHTML = `
-                    <div class="product-category">${product.Categoria || 'Sin categoría'}</div>
-                    <h3 class="product-name">${icon} ${product.Nombre || 'Sin nombre'}</h3>
-                    <div class="product-brand">${product.Marca || 'Sin marca'}</div>
+                    <div class="product-category">${product.categoria}</div>
+                    <h3 class="product-name">${product.imagen} ${product.nombre}</h3>
+                    <div class="product-brand">${product.marca}</div>
                     
                     <div class="product-details">
-                        ${product.Color ? `
                         <div class="detail-item">
                             <span>🎨</span>
-                            <span>${product.Color}</span>
-                        </div>` : ''}
-                        
-                        ${product.Talla ? `
+                            <span>${product.color}</span>
+                        </div>
+                        ${product.talla ? `
                         <div class="detail-item">
                             <span>📏</span>
-                            <span>Talla: ${product.Talla}</span>
+                            <span>Talla: ${product.talla}</span>
                         </div>` : ''}
-                        
                         <div class="detail-item">
-                            <span>💰</span>
-                            <span>Precio: $${parseFloat(product.Precio || 0).toFixed(2)}</span>
+                            <span>⭐</span>
+                            <span>${product.rating}/5.0</span>
                         </div>
-                        
                         <div class="detail-item">
                             <span>📦</span>
-                            <span>Stock: ${stock}</span>
+                            <span>${product.stock} unidades</span>
                         </div>
                     </div>
                     
                     <div class="product-price">
                         <span class="price-currency">$</span>
-                        ${parseFloat(product.Precio || 0).toFixed(2)}
+                        ${product.precio.toFixed(2)}
                     </div>
+                    
+                    <p style="color: #64748b; font-size: 0.9rem; margin: 15px 0; line-height: 1.5;">
+                        ${product.descripcion}
+                    </p>
                     
                     <div class="product-footer">
                         <span class="stock-badge ${stockClass}">${stockText}</span>
-                        <span class="product-id">ID: ${product.RowKey || 'N/A'}</span>
+                        <span class="product-id">ID: ${product.id}</span>
                     </div>
                 `;
                 
@@ -814,66 +1084,62 @@ async function searchAzure(searchTerm = '', filters = {}) {
             });
         }
         
-        function extractFilters(products) {
-            allCategories.clear();
-            allBrands.clear();
-            
-            products.forEach(product => {
-                if (product.Categoria) allCategories.add(product.Categoria);
-                if (product.Marca) allBrands.add(product.Marca);
-            });
-            
-            updateFilterOptions();
-        }
+        // ================================================
+        // FUNCIONES DE FILTROS
+        // ================================================
         
-        function updateFilterOptions() {
-            // Actualizar categorías
-            categoryFilter.innerHTML = '<option value="">Todas las categorías</option>';
-            allCategories.forEach(cat => {
+        function loadFilters() {
+            // Extraer categorías únicas
+            const categories = [...new Set(PRODUCTOS_DB.map(p => p.categoria))];
+            const brands = [...new Set(PRODUCTOS_DB.map(p => p.marca))];
+            
+            // Llenar categorías
+            categories.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat;
                 option.textContent = cat;
                 categoryFilter.appendChild(option);
             });
             
-            // Actualizar marcas
-            brandFilter.innerHTML = '<option value="">Todas las marcas</option>';
-            allBrands.forEach(brand => {
+            // Llenar marcas
+            brands.forEach(brand => {
                 const option = document.createElement('option');
                 option.value = brand;
                 option.textContent = brand;
                 brandFilter.appendChild(option);
             });
-        }
-        
-        function updateCounts() {
-            realCount.textContent = `📊 ${totalDocuments} Productos`;
-            docCount.textContent = totalDocuments;
-        }
-        
-        function updateConnectionStatus(status, message) {
-            connectionStatus.style.display = 'flex';
-            statusText.textContent = message;
             
-            const dot = connectionStatus.querySelector('.status-dot');
-            dot.classList.remove('status-connected', 'status-disconnected');
+            // Crear tarjetas de categorías
+            const categoryData = {
+                "Ropa Deportiva": { icon: "🏃", count: 4, color: "#0078d4" },
+                "Calzado Deportivo": { icon: "👟", count: 4, color: "#107c10" },
+                "Electrónica": { icon: "📱", count: 4, color: "#ff8c00" },
+                "Hogar": { icon: "🏠", count: 4, color: "#d13438" },
+                "Oficina": { icon: "💼", count: 4, color: "#8661c5" }
+            };
             
-            if (status === 'connected') {
-                dot.classList.add('status-connected');
-                connectionStatus.style.background = '#d4edda';
-                connectionStatus.style.color = '#155724';
-            } else if (status === 'error') {
-                dot.classList.add('status-disconnected');
-                connectionStatus.style.background = '#f8d7da';
-                connectionStatus.style.color = '#721c24';
-            } else {
-                connectionStatus.style.background = '#fff3cd';
-                connectionStatus.style.color = '#856404';
-            }
+            Object.entries(categoryData).forEach(([name, data]) => {
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'category-card';
+                categoryCard.style.borderColor = data.color;
+                categoryCard.style.borderWidth = '2px';
+                categoryCard.onclick = () => {
+                    categoryFilter.value = name;
+                    performSearch();
+                };
+                
+                categoryCard.innerHTML = `
+                    <div class="category-icon">${data.icon}</div>
+                    <h4 style="margin-bottom: 8px; color: #1e293b;">${name}</h4>
+                    <p style="color: #64748b; font-size: 0.9rem;">${data.count} productos</p>
+                `;
+                
+                categoriesGrid.appendChild(categoryCard);
+            });
         }
         
         // ================================================
-        // FUNCIONES DE BÚSQUEDA
+        // FUNCIONES AUXILIARES
         // ================================================
         
         function searchByTag(tag) {
@@ -887,20 +1153,11 @@ async function searchAzure(searchTerm = '', filters = {}) {
                 category: categoryFilter.value,
                 brand: brandFilter.value,
                 maxPrice: priceFilter.value,
+                stock: stockFilter.value,
                 sortBy: sortSelect.value
             };
             
-            searchAzure(searchTerm, filters);
-        }
-        
-        function refreshData() {
-            searchInput.value = '';
-            categoryFilter.value = '';
-            brandFilter.value = '';
-            priceFilter.value = '';
-            sortSelect.value = 'relevance';
-            
-            searchAzure();
+            searchProducts(searchTerm, filters);
         }
         
         // ================================================
@@ -915,7 +1172,7 @@ async function searchAzure(searchTerm = '', filters = {}) {
             }
         });
         
-        [categoryFilter, brandFilter, priceFilter].forEach(filter => {
+        [categoryFilter, brandFilter, priceFilter, stockFilter].forEach(filter => {
             filter.addEventListener('change', performSearch);
         });
         
@@ -923,25 +1180,13 @@ async function searchAzure(searchTerm = '', filters = {}) {
         // INICIALIZACIÓN
         // ================================================
         
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Mostrar estado de conexión
-            connectionStatus.style.display = 'flex';
-            statusText.textContent = 'Conectando a Azure AI Search...';
-            
-            // Probar conexión
-            const isConnected = await testConnection();
-            
-            if (isConnected) {
-                // Cargar todos los productos al inicio
-                await searchAzure();
-            } else {
-                resultsGrid.innerHTML = `
-                    <div class="loading-container">
-                        <h3 style="color: #d13438;">No se pudo conectar con Azure</h3>
-                        <p style="color: #94a3b8;">Verifica tu configuración de Azure AI Search.</p>
-                    </div>
-                `;
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFilters();
+            // Mostrar algunos productos al inicio
+            const initialResults = PRODUCTOS_DB.slice(0, 6);
+            displayResults(initialResults);
+            resultsCount.textContent = `🏪 ${PRODUCTOS_DB.length} productos disponibles`;
+            docCount.textContent = PRODUCTOS_DB.length;
         });
     </script>
 </body>
