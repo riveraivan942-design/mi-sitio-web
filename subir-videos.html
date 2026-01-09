@@ -168,6 +168,55 @@
             font-size: 0.85rem;
             text-align: left;
         }
+        
+        /* NAVEGACIÓN */
+        .navigation {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .nav-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-home {
+            background: #0078d4;
+        }
+        
+        .btn-web {
+            background: #28a745;
+        }
+        
+        .btn-products {
+            background: #9c27b0;
+        }
+        
+        .btn-viewer {
+            background: #ff8c00;
+        }
     </style>
 </head>
 <body>
@@ -187,10 +236,10 @@
         </div>
         
         <div class="file-input-wrapper">
-            <input type="file" id="fileInput" class="file-input" accept="video/*,.mp4,.avi,.mov,.wmv,.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt">
+            <input type="file" id="fileInput" class="file-input" accept="video/*,.mp4,.avi,.mov,.wmv">
             <label for="fileInput" id="fileLabel" class="file-label">
-                📁 Haz clic aquí o arrastra cualquier archivo<br>
-                <small>(Videos, imágenes, PDFs - Límite: 100MB)</small>
+                📁 Haz clic aquí o arrastra un video<br>
+                <small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>
             </label>
         </div>
         
@@ -200,7 +249,7 @@
         </div>
         
         <button id="uploadButton" class="upload-button" disabled>
-            ⏫ Subir Archivo a Azure
+            ⏫ Subir Video a Azure
         </button>
         
         <div id="progressContainer" class="progress-container">
@@ -213,18 +262,31 @@
         <div id="successMessage" class="message success"></div>
         <div id="errorMessage" class="message error"></div>
         
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
-            <a href="index.html" style="color: #0078d4; text-decoration: none; font-weight: 600;">
-                ← Volver a la página principal
-            </a>
+        <!-- NAVEGACIÓN -->
+        <div class="navigation">
+            <p style="color: #666; margin-bottom: 15px;">Navega a otras secciones:</p>
+            <div class="nav-buttons">
+                <a href="index.html" class="nav-btn btn-home">
+                    🏠 Inicio
+                </a>
+                <a href="buscador-web.html" class="nav-btn btn-web">
+                    🔍 Buscador Web
+                </a>
+                <a href="buscar-productos.html" class="nav-btn btn-products">
+                    🏪 Buscar Productos
+                </a>
+                <a href="blob-viewer.html" class="nav-btn btn-viewer">
+                    📊 Visualizador
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
         // ================================================
-        // TU NUEVO SAS TOKEN - VÁLIDO HASTA 23/01/2026
+        // CONFIGURACIÓN - TU URL SAS
         // ================================================
-        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-23T00:40:13Z&se=2026-01-23T08:55:13Z&spr=https&sv=2024-11-04&sr=c&sig=xh3JQCUGNYz1DBIqUoH5%2BG9jKNnZ9pp3%2Bu3EcDj7zrM%3D";
+        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-20T01:50:55Z&se=2025-12-20T10:05:55Z&spr=https&sv=2024-11-04&sr=c&sig=zabjdZrYLp9aKzp2ZJDwTdsjQMcvslVnXN5YVqMKh%2FM%3D";
         // ================================================
         
         // Elementos del DOM
@@ -243,27 +305,6 @@
         // Variables
         let selectedFile = null;
         
-        // Función para detectar tipo de archivo
-        function getFileTypeIcon(filename) {
-            const ext = filename.toLowerCase().split('.').pop();
-            
-            if (['mp4', 'avi', 'mov', 'wmv', 'mkv'].includes(ext)) {
-                return { icon: '🎬', type: 'video', color: '#0078d4' };
-            }
-            else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
-                return { icon: '🖼️', type: 'imagen', color: '#4CAF50' };
-            }
-            else if (['pdf'].includes(ext)) {
-                return { icon: '📄', type: 'PDF', color: '#F44336' };
-            }
-            else if (['doc', 'docx', 'txt'].includes(ext)) {
-                return { icon: '📝', type: 'documento', color: '#FF9800' };
-            }
-            else {
-                return { icon: '📁', type: 'archivo', color: '#607D8B' };
-            }
-        }
-        
         // Evento para seleccionar archivo
         fileInput.addEventListener('change', (e) => {
             selectedFile = e.target.files[0];
@@ -275,21 +316,24 @@
                     return;
                 }
                 
-                // Obtener icono según tipo
-                const fileInfoData = getFileTypeIcon(selectedFile.name);
+                // Validar tipo
+                const validTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-ms-wmv'];
+                if (!validTypes.includes(selectedFile.type) && !selectedFile.name.match(/\.(mp4|avi|mov|wmv)$/i)) {
+                    showError('Formato no válido. Usa MP4, AVI, MOV o WMV');
+                    resetForm();
+                    return;
+                }
                 
-                // Mostrar información con icono
+                // Mostrar información del archivo
                 fileName.textContent = selectedFile.name;
                 fileSize.textContent = formatBytes(selectedFile.size);
                 fileInfo.style.display = 'block';
                 
-                // Habilitar botón con icono correspondiente
+                // Habilitar botón de subir
                 uploadButton.disabled = false;
-                uploadButton.innerHTML = `${fileInfoData.icon} Subir ${fileInfoData.type}`;
-                
-                fileLabel.innerHTML = `${fileInfoData.icon} ${selectedFile.name}<br><small>${fileInfoData.type.toUpperCase()} - Haz clic para cambiar</small>`;
-                fileLabel.style.borderColor = fileInfoData.color;
-                fileLabel.style.background = `${fileInfoData.color}15`;
+                fileLabel.innerHTML = `✅ ${selectedFile.name}<br><small>Haz clic para cambiar</small>`;
+                fileLabel.style.borderColor = '#28a745';
+                fileLabel.style.background = '#d4edda';
             }
         });
         
@@ -326,7 +370,7 @@
         // Subir archivo
         uploadButton.addEventListener('click', async () => {
             if (!selectedFile) {
-                showError('Selecciona un archivo primero');
+                showError('Selecciona un video primero');
                 return;
             }
             
@@ -378,18 +422,18 @@
                     
                     if (xhr.status === 201) {
                         showSuccess(`
-                            ✅ <strong>Archivo subido exitosamente!</strong><br><br>
+                            ✅ <strong>Video subido exitosamente!</strong><br><br>
                             📁 <strong>Nombre:</strong> ${blobName}<br>
                             💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
                             🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
-                            El archivo aparecerá en la galería en unos minutos.
+                            El video aparecerá en la página principal en unos minutos.
                         `);
                         resetForm();
                     } else {
                         showError(`Error ${xhr.status}: ${xhr.statusText}. Intenta de nuevo.`);
                         uploadButton.disabled = false;
                         fileInput.disabled = false;
-                        uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
+                        uploadButton.innerHTML = '⏫ Subir Video a Azure';
                     }
                     progressContainer.style.display = 'none';
                 });
@@ -400,14 +444,14 @@
                     uploadButton.disabled = false;
                     fileInput.disabled = false;
                     progressContainer.style.display = 'none';
-                    uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
+                    uploadButton.innerHTML = '⏫ Subir Video a Azure';
                 });
                 
                 // Configurar y enviar
                 xhr.open('PUT', uploadUrl);
                 xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
-                xhr.setRequestHeader('Content-Type', selectedFile.type || 'application/octet-stream');
-                xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'application/octet-stream');
+                xhr.setRequestHeader('Content-Type', selectedFile.type || 'video/mp4');
+                xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'video/mp4');
                 
                 xhr.send(selectedFile);
                 
@@ -417,7 +461,7 @@
                 uploadButton.disabled = false;
                 fileInput.disabled = false;
                 progressContainer.style.display = 'none';
-                uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
+                uploadButton.innerHTML = '⏫ Subir Video a Azure';
             }
         });
         
@@ -464,10 +508,10 @@
             uploadButton.disabled = true;
             fileInput.disabled = false;
             fileInfo.style.display = 'none';
-            fileLabel.innerHTML = '📁 Haz clic aquí o arrastra cualquier archivo<br><small>(Videos, imágenes, PDFs - Límite: 100MB)</small>';
+            fileLabel.innerHTML = '📁 Haz clic aquí o arrastra un video<br><small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>';
             fileLabel.style.borderColor = '#0078d4';
             fileLabel.style.background = '#f8fafc';
-            uploadButton.innerHTML = '⏫ Subir Archivo a Azure';
+            uploadButton.innerHTML = '⏫ Subir Video a Azure';
         }
         
         // Validar SAS al cargar
@@ -482,8 +526,8 @@
             if (now > expiryTime) {
                 showError('⚠️ El enlace SAS ha expirado. Solicita uno nuevo.');
             } else {
-                const daysLeft = Math.round((expiryTime - now) / (1000 * 60 * 60 * 24));
-                console.log(`SAS válido por: ${daysLeft} días`);
+                const hoursLeft = Math.round((expiryTime - now) / (1000 * 60 * 60));
+                console.log(`SAS válido por: ${hoursLeft} horas`);
             }
         });
     </script>
