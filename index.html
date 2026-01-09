@@ -16,7 +16,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             padding: 20px;
         }
@@ -29,7 +29,6 @@
             width: 100%;
             max-width: 500px;
             text-align: center;
-            margin-bottom: 30px;
         }
         
         .upload-title {
@@ -170,251 +169,25 @@
             text-align: left;
         }
         
-        /* BUSCADOR WEB STYLES */
-        .search-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 800px;
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        .sas-expired {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
         }
         
-        .search-title {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .search-subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            opacity: 0.9;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .search-box {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            outline: none;
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            transition: all 0.3s;
-        }
-        
-        .search-input:focus {
-            background: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-        }
-        
-        .search-btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 0 35px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        
-        .search-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
-        }
-        
-        .engine-selector {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
+        .guide-container {
             margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-        }
-        
-        .engine-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        
-        .engine-option input[type="radio"] {
-            margin: 0;
-            cursor: pointer;
-        }
-        
-        .search-results {
-            margin-top: 30px;
+            padding: 15px;
+            background: #e8f4fd;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            color: #004085;
+            font-size: 0.85rem;
             text-align: left;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            display: none;
-        }
-        
-        .results-title {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
-        }
-        
-        .result-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .result-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .result-description {
-            opacity: 0.9;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        
-        .result-link {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-        
-        .result-link:hover {
-            background: white;
-            color: #667eea;
-        }
-        
-        .search-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .action-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        /* SPINNER */
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* NAVIGATION */
-        .nav-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 30px 0;
-        }
-        
-        .nav-link {
-            color: #0078d4;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 12px 25px;
-            border: 2px solid #0078d4;
-            border-radius: 10px;
-            transition: all 0.3s;
-            background: white;
-        }
-        
-        .nav-link:hover {
-            background: #0078d4;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 120, 212, 0.2);
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .upload-container, .search-container {
-                padding: 25px;
-                margin: 15px;
-            }
-            
-            .search-box {
-                flex-direction: column;
-            }
-            
-            .search-btn {
-                padding: 20px;
-                justify-content: center;
-            }
-            
-            .nav-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .nav-link {
-                width: 100%;
-                text-align: center;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- CONTENEDOR DE SUBIDA -->
     <div class="upload-container">
         <h1 class="upload-title">
             <span>📤</span>
@@ -424,10 +197,44 @@
             Selecciona un video para subirlo directamente al contenedor Azure Storage
         </p>
         
-        <div class="sas-info">
-            <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅<br>
-            <strong>⏰ Expira:</strong> 23/01/2026 08:55 AM<br>
-            <strong>📁 Contenedor:</strong> multimedia
+        <div id="sasStatus" class="sas-info sas-expired">
+            <strong>⚠️ ATENCIÓN: SAS EXPIRADO</strong><br>
+            <strong>🔐 Últimos permisos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅ | Eliminación ✅<br>
+            <strong>⏰ Expiró el:</strong> 22/12/2025 10:05 AM<br>
+            <strong>📁 Contenedor:</strong> multimedia<br><br>
+            <strong>🔧 Acción requerida:</strong> Debes generar un nuevo SAS token
+        </div>
+        
+        <!-- Guía para obtener nuevo SAS -->
+        <div class="guide-container">
+            <strong>📝 CÓMO OBTENER NUEVO SAS TOKEN:</strong>
+            <ol style="margin: 10px 0 10px 20px;">
+                <li>Ve al <strong>Azure Portal</strong></li>
+                <li>Busca tu cuenta de almacenamiento "almacenamientoivan"</li>
+                <li>Ve a "Contenedores" → selecciona "multimedia"</li>
+                <li>Haz clic en "Generar SAS"</li>
+                <li>Configura:
+                    <ul>
+                        <li><strong>Permisos:</strong> Lectura + Escritura + Lista + Adición + Eliminación</li>
+                        <li><strong>Fecha inicio:</strong> Ahora</li>
+                        <li><strong>Fecha expiración:</strong> Al menos 7 días futuro</li>
+                        <li><strong>IP permitidas:</strong> (opcional, déjalo en blanco)</li>
+                    </ul>
+                </li>
+                <li>Haz clic en "Generar SAS y cadena de conexión"</li>
+                <li>Copia la <strong>URL SAS del Blob</strong></li>
+            </ol>
+            <button onclick="showSASInput()" style="background: #0078d4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                🔑 Ingresar nuevo SAS
+            </button>
+        </div>
+        
+        <!-- Input para nuevo SAS (oculto inicialmente) -->
+        <div id="sasInputContainer" style="display: none; margin-top: 20px;">
+            <input type="text" id="newSASInput" placeholder="Pega aquí tu nueva URL SAS" style="width: 100%; padding: 12px; border: 2px solid #0078d4; border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px;">
+            <button onclick="updateSAS()" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600;">
+                ✅ Actualizar SAS
+            </button>
         </div>
         
         <div class="file-input-wrapper">
@@ -457,79 +264,22 @@
         <div id="successMessage" class="message success"></div>
         <div id="errorMessage" class="message error"></div>
         
-        <!-- NAVEGACIÓN -->
-        <div class="nav-container">
-            <a href="index.html" class="nav-link">📊Inicio</a>
-            <a href="buscar-productos.html" class="nav-link">🔍 Buscar Productos</a>
-            <a href="blob-viewer.html" class="nav-link">🎬 Ver Videos</a>
-        </div>
-    </div>
-    
-    <!-- BUSCADOR WEB -->
-    <div class="search-container">
-        <h2 class="search-title">
-            <span>🌐</span>
-            Buscador Web Inteligente
-        </h2>
-        <p class="search-subtitle">
-            Busca en Internet directamente desde aquí. Selecciona tu motor de búsqueda preferido.
-        </p>
-        
-        <div class="search-box">
-            <input type="text" 
-                   id="webSearchInput" 
-                   class="search-input" 
-                   placeholder="🔍 ¿Qué quieres buscar en Internet?"
-                   autocomplete="off">
-            <button id="searchButton" class="search-btn" onclick="performWebSearch()">
-                🚀 Buscar
-            </button>
-        </div>
-        
-        <div class="engine-selector">
-            <label class="engine-option">
-                <input type="radio" name="searchEngine" value="duckduckgo" checked>
-                <span>🦆 DuckDuckGo</span>
-            </label>
-            <label class="engine-option">
-                <input type="radio" name="searchEngine" value="google">
-                <span>🔍 Google</span>
-            </label>
-            <label class="engine-option">
-                <input type="radio" name="searchEngine" value="bing">
-                <span>🏢 Bing</span>
-            </label>
-            <label class="engine-option">
-                <input type="radio" name="searchEngine" value="youtube">
-                <span>📺 YouTube</span>
-            </label>
-        </div>
-        
-        <div id="searchResults" class="search-results">
-            <h3 class="results-title">
-                <span>📋</span>
-                Resultados de búsqueda
-            </h3>
-            <div id="resultsList"></div>
-            
-            <div class="search-actions">
-                <button class="action-btn" onclick="openSearchInNewTab()">
-                    🔗 Abrir en nueva pestaña
-                </button>
-                <button class="action-btn" onclick="clearSearch()">
-                    🧹 Limpiar búsqueda
-                </button>
-            </div>
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <a href="index.html" style="color: #0078d4; text-decoration: none; font-weight: 600;">
+                ← Volver a ver los videos
+            </a>
         </div>
     </div>
 
     <script>
         // ================================================
-        // CONFIGURACIÓN SUBIDA DE VIDEOS
+        // CONFIGURACIÓN - VARIABLE PARA SAS (inicialmente vacía o expirada)
         // ================================================
-        const SAS_URL = "sp=racw&st=2026-01-09T02:04:54Z&se=2026-01-31T10:19:54Z&spr=https&sv=2024-11-04&sr=b&sig=Ew9jeCDz%2BikBYx1Mw%2F2ZX4PBv%2BcKWcsb%2BTXeibOPeak%3D";
+        let SAS_URL = ""; // Déjalo vacío o usa el expirado
+        // Para usar el expirado (solo para referencia):
+        // SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia/C%C3%B3digo%20Multimedia.mp4?sp=racw&st=2026-01-09T02:04:54Z&se=2026-01-31T10:19:54Z&spr=https&sv=2024-11-04&sr=b&sig=Ew9jeCDz%2BikBYx1Mw%2F2ZX4PBv%2BcKWcsb%2BTXeibOPeak%3D";
         
-        // Elementos del DOM - Subida
+        // Elementos del DOM
         const fileInput = document.getElementById('fileInput');
         const fileLabel = document.getElementById('fileLabel');
         const uploadButton = document.getElementById('uploadButton');
@@ -541,30 +291,87 @@
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
+        const sasStatus = document.getElementById('sasStatus');
         
-        // Elementos del DOM - Buscador
-        const webSearchInput = document.getElementById('webSearchInput');
-        const searchButton = document.getElementById('searchButton');
-        const searchResults = document.getElementById('searchResults');
-        const resultsList = document.getElementById('resultsList');
-        
+        // Variables
         let selectedFile = null;
-        let currentSearchTerm = '';
-        let currentSearchEngine = 'duckduckgo';
         
-        // ================================================
-        // FUNCIONES DE SUBIDA DE VIDEOS
-        // ================================================
+        // Función para mostrar el input de SAS
+        function showSASInput() {
+            document.getElementById('sasInputContainer').style.display = 'block';
+            document.getElementById('newSASInput').focus();
+        }
         
+        // Función para actualizar el SAS
+        function updateSAS() {
+            const newSAS = document.getElementById('newSASInput').value.trim();
+            
+            if (!newSAS) {
+                alert('Por favor, pega tu nueva URL SAS');
+                return;
+            }
+            
+            if (!newSAS.includes('https://') || !newSAS.includes('blob.core.windows.net') || !newSAS.includes('sig=')) {
+                alert('URL SAS no válida. Debe ser una URL completa de Azure Blob Storage con firma SAS.');
+                return;
+            }
+            
+            // Validar fecha de expiración
+            try {
+                const urlParams = new URLSearchParams(newSAS.split('?')[1]);
+                const expiryTime = new Date(urlParams.get('se'));
+                const now = new Date();
+                
+                if (now > expiryTime) {
+                    alert('⚠️ Esta URL SAS ya ha expirado. Genera una nueva.');
+                    return;
+                }
+                
+                // Actualizar SAS
+                SAS_URL = newSAS;
+                
+                // Actualizar interfaz
+                const hoursLeft = Math.round((expiryTime - now) / (1000 * 60 * 60));
+                const daysLeft = Math.round((expiryTime - now) / (1000 * 60 * 60 * 24));
+                
+                sasStatus.innerHTML = `
+                    <strong>✅ SAS ACTUALIZADO</strong><br>
+                    <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅ | Eliminación ✅<br>
+                    <strong>⏰ Expira:</strong> ${expiryTime.toLocaleDateString()} ${expiryTime.toLocaleTimeString()}<br>
+                    <strong>📁 Contenedor:</strong> multimedia<br>
+                    <strong>⏳ Tiempo restante:</strong> ${daysLeft > 0 ? `${daysLeft} días` : `${hoursLeft} horas`}
+                `;
+                
+                sasStatus.className = 'sas-info';
+                sasStatus.style.background = '#d4edda';
+                sasStatus.style.borderColor = '#c3e6cb';
+                sasStatus.style.color = '#155724';
+                
+                // Ocultar input
+                document.getElementById('sasInputContainer').style.display = 'none';
+                document.getElementById('newSASInput').value = '';
+                
+                showSuccess('✅ SAS actualizado correctamente. Ya puedes subir videos.');
+                
+                console.log('Nuevo SAS configurado:', SAS_URL);
+                
+            } catch (error) {
+                alert('Error al validar el SAS: ' + error.message);
+            }
+        }
+        
+        // Evento para seleccionar archivo
         fileInput.addEventListener('change', (e) => {
             selectedFile = e.target.files[0];
             if (selectedFile) {
+                // Validar tamaño (100MB máximo)
                 if (selectedFile.size > 100 * 1024 * 1024) {
                     showError('El archivo es demasiado grande. Límite: 100MB');
                     resetForm();
                     return;
                 }
                 
+                // Validar tipo
                 const validTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-ms-wmv'];
                 if (!validTypes.includes(selectedFile.type) && !selectedFile.name.match(/\.(mp4|avi|mov|wmv)$/i)) {
                     showError('Formato no válido. Usa MP4, AVI, MOV o WMV');
@@ -572,17 +379,34 @@
                     return;
                 }
                 
+                // Mostrar información del archivo
                 fileName.textContent = selectedFile.name;
                 fileSize.textContent = formatBytes(selectedFile.size);
                 fileInfo.style.display = 'block';
                 
-                uploadButton.disabled = false;
+                // Habilitar botón de subir solo si hay SAS válido
+                if (SAS_URL && !isSASExpired(SAS_URL)) {
+                    uploadButton.disabled = false;
+                }
+                
                 fileLabel.innerHTML = `✅ ${selectedFile.name}<br><small>Haz clic para cambiar</small>`;
                 fileLabel.style.borderColor = '#28a745';
                 fileLabel.style.background = '#d4edda';
             }
         });
         
+        // Función para verificar si SAS está expirado
+        function isSASExpired(sasUrl) {
+            try {
+                const urlParams = new URLSearchParams(sasUrl.split('?')[1]);
+                const expiryTime = new Date(urlParams.get('se'));
+                return new Date() > expiryTime;
+            } catch (error) {
+                return true;
+            }
+        }
+        
+        // Drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             fileLabel.addEventListener(eventName, preventDefaults, false);
         });
@@ -612,19 +436,26 @@
             }
         });
         
+        // Subir archivo
         uploadButton.addEventListener('click', async () => {
             if (!selectedFile) {
                 showError('Selecciona un video primero');
                 return;
             }
             
-            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
-            const expiryTime = new Date(urlParams.get('se'));
-            if (new Date() > expiryTime) {
-                showError('El enlace SAS ha expirado. Solicita uno nuevo.');
+            // Verificar si hay SAS configurado
+            if (!SAS_URL) {
+                showError('Primero debes configurar un SAS token. Haz clic en "Ingresar nuevo SAS"');
                 return;
             }
             
+            // Verificar si SAS ha expirado
+            if (isSASExpired(SAS_URL)) {
+                showError('El SAS token ha expirado. Genera uno nuevo.');
+                return;
+            }
+            
+            // Deshabilitar interfaz durante la subida
             uploadButton.disabled = true;
             fileInput.disabled = true;
             progressContainer.style.display = 'block';
@@ -632,17 +463,20 @@
             progressText.textContent = '0%';
             
             try {
+                // Crear nombre único para el archivo
                 const timestamp = Date.now();
                 const randomId = Math.random().toString(36).substring(2, 8);
                 const safeName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
                 const blobName = `${timestamp}_${randomId}_${safeName}`;
                 
+                // URL completa con nombre de blob
                 const baseUrl = SAS_URL.split('?')[0];
                 const queryParams = SAS_URL.split('?')[1];
                 const uploadUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${queryParams}`;
                 
                 console.log('Subiendo a:', uploadUrl);
                 
+                // Crear XMLHttpRequest para mostrar progreso
                 const xhr = new XMLHttpRequest();
                 
                 xhr.upload.addEventListener('progress', (e) => {
@@ -650,6 +484,8 @@
                         const percentComplete = Math.round((e.loaded / e.total) * 100);
                         progressFill.style.width = `${percentComplete}%`;
                         progressText.textContent = `${percentComplete}%`;
+                        
+                        // Actualizar texto del botón
                         uploadButton.innerHTML = `⏫ Subiendo... ${percentComplete}%`;
                     }
                 });
@@ -658,16 +494,27 @@
                     console.log('Respuesta:', xhr.status, xhr.statusText);
                     
                     if (xhr.status === 201) {
+                        const videoUrl = `${baseUrl}/${encodeURIComponent(blobName)}`;
+                        
                         showSuccess(`
                             ✅ <strong>Video subido exitosamente!</strong><br><br>
                             📁 <strong>Nombre:</strong> ${blobName}<br>
                             💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
-                            🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
+                            🔗 <strong>URL:</strong> <a href="${videoUrl}" target="_blank">Ver Video</a><br>
+                            📋 <strong>Nombre del archivo:</strong> ${blobName}<br><br>
                             El video aparecerá en la página principal en unos minutos.
                         `);
                         resetForm();
                     } else {
-                        showError(`Error ${xhr.status}: ${xhr.statusText}. Intenta de nuevo.`);
+                        let errorMsg = `Error ${xhr.status}: ${xhr.statusText}.`;
+                        
+                        if (xhr.status === 403) {
+                            errorMsg += ' Error de permisos. Verifica que el SAS tenga permisos de escritura.';
+                        } else if (xhr.status === 404) {
+                            errorMsg += ' Contenedor no encontrado.';
+                        }
+                        
+                        showError(errorMsg);
                         uploadButton.disabled = false;
                         fileInput.disabled = false;
                         uploadButton.innerHTML = '⏫ Subir Video a Azure';
@@ -677,17 +524,19 @@
                 
                 xhr.addEventListener('error', () => {
                     console.error('Error de red');
-                    showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+                    showError('Error de conexión. Verifica:<br>1. Tu conexión a internet<br>2. Que el SAS sea válido<br>3. Que el contenedor exista');
                     uploadButton.disabled = false;
                     fileInput.disabled = false;
                     progressContainer.style.display = 'none';
                     uploadButton.innerHTML = '⏫ Subir Video a Azure';
                 });
                 
+                // Configurar y enviar
                 xhr.open('PUT', uploadUrl);
                 xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
                 xhr.setRequestHeader('Content-Type', selectedFile.type || 'video/mp4');
                 xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'video/mp4');
+                
                 xhr.send(selectedFile);
                 
             } catch (error) {
@@ -700,6 +549,7 @@
             }
         });
         
+        // Funciones auxiliares
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -712,16 +562,28 @@
             successMessage.innerHTML = message;
             successMessage.style.display = 'block';
             errorMessage.style.display = 'none';
+            
+            // Auto-scroll para ver el mensaje
             successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            setTimeout(() => { successMessage.style.display = 'none'; }, 15000);
+            
+            // Ocultar después de 15 segundos
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 15000);
         }
         
         function showError(message) {
             errorMessage.innerHTML = message;
             errorMessage.style.display = 'block';
             successMessage.style.display = 'none';
+            
+            // Auto-scroll para ver el mensaje
             errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            setTimeout(() => { errorMessage.style.display = 'none'; }, 10000);
+            
+            // Ocultar después de 10 segundos
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 10000);
         }
         
         function resetForm() {
@@ -736,146 +598,21 @@
             uploadButton.innerHTML = '⏫ Subir Video a Azure';
         }
         
-        // ================================================
-        // FUNCIONES DE BUSCADOR WEB
-        // ================================================
-        
-        function performWebSearch() {
-            currentSearchTerm = webSearchInput.value.trim();
-            const engineRadios = document.getElementsByName('searchEngine');
-            
-            for (let radio of engineRadios) {
-                if (radio.checked) {
-                    currentSearchEngine = radio.value;
-                    break;
-                }
-            }
-            
-            if (!currentSearchTerm) {
-                alert('Por favor, escribe algo para buscar');
-                return;
-            }
-            
-            searchResults.style.display = 'block';
-            resultsList.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div class="spinner"></div>
-                    <p style="margin-top: 15px; opacity: 0.8; font-size: 1.1rem;">
-                        Buscando "<strong>${currentSearchTerm}</strong>" en ${getEngineName(currentSearchEngine)}...
-                    </p>
-                </div>
-            `;
-            
-            // Mostrar resultados simulados (en realidad abrirá directamente)
-            setTimeout(() => {
-                showSearchResults();
-            }, 1500);
-        }
-        
-        function getEngineName(engine) {
-            const names = {
-                'duckduckgo': 'DuckDuckGo',
-                'google': 'Google',
-                'bing': 'Bing',
-                'youtube': 'YouTube'
-            };
-            return names[engine] || engine;
-        }
-        
-        function showSearchResults() {
-            const searchUrl = getSearchUrl(currentSearchTerm, currentSearchEngine);
-            
-            resultsList.innerHTML = `
-                <div class="result-item">
-                    <div class="result-title">🔍 Búsqueda lista</div>
-                    <div class="result-description">
-                        Tu búsqueda de "<strong>${currentSearchTerm}</strong>" está lista para ejecutarse en ${getEngineName(currentSearchEngine)}.
-                        Haz clic en el botón de abajo para ver los resultados.
-                    </div>
-                    <a href="${searchUrl}" target="_blank" class="result-link">
-                        🔗 Ver resultados en ${getEngineName(currentSearchEngine)}
-                    </a>
-                </div>
-                
-                <div class="result-item">
-                    <div class="result-title">📊 Información de búsqueda</div>
-                    <div class="result-description">
-                        <strong>Término buscado:</strong> ${currentSearchTerm}<br>
-                        <strong>Motor de búsqueda:</strong> ${getEngineName(currentSearchEngine)}<br>
-                        <strong>URL de búsqueda:</strong> <small>${searchUrl}</small>
-                    </div>
-                </div>
-                
-                <div class="result-item">
-                    <div class="result-title">💡 Consejos de búsqueda</div>
-                    <div class="result-description">
-                        1. Usa comillas para buscar frases exactas: "Azure Functions"<br>
-                        2. Usa - para excluir términos: python -django<br>
-                        3. Usa site: para buscar en un sitio específico: site:microsoft.com Azure<br>
-                        4. Usa filetype: para buscar tipos específicos: filetype:pdf machine learning
-                    </div>
-                </div>
-            `;
-            
-            // Desplazar a resultados
-            searchResults.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function getSearchUrl(term, engine) {
-            const encodedTerm = encodeURIComponent(term);
-            
-            switch(engine) {
-                case 'duckduckgo':
-                    return `https://duckduckgo.com/?q=${encodedTerm}`;
-                case 'google':
-                    return `https://www.google.com/search?q=${encodedTerm}`;
-                case 'bing':
-                    return `https://www.bing.com/search?q=${encodedTerm}`;
-                case 'youtube':
-                    return `https://www.youtube.com/results?search_query=${encodedTerm}`;
-                default:
-                    return `https://www.google.com/search?q=${encodedTerm}`;
-            }
-        }
-        
-        function openSearchInNewTab() {
-            if (!currentSearchTerm) {
-                alert('Primero realiza una búsqueda');
-                return;
-            }
-            
-            const searchUrl = getSearchUrl(currentSearchTerm, currentSearchEngine);
-            window.open(searchUrl, '_blank');
-        }
-        
-        function clearSearch() {
-            webSearchInput.value = '';
-            searchResults.style.display = 'none';
-            resultsList.innerHTML = '';
-            currentSearchTerm = '';
-        }
-        
-        // Permitir búsqueda con Enter
-        webSearchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                performWebSearch();
-            }
-        });
-        
-        // ================================================
-        // INICIALIZACIÓN
-        // ================================================
-        
+        // Validar SAS al cargar
         document.addEventListener('DOMContentLoaded', () => {
-            // Validar SAS
-            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
-            const expiryTime = new Date(urlParams.get('se'));
-            if (new Date() > expiryTime) {
-                showError('⚠️ El enlace SAS ha expirado. Solicita uno nuevo.');
-            }
+            console.log('Estado SAS:', SAS_URL ? 'Configurado' : 'No configurado');
             
-            // Mostrar ejemplo de búsqueda
-            webSearchInput.value = 'Azure Functions tutorial';
+            // Si hay SAS, verificar si está expirado
+            if (SAS_URL) {
+                const isExpired = isSASExpired(SAS_URL);
+                console.log('SAS expirado:', isExpired);
+                
+                if (isExpired) {
+                    showError('⚠️ El SAS token ha expirado. Genera uno nuevo.');
+                }
+            } else {
+                showError('⚠️ No hay SAS token configurado. Haz clic en "Ingresar nuevo SAS"');
+            }
         });
     </script>
 </body>
