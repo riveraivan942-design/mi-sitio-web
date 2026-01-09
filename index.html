@@ -3,14 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Buscador Web Gratuito con Azure</title>
+    <title>📤 Subir Videos a Azure Storage</title>
     <style>
-        :root {
-            --primary: #28a745;
-            --primary-dark: #20c997;
-            --background: #f8fafc;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -19,82 +13,192 @@
         
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #d1e7dd 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            color: #1e293b;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
         }
         
-        /* HEADER */
-        .header {
-            text-align: center;
-            padding: 50px 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
+        .upload-container {
+            background: white;
             border-radius: 20px;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .header::before {
-            content: '';
+        .upload-title {
+            color: #0078d4;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .upload-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .file-input {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-            background-size: cover;
-        }
-        
-        .header-content {
-            position: relative;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
             z-index: 2;
         }
         
-        .title {
-            font-size: 3rem;
+        .file-label {
+            display: block;
+            padding: 40px 20px;
+            border: 3px dashed #0078d4;
+            border-radius: 15px;
+            background: #f8fafc;
+            transition: all 0.3s;
+            color: #0078d4;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .file-label:hover {
+            background: #e3f2fd;
+            border-color: #005a9e;
+        }
+        
+        .file-label.dragover {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .upload-button {
+            background: linear-gradient(90deg, #0078d4, #005a9e);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .upload-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 120, 212, 0.3);
+        }
+        
+        .upload-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .sas-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            color: #856404;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+        
+        /* BUSCADOR WEB STYLES */
+        .search-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .search-title {
+            font-size: 2.5rem;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
         
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            max-width: 800px;
-            margin: 0 auto 25px;
-        }
-        
-        .stats-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            margin: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        /* SEARCH SECTION */
-        .search-section {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            margin-bottom: 40px;
-            border: 2px solid #d1e7dd;
+        .search-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .search-box {
@@ -105,173 +209,148 @@
         
         .search-input {
             flex: 1;
-            padding: 20px 25px;
-            border: 3px solid var(--primary);
-            border-radius: 15px;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
             font-size: 1.1rem;
             outline: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
             transition: all 0.3s;
-            background: #f8fafc;
         }
         
         .search-input:focus {
-            border-color: var(--primary-dark);
             background: white;
-            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
         }
         
-        .search-button {
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            color: white;
+        .search-btn {
+            background: white;
+            color: #667eea;
             border: none;
-            padding: 0 45px;
-            border-radius: 15px;
-            font-size: 1.2rem;
+            padding: 0 35px;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             white-space: nowrap;
         }
         
-        .search-button:hover {
+        .search-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
         }
         
-        /* QUICK SEARCH */
-        .quick-search {
+        .engine-selector {
             display: flex;
+            justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 20px;
             margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
         }
         
-        .quick-tag {
-            background: #d1e7dd;
-            color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-        }
-        
-        .quick-tag:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        /* RESULTS */
-        .results-header {
+        .engine-option {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e2e8f0;
+            gap: 8px;
+            cursor: pointer;
         }
         
-        .results-count {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary);
+        .engine-option input[type="radio"] {
+            margin: 0;
+            cursor: pointer;
         }
         
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-        
-        .result-card {
-            background: white;
-            border-radius: 15px;
+        .search-results {
+            margin-top: 30px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
             padding: 25px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            border: 2px solid #d1e7dd;
-            transition: all 0.3s;
-        }
-        
-        .result-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(40, 167, 69, 0.15);
-            border-color: var(--primary);
-        }
-        
-        .result-source {
-            display: inline-block;
-            background: #d1e7dd;
-            color: var(--primary);
-            padding: 5px 12px;
             border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            display: none;
+        }
+        
+        .results-title {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .result-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
             margin-bottom: 15px;
+            border-left: 4px solid #667eea;
         }
         
         .result-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 12px;
-            line-height: 1.3;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
         }
         
-        .result-snippet {
-            color: #495057;
-            margin-bottom: 15px;
+        .result-description {
+            opacity: 0.9;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
             line-height: 1.5;
         }
         
-        .result-url {
-            color: #6c757d;
-            font-size: 0.85rem;
-            display: block;
-            margin-bottom: 15px;
-            word-break: break-all;
-        }
-        
         .result-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             padding: 8px 16px;
-            border: 2px solid var(--primary);
-            border-radius: 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
             transition: all 0.3s;
         }
         
         .result-link:hover {
-            background: var(--primary);
+            background: white;
+            color: #667eea;
+        }
+        
+        .search-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
         }
         
-        /* LOADING */
-        .loading-container {
-            text-align: center;
-            padding: 60px 40px;
-            grid-column: 1 / -1;
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
         
+        /* SPINNER */
         .spinner {
-            border: 5px solid #d1e7dd;
-            border-top: 5px solid var(--primary);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
+            margin: 0 auto;
         }
         
         @keyframes spin {
@@ -279,405 +358,508 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* INFO BOXES */
-        .info-box {
-            margin: 20px 0;
-            padding: 20px;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 15px;
-            color: #856404;
-        }
-        
         /* NAVIGATION */
-        .navigation {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .nav-buttons {
+        .nav-container {
             display: flex;
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            margin: 30px 0;
         }
         
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 25px;
-            border-radius: 12px;
+        .nav-link {
+            color: #0078d4;
             text-decoration: none;
             font-weight: 600;
+            padding: 12px 25px;
+            border: 2px solid #0078d4;
+            border-radius: 10px;
             transition: all 0.3s;
+            background: white;
         }
         
-        .btn-home {
+        .nav-link:hover {
             background: #0078d4;
             color: white;
-        }
-        
-        .btn-upload {
-            background: #0078d4;
-            color: white;
-        }
-        
-        .btn-products {
-            background: #9c27b0;
-            color: white;
-        }
-        
-        .nav-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 120, 212, 0.2);
         }
         
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .title { font-size: 2.2rem; }
-            .search-box { flex-direction: column; }
-            .search-button { padding: 20px; justify-content: center; }
-            .results-grid { grid-template-columns: 1fr; }
-            .nav-buttons { flex-direction: column; }
-            .nav-btn { justify-content: center; }
+            .upload-container, .search-container {
+                padding: 25px;
+                margin: 15px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                padding: 20px;
+                justify-content: center;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-link {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="header-content">
-                <h1 class="title">
-                    <span>🔍</span>
-                    Buscador Web Gratuito
-                </h1>
-                <p class="subtitle">
-                    Busca información en Internet usando Bing Search API (1,000 búsquedas/mes gratis) 
-                    y DuckDuckGo como alternativa.
-                </p>
-                <div>
-                    <span class="stats-badge">⚡ Bing Search API</span>
-                    <span class="stats-badge">🆓 1,000 búsquedas/mes gratis</span>
-                    <span class="stats-badge">🔄 DuckDuckGo Fallback</span>
-                </div>
+    <!-- CONTENEDOR DE SUBIDA -->
+    <div class="upload-container">
+        <h1 class="upload-title">
+            <span>📤</span>
+            Subir Video a Azure
+        </h1>
+        <p class="upload-subtitle">
+            Selecciona un video para subirlo directamente al contenedor Azure Storage
+        </p>
+        
+        <div class="sas-info">
+            <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅<br>
+            <strong>⏰ Expira:</strong> 23/01/2026 08:55 AM<br>
+            <strong>📁 Contenedor:</strong> multimedia
+        </div>
+        
+        <div class="file-input-wrapper">
+            <input type="file" id="fileInput" class="file-input" accept="video/*,.mp4,.avi,.mov,.wmv">
+            <label for="fileInput" id="fileLabel" class="file-label">
+                📁 Haz clic aquí o arrastra un video<br>
+                <small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>
+            </label>
+        </div>
+        
+        <div id="fileInfo" class="file-info" style="display: none;">
+            Archivo seleccionado: <span id="fileName"></span><br>
+            Tamaño: <span id="fileSize"></span>
+        </div>
+        
+        <button id="uploadButton" class="upload-button" disabled>
+            ⏫ Subir Video a Azure
+        </button>
+        
+        <div id="progressContainer" class="progress-container">
+            <div>Subiendo: <span id="progressText">0%</span></div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
             </div>
         </div>
         
-        <!-- SEARCH SECTION -->
-        <div class="search-section">
-            <div class="search-box">
-                <input type="text" 
-                       id="searchInput" 
-                       class="search-input" 
-                       placeholder="🔍 ¿Qué quieres buscar? (noticias, tutoriales, información...)"
-                       autocomplete="off">
-                <button id="searchButton" class="search-button">
-                    <span>🌐</span>
-                    Buscar en la Web
-                </button>
-            </div>
-            
-            <!-- QUICK SEARCH -->
-            <div class="quick-search">
-                <span style="font-weight: 600; color: #64748b;">Búsquedas rápidas:</span>
-                <span class="quick-tag" onclick="quickSearch('Azure servicios gratuitos')">Azure Gratis</span>
-                <span class="quick-tag" onclick="quickSearch('Inteligencia artificial noticias')">Noticias IA</span>
-                <span class="quick-tag" onclick="quickSearch('Tutorial Azure Storage')">Tutorial Azure</span>
-                <span class="quick-tag" onclick="quickSearch('Microsoft Copilot')">Microsoft Copilot</span>
-                <span class="quick-tag" onclick="quickSearch('Desarrollo web')">Desarrollo Web</span>
-                <span class="quick-tag" onclick="quickSearch('OpenAI ChatGPT')">OpenAI ChatGPT</span>
-            </div>
+        <div id="successMessage" class="message success"></div>
+        <div id="errorMessage" class="message error"></div>
+        
+        <!-- NAVEGACIÓN -->
+        <div class="nav-container">
+            <a href="index.html" class="nav-link">🎬 Ver Videos</a>
+            <a href="buscar-productos.html" class="nav-link">🔍 Buscar Productos</a>
+            <a href="blob-viewer.html" class="nav-link">📊 Visualizador</a>
+            <a href="videos.html" class="nav-link">📹 Ver Todos</a>
+        </div>
+    </div>
+    
+    <!-- BUSCADOR WEB -->
+    <div class="search-container">
+        <h2 class="search-title">
+            <span>🌐</span>
+            Buscador Web Inteligente
+        </h2>
+        <p class="search-subtitle">
+            Busca en Internet directamente desde aquí. Selecciona tu motor de búsqueda preferido.
+        </p>
+        
+        <div class="search-box">
+            <input type="text" 
+                   id="webSearchInput" 
+                   class="search-input" 
+                   placeholder="🔍 ¿Qué quieres buscar en Internet?"
+                   autocomplete="off">
+            <button id="searchButton" class="search-btn" onclick="performWebSearch()">
+                🚀 Buscar
+            </button>
         </div>
         
-        <!-- INFO BOX -->
-        <div class="info-box">
-            <strong>⚠️ Configura tu API Key:</strong> Para usar Bing Search API, necesitas una clave gratuita.
-            Sin ella, el sistema usará DuckDuckGo automáticamente.
-            <a href="https://www.microsoft.com/en-us/bing/apis/bing-web-search-api" 
-               target="_blank" 
-               style="color: #0078d4; text-decoration: none; font-weight: 600;">
-               Obtén tu clave aquí
-            </a>
+        <div class="engine-selector">
+            <label class="engine-option">
+                <input type="radio" name="searchEngine" value="duckduckgo" checked>
+                <span>🦆 DuckDuckGo</span>
+            </label>
+            <label class="engine-option">
+                <input type="radio" name="searchEngine" value="google">
+                <span>🔍 Google</span>
+            </label>
+            <label class="engine-option">
+                <input type="radio" name="searchEngine" value="bing">
+                <span>🏢 Bing</span>
+            </label>
+            <label class="engine-option">
+                <input type="radio" name="searchEngine" value="youtube">
+                <span>📺 YouTube</span>
+            </label>
         </div>
         
-        <!-- RESULTS -->
-        <div class="results-header">
-            <div id="resultsCount" class="results-count">
-                🔍 Escribe algo para buscar en Internet...
-            </div>
-        </div>
-        
-        <div id="loading" class="loading-container" style="display: none;">
-            <div class="spinner"></div>
-            <p style="font-size: 1.1rem; color: #64748b;">Buscando en la web...</p>
-        </div>
-        
-        <div id="resultsGrid" class="results-grid">
-            <!-- Los resultados aparecerán aquí -->
-        </div>
-        
-        <div id="noResults" class="loading-container" style="display: none;">
-            <div style="font-size: 3rem; margin-bottom: 20px;">🌐</div>
-            <h3 style="color: #64748b; margin-bottom: 15px;">No se encontraron resultados</h3>
-            <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">
-                Intenta con otros términos o verifica tu conexión a Internet.
-            </p>
-        </div>
-        
-        <!-- NAVIGATION -->
-        <div class="navigation">
-            <h3 style="text-align: center; margin-bottom: 20px; color: #475569;">
-                ⚡ Otras Herramientas del Portal
+        <div id="searchResults" class="search-results">
+            <h3 class="results-title">
+                <span>📋</span>
+                Resultados de búsqueda
             </h3>
-            <div class="nav-buttons">
-                <a href="index.html" class="nav-btn btn-home">
-                    🏠 Volver al Inicio
-                </a>
-                <a href="subir-video.html" class="nav-btn btn-upload">
-                    📤 Subir Videos
-                </a>
-                <a href="buscar-productos.html" class="nav-btn btn-products">
-                    🏪 Buscar Productos
-                </a>
+            <div id="resultsList"></div>
+            
+            <div class="search-actions">
+                <button class="action-btn" onclick="openSearchInNewTab()">
+                    🔗 Abrir en nueva pestaña
+                </button>
+                <button class="action-btn" onclick="clearSearch()">
+                    🧹 Limpiar búsqueda
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         // ================================================
-        // CONFIGURACIÓN - API KEYS
+        // CONFIGURACIÓN SUBIDA DE VIDEOS
         // ================================================
-        const BING_API_KEY = ""; // Tu clave Bing API aquí
-        const BING_ENDPOINT = "https://api.bing.microsoft.com/v7.0/search";
+        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-20T01:50:55Z&se=2025-12-20T10:05:55Z&spr=https&sv=2024-11-04&sr=c&sig=zabjdZrYLp9aKzp2ZJDwTdsjQMcvslVnXN5YVqMKh%2FM%3D";
         
-        // Cache en localStorage
-        const SEARCH_CACHE = {
-            set: (key, data, ttl = 3600000) => {
-                const item = {
-                    data: data,
-                    expiry: Date.now() + ttl
-                };
-                localStorage.setItem(`search_${key}`, JSON.stringify(item));
-            },
-            get: (key) => {
-                const itemStr = localStorage.getItem(`search_${key}`);
-                if (!itemStr) return null;
-                
-                const item = JSON.parse(itemStr);
-                if (Date.now() > item.expiry) {
-                    localStorage.removeItem(`search_${key}`);
-                    return null;
-                }
-                return item.data;
-            }
-        };
+        // Elementos del DOM - Subida
+        const fileInput = document.getElementById('fileInput');
+        const fileLabel = document.getElementById('fileLabel');
+        const uploadButton = document.getElementById('uploadButton');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
         
-        // ================================================
-        // ELEMENTOS DEL DOM
-        // ================================================
-        const searchInput = document.getElementById('searchInput');
+        // Elementos del DOM - Buscador
+        const webSearchInput = document.getElementById('webSearchInput');
         const searchButton = document.getElementById('searchButton');
-        const resultsCount = document.getElementById('resultsCount');
-        const resultsGrid = document.getElementById('resultsGrid');
-        const loading = document.getElementById('loading');
-        const noResults = document.getElementById('noResults');
+        const searchResults = document.getElementById('searchResults');
+        const resultsList = document.getElementById('resultsList');
+        
+        let selectedFile = null;
+        let currentSearchTerm = '';
+        let currentSearchEngine = 'duckduckgo';
         
         // ================================================
-        // FUNCIONES DE BÚSQUEDA
+        // FUNCIONES DE SUBIDA DE VIDEOS
         // ================================================
         
-        async function performSearch() {
-            const query = searchInput.value.trim();
-            if (!query) {
-                showMessage('Por favor, escribe algo para buscar', 'warning');
-                return;
-            }
-            
-            // Mostrar loading
-            loading.style.display = 'block';
-            resultsGrid.innerHTML = '';
-            noResults.style.display = 'none';
-            resultsCount.textContent = '🔍 Buscando...';
-            
-            try {
-                // Verificar cache primero
-                const cachedResults = SEARCH_CACHE.get(query);
-                if (cachedResults) {
-                    resultsCount.textContent = `⚡ ${cachedResults.length} resultados (de cache)`;
-                    displayResults(cachedResults);
-                    loading.style.display = 'none';
+        fileInput.addEventListener('change', (e) => {
+            selectedFile = e.target.files[0];
+            if (selectedFile) {
+                if (selectedFile.size > 100 * 1024 * 1024) {
+                    showError('El archivo es demasiado grande. Límite: 100MB');
+                    resetForm();
                     return;
                 }
                 
-                // Intentar con Bing API
-                let results = [];
-                let source = 'bing';
-                
-                if (BING_API_KEY && BING_API_KEY !== "") {
-                    results = await searchWithBing(query);
+                const validTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-ms-wmv'];
+                if (!validTypes.includes(selectedFile.type) && !selectedFile.name.match(/\.(mp4|avi|mov|wmv)$/i)) {
+                    showError('Formato no válido. Usa MP4, AVI, MOV o WMV');
+                    resetForm();
+                    return;
                 }
                 
-                // Si Bing no da resultados, usar DuckDuckGo
-                if (results.length === 0) {
-                    source = 'duckduckgo';
-                    results = await searchWithDuckDuckGo(query);
-                }
+                fileName.textContent = selectedFile.name;
+                fileSize.textContent = formatBytes(selectedFile.size);
+                fileInfo.style.display = 'block';
                 
-                // Guardar en cache si hay resultados
-                if (results.length > 0) {
-                    SEARCH_CACHE.set(query, results);
-                }
-                
-                // Mostrar resultados
-                resultsCount.textContent = `🌐 ${results.length} resultados encontrados (fuente: ${source})`;
-                displayResults(results);
-                
-                if (results.length === 0) {
-                    noResults.style.display = 'block';
-                }
-                
-            } catch (error) {
-                console.error('Error en búsqueda:', error);
-                resultsCount.textContent = '❌ Error en la búsqueda';
-                showMessage('Error al buscar. Intenta de nuevo.', 'error');
-            } finally {
-                loading.style.display = 'none';
+                uploadButton.disabled = false;
+                fileLabel.innerHTML = `✅ ${selectedFile.name}<br><small>Haz clic para cambiar</small>`;
+                fileLabel.style.borderColor = '#28a745';
+                fileLabel.style.background = '#d4edda';
             }
+        });
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
         
-        async function searchWithBing(query, numResults = 8) {
-            try {
-                const headers = { "Ocp-Apim-Subscription-Key": BING_API_KEY };
-                const params = {
-                    "q": query,
-                    "count": numResults,
-                    "responseFilter": "Webpages",
-                    "textDecorations": true,
-                    "textFormat": "HTML",
-                    "safeSearch": "Moderate",
-                    "setLang": "es"
-                };
-                
-                const response = await fetch(`${BING_ENDPOINT}?${new URLSearchParams(params)}`, { headers });
-                
-                if (!response.ok) {
-                    throw new Error(`Bing API error: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const results = [];
-                
-                if (data.webPages && data.webPages.value) {
-                    data.webPages.value.forEach(item => {
-                        results.push({
-                            title: item.name || '',
-                            url: item.url || '',
-                            snippet: item.snippet || '',
-                            source: 'bing'
-                        });
-                    });
-                }
-                
-                return results;
-            } catch (error) {
-                console.error('Bing search error:', error);
-                return [];
-            }
-        }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, () => {
+                fileLabel.classList.add('dragover');
+            }, false);
+        });
         
-        async function searchWithDuckDuckGo(query, numResults = 5) {
-            try {
-                // Usar API no oficial de DuckDuckGo
-                const response = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1`);
-                const data = await response.json();
-                
-                const results = [];
-                
-                // Resultado principal
-                if (data.AbstractText) {
-                    results.push({
-                        title: data.Heading || query,
-                        url: data.AbstractURL || '',
-                        snippet: data.AbstractText,
-                        source: 'duckduckgo'
-                    });
-                }
-                
-                // Resultados relacionados
-                if (data.RelatedTopics) {
-                    data.RelatedTopics.slice(0, numResults - 1).forEach(topic => {
-                        if (topic.Text && topic.FirstURL) {
-                            results.push({
-                                title: topic.Text.split(' - ')[0] || 'Resultado',
-                                url: topic.FirstURL,
-                                snippet: topic.Text,
-                                source: 'duckduckgo'
-                            });
-                        }
-                    });
-                }
-                
-                return results;
-            } catch (error) {
-                console.error('DuckDuckGo search error:', error);
-                return [];
-            }
-        }
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, () => {
+                fileLabel.classList.remove('dragover');
+            }, false);
+        });
         
-        function displayResults(results) {
-            resultsGrid.innerHTML = '';
-            
-            if (results.length === 0) {
-                noResults.style.display = 'block';
+        fileLabel.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        uploadButton.addEventListener('click', async () => {
+            if (!selectedFile) {
+                showError('Selecciona un video primero');
                 return;
             }
             
-            results.forEach((result, index) => {
-                const resultCard = document.createElement('div');
-                resultCard.className = 'result-card';
-                resultCard.style.animationDelay = `${index * 0.1}s`;
+            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
+            const expiryTime = new Date(urlParams.get('se'));
+            if (new Date() > expiryTime) {
+                showError('El enlace SAS ha expirado. Solicita uno nuevo.');
+                return;
+            }
+            
+            uploadButton.disabled = true;
+            fileInput.disabled = true;
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            
+            try {
+                const timestamp = Date.now();
+                const randomId = Math.random().toString(36).substring(2, 8);
+                const safeName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+                const blobName = `${timestamp}_${randomId}_${safeName}`;
                 
-                resultCard.innerHTML = `
-                    <div class="result-source">${result.source}</div>
-                    <h3 class="result-title">${result.title}</h3>
-                    <p class="result-snippet">${result.snippet}</p>
-                    <a href="${result.url}" target="_blank" class="result-url">${result.url}</a>
-                    <a href="${result.url}" target="_blank" class="result-link">
-                        <span>🌐</span>
-                        Visitar Sitio Web
+                const baseUrl = SAS_URL.split('?')[0];
+                const queryParams = SAS_URL.split('?')[1];
+                const uploadUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${queryParams}`;
+                
+                console.log('Subiendo a:', uploadUrl);
+                
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressFill.style.width = `${percentComplete}%`;
+                        progressText.textContent = `${percentComplete}%`;
+                        uploadButton.innerHTML = `⏫ Subiendo... ${percentComplete}%`;
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    console.log('Respuesta:', xhr.status, xhr.statusText);
+                    
+                    if (xhr.status === 201) {
+                        showSuccess(`
+                            ✅ <strong>Video subido exitosamente!</strong><br><br>
+                            📁 <strong>Nombre:</strong> ${blobName}<br>
+                            💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
+                            🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
+                            El video aparecerá en la página principal en unos minutos.
+                        `);
+                        resetForm();
+                    } else {
+                        showError(`Error ${xhr.status}: ${xhr.statusText}. Intenta de nuevo.`);
+                        uploadButton.disabled = false;
+                        fileInput.disabled = false;
+                        uploadButton.innerHTML = '⏫ Subir Video a Azure';
+                    }
+                    progressContainer.style.display = 'none';
+                });
+                
+                xhr.addEventListener('error', () => {
+                    console.error('Error de red');
+                    showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+                    uploadButton.disabled = false;
+                    fileInput.disabled = false;
+                    progressContainer.style.display = 'none';
+                    uploadButton.innerHTML = '⏫ Subir Video a Azure';
+                });
+                
+                xhr.open('PUT', uploadUrl);
+                xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
+                xhr.setRequestHeader('Content-Type', selectedFile.type || 'video/mp4');
+                xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'video/mp4');
+                xhr.send(selectedFile);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+                uploadButton.disabled = false;
+                fileInput.disabled = false;
+                progressContainer.style.display = 'none';
+                uploadButton.innerHTML = '⏫ Subir Video a Azure';
+            }
+        });
+        
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+        }
+        
+        function showSuccess(message) {
+            successMessage.innerHTML = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { successMessage.style.display = 'none'; }, 15000);
+        }
+        
+        function showError(message) {
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { errorMessage.style.display = 'none'; }, 10000);
+        }
+        
+        function resetForm() {
+            fileInput.value = '';
+            selectedFile = null;
+            uploadButton.disabled = true;
+            fileInput.disabled = false;
+            fileInfo.style.display = 'none';
+            fileLabel.innerHTML = '📁 Haz clic aquí o arrastra un video<br><small>(Límite: 100MB, Formatos: MP4, AVI, MOV, WMV)</small>';
+            fileLabel.style.borderColor = '#0078d4';
+            fileLabel.style.background = '#f8fafc';
+            uploadButton.innerHTML = '⏫ Subir Video a Azure';
+        }
+        
+        // ================================================
+        // FUNCIONES DE BUSCADOR WEB
+        // ================================================
+        
+        function performWebSearch() {
+            currentSearchTerm = webSearchInput.value.trim();
+            const engineRadios = document.getElementsByName('searchEngine');
+            
+            for (let radio of engineRadios) {
+                if (radio.checked) {
+                    currentSearchEngine = radio.value;
+                    break;
+                }
+            }
+            
+            if (!currentSearchTerm) {
+                alert('Por favor, escribe algo para buscar');
+                return;
+            }
+            
+            searchResults.style.display = 'block';
+            resultsList.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 15px; opacity: 0.8; font-size: 1.1rem;">
+                        Buscando "<strong>${currentSearchTerm}</strong>" en ${getEngineName(currentSearchEngine)}...
+                    </p>
+                </div>
+            `;
+            
+            // Mostrar resultados simulados (en realidad abrirá directamente)
+            setTimeout(() => {
+                showSearchResults();
+            }, 1500);
+        }
+        
+        function getEngineName(engine) {
+            const names = {
+                'duckduckgo': 'DuckDuckGo',
+                'google': 'Google',
+                'bing': 'Bing',
+                'youtube': 'YouTube'
+            };
+            return names[engine] || engine;
+        }
+        
+        function showSearchResults() {
+            const searchUrl = getSearchUrl(currentSearchTerm, currentSearchEngine);
+            
+            resultsList.innerHTML = `
+                <div class="result-item">
+                    <div class="result-title">🔍 Búsqueda lista</div>
+                    <div class="result-description">
+                        Tu búsqueda de "<strong>${currentSearchTerm}</strong>" está lista para ejecutarse en ${getEngineName(currentSearchEngine)}.
+                        Haz clic en el botón de abajo para ver los resultados.
+                    </div>
+                    <a href="${searchUrl}" target="_blank" class="result-link">
+                        🔗 Ver resultados en ${getEngineName(currentSearchEngine)}
                     </a>
-                `;
+                </div>
                 
-                resultsGrid.appendChild(resultCard);
-            });
+                <div class="result-item">
+                    <div class="result-title">📊 Información de búsqueda</div>
+                    <div class="result-description">
+                        <strong>Término buscado:</strong> ${currentSearchTerm}<br>
+                        <strong>Motor de búsqueda:</strong> ${getEngineName(currentSearchEngine)}<br>
+                        <strong>URL de búsqueda:</strong> <small>${searchUrl}</small>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-title">💡 Consejos de búsqueda</div>
+                    <div class="result-description">
+                        1. Usa comillas para buscar frases exactas: "Azure Functions"<br>
+                        2. Usa - para excluir términos: python -django<br>
+                        3. Usa site: para buscar en un sitio específico: site:microsoft.com Azure<br>
+                        4. Usa filetype: para buscar tipos específicos: filetype:pdf machine learning
+                    </div>
+                </div>
+            `;
+            
+            // Desplazar a resultados
+            searchResults.scrollIntoView({ behavior: 'smooth' });
         }
         
-        // ================================================
-        // FUNCIONES AUXILIARES
-        // ================================================
-        
-        function quickSearch(query) {
-            searchInput.value = query;
-            performSearch();
+        function getSearchUrl(term, engine) {
+            const encodedTerm = encodeURIComponent(term);
+            
+            switch(engine) {
+                case 'duckduckgo':
+                    return `https://duckduckgo.com/?q=${encodedTerm}`;
+                case 'google':
+                    return `https://www.google.com/search?q=${encodedTerm}`;
+                case 'bing':
+                    return `https://www.bing.com/search?q=${encodedTerm}`;
+                case 'youtube':
+                    return `https://www.youtube.com/results?search_query=${encodedTerm}`;
+                default:
+                    return `https://www.google.com/search?q=${encodedTerm}`;
+            }
         }
         
-        function showMessage(message, type = 'info') {
-            // Puedes implementar un sistema de notificaciones aquí
-            alert(`${type.toUpperCase()}: ${message}`);
+        function openSearchInNewTab() {
+            if (!currentSearchTerm) {
+                alert('Primero realiza una búsqueda');
+                return;
+            }
+            
+            const searchUrl = getSearchUrl(currentSearchTerm, currentSearchEngine);
+            window.open(searchUrl, '_blank');
         }
         
-        // ================================================
-        // EVENT LISTENERS
-        // ================================================
+        function clearSearch() {
+            webSearchInput.value = '';
+            searchResults.style.display = 'none';
+            resultsList.innerHTML = '';
+            currentSearchTerm = '';
+        }
         
-        searchButton.addEventListener('click', performSearch);
-        
-        searchInput.addEventListener('keypress', (e) => {
+        // Permitir búsqueda con Enter
+        webSearchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                performSearch();
+                performWebSearch();
             }
         });
         
@@ -686,29 +868,15 @@
         // ================================================
         
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Buscador Web cargado');
-            
-            // Verificar API Key
-            if (!BING_API_KEY || BING_API_KEY === "") {
-                console.warn('Bing API Key no configurada. Usando DuckDuckGo.');
-                const infoBox = document.querySelector('.info-box');
-                if (infoBox) {
-                    infoBox.innerHTML = `
-                        <strong>⚠️ Bing API no configurada:</strong> 
-                        El sistema está usando DuckDuckGo para búsquedas.
-                        Para mejores resultados, configura tu Bing API Key.
-                    `;
-                    infoBox.style.background = '#f8d7da';
-                    infoBox.style.borderColor = '#f5c6cb';
-                    infoBox.style.color = '#721c24';
-                }
+            // Validar SAS
+            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
+            const expiryTime = new Date(urlParams.get('se'));
+            if (new Date() > expiryTime) {
+                showError('⚠️ El enlace SAS ha expirado. Solicita uno nuevo.');
             }
             
             // Mostrar ejemplo de búsqueda
-            setTimeout(() => {
-                // Puedes mostrar una búsqueda de ejemplo
-                // quickSearch('Azure Storage Blob');
-            }, 1000);
+            webSearchInput.value = 'Azure Functions tutorial';
         });
     </script>
 </body>
