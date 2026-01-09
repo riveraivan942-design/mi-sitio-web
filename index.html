@@ -425,9 +425,10 @@
         </p>
         
         <div class="sas-info">
-            <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Lista ✅ | Adición ✅<br>
-            <strong>⏰ Expira:</strong> 23/01/2026 08:55 AM<br>
-            <strong>📁 Contenedor:</strong> multimedia
+            <strong>🔐 Permisos activos:</strong> Lectura ✅ | Escritura ✅ | Creación ✅ | Adición ✅<br>
+            <strong>⏰ Expira:</strong> 31/01/2026 11:13 AM<br>
+            <strong>📁 Contenedor:</strong> multimedia<br>
+            <strong>🔗 Estado:</strong> <span id="sasStatus" style="color: #28a745; font-weight: bold;">✅ VÁLIDO</span>
         </div>
         
         <div class="file-input-wrapper">
@@ -526,9 +527,9 @@
 
     <script>
         // ================================================
-        // CONFIGURACIÓN SUBIDA DE VIDEOS
+        // CONFIGURACIÓN SAS ACTUALIZADA
         // ================================================
-        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racwd&st=2025-12-20T01:50:55Z&se=2025-12-20T10:05:55Z&spr=https&sv=2024-11-04&sr=c&sig=zabjdZrYLp9aKzp2ZJDwTdsjQMcvslVnXN5YVqMKh%2FM%3D";
+        const SAS_URL = "https://almacenamientoivan.blob.core.windows.net/multimedia?sp=racw&st=2026-01-09T02:58:24Z&se=2026-01-31T11:13:24Z&spr=https&sv=2024-11-04&sr=c&sig=fztg%2BGTPj6jvLgj5lQt9mq71F6soUeo9OluZpKSPuRk%3D";
         
         // Elementos del DOM - Subida
         const fileInput = document.getElementById('fileInput');
@@ -542,6 +543,7 @@
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
+        const sasStatus = document.getElementById('sasStatus');
         
         // Elementos del DOM - Buscador
         const webSearchInput = document.getElementById('webSearchInput');
@@ -554,7 +556,7 @@
         let currentSearchEngine = 'duckduckgo';
         
         // ================================================
-        // FUNCIONES DE SUBIDA DE VIDEOS
+        // FUNCIONES DE SUBIDA DE VIDEOS - CORREGIDAS
         // ================================================
         
         fileInput.addEventListener('change', (e) => {
@@ -619,10 +621,10 @@
                 return;
             }
             
-            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
-            const expiryTime = new Date(urlParams.get('se'));
-            if (new Date() > expiryTime) {
-                showError('El enlace SAS ha expirado. Solicita uno nuevo.');
+            // Verificar SAS antes de subir
+            const sasValid = validateSAS();
+            if (!sasValid) {
+                showError('El enlace SAS no es válido. Verifica la configuración.');
                 return;
             }
             
@@ -631,6 +633,7 @@
             progressContainer.style.display = 'block';
             progressFill.style.width = '0%';
             progressText.textContent = '0%';
+            uploadButton.innerHTML = '⏫ Preparando subida...';
             
             try {
                 const timestamp = Date.now();
@@ -638,68 +641,95 @@
                 const safeName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
                 const blobName = `${timestamp}_${randomId}_${safeName}`;
                 
-                const baseUrl = SAS_URL.split('?')[0];
-                const queryParams = SAS_URL.split('?')[1];
-                const uploadUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${queryParams}`;
+                // Construir URL de subida CORRECTAMENTE
+                const baseUrl = "https://almacenamientoivan.blob.core.windows.net/multimedia";
+                const blobUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${SAS_URL.split('?')[1]}`;
                 
-                console.log('Subiendo a:', uploadUrl);
+                console.log('Subiendo a:', blobUrl);
                 
-                const xhr = new XMLHttpRequest();
+                // Usar Fetch API en lugar de XMLHttpRequest (más moderno)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
                 
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100);
-                        progressFill.style.width = `${percentComplete}%`;
-                        progressText.textContent = `${percentComplete}%`;
-                        uploadButton.innerHTML = `⏫ Subiendo... ${percentComplete}%`;
-                    }
+                uploadButton.innerHTML = '⏫ Subiendo... 0%';
+                
+                const response = await fetch(blobUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'x-ms-blob-type': 'BlockBlob',
+                        'Content-Type': selectedFile.type || 'video/mp4',
+                        'Content-Length': selectedFile.size
+                    },
+                    body: selectedFile,
+                    signal: controller.signal
                 });
                 
-                xhr.addEventListener('load', () => {
-                    console.log('Respuesta:', xhr.status, xhr.statusText);
-                    
-                    if (xhr.status === 201) {
-                        showSuccess(`
-                            ✅ <strong>Video subido exitosamente!</strong><br><br>
-                            📁 <strong>Nombre:</strong> ${blobName}<br>
-                            💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
-                            🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
-                            El video aparecerá en la página principal en unos minutos.
-                        `);
-                        resetForm();
-                    } else {
-                        showError(`Error ${xhr.status}: ${xhr.statusText}. Intenta de nuevo.`);
-                        uploadButton.disabled = false;
-                        fileInput.disabled = false;
-                        uploadButton.innerHTML = '⏫ Subir Video a Azure';
-                    }
-                    progressContainer.style.display = 'none';
-                });
+                clearTimeout(timeoutId);
                 
-                xhr.addEventListener('error', () => {
-                    console.error('Error de red');
-                    showError('Error de conexión. Verifica tu internet e intenta de nuevo.');
+                if (response.status === 201) {
+                    showSuccess(`
+                        ✅ <strong>Video subido exitosamente!</strong><br><br>
+                        📁 <strong>Nombre:</strong> ${blobName}<br>
+                        💾 <strong>Tamaño:</strong> ${formatBytes(selectedFile.size)}<br>
+                        🔗 <strong>URL:</strong> <a href="${baseUrl}/${encodeURIComponent(blobName)}" target="_blank">Ver en Azure</a><br><br>
+                        El video aparecerá en la página principal en unos minutos.
+                    `);
+                    resetForm();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error de Azure:', response.status, errorText);
+                    showError(`Error ${response.status}: No se pudo subir el archivo. Intenta de nuevo.`);
                     uploadButton.disabled = false;
                     fileInput.disabled = false;
-                    progressContainer.style.display = 'none';
                     uploadButton.innerHTML = '⏫ Subir Video a Azure';
-                });
+                }
                 
-                xhr.open('PUT', uploadUrl);
-                xhr.setRequestHeader('x-ms-blob-type', 'BlockBlob');
-                xhr.setRequestHeader('Content-Type', selectedFile.type || 'video/mp4');
-                xhr.setRequestHeader('x-ms-blob-content-type', selectedFile.type || 'video/mp4');
-                xhr.send(selectedFile);
+                progressContainer.style.display = 'none';
                 
             } catch (error) {
-                console.error('Error:', error);
-                showError(`Error: ${error.message}`);
+                console.error('Error en subida:', error);
+                if (error.name === 'AbortError') {
+                    showError('⏱️ Tiempo de espera agotado. El archivo es muy grande o la conexión es lenta.');
+                } else {
+                    showError(`Error: ${error.message}. Verifica tu conexión.`);
+                }
                 uploadButton.disabled = false;
                 fileInput.disabled = false;
                 progressContainer.style.display = 'none';
                 uploadButton.innerHTML = '⏫ Subir Video a Azure';
             }
         });
+        
+        function validateSAS() {
+            try {
+                const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
+                const expiryTime = new Date(urlParams.get('se'));
+                const now = new Date();
+                
+                if (now > expiryTime) {
+                    sasStatus.textContent = '❌ EXPIRADO';
+                    sasStatus.style.color = '#dc3545';
+                    return false;
+                }
+                
+                // Verificar permisos
+                const permissions = urlParams.get('sp');
+                if (!permissions.includes('w') && !permissions.includes('c')) {
+                    sasStatus.textContent = '❌ SIN PERMISOS ESCRITURA';
+                    sasStatus.style.color = '#dc3545';
+                    return false;
+                }
+                
+                sasStatus.textContent = '✅ VÁLIDO';
+                sasStatus.style.color = '#28a745';
+                return true;
+                
+            } catch (error) {
+                sasStatus.textContent = '❌ INVÁLIDO';
+                sasStatus.style.color = '#dc3545';
+                return false;
+            }
+        }
         
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 Bytes';
@@ -767,7 +797,6 @@
                 </div>
             `;
             
-            // Mostrar resultados simulados (en realidad abrirá directamente)
             setTimeout(() => {
                 showSearchResults();
             }, 1500);
@@ -818,7 +847,6 @@
                 </div>
             `;
             
-            // Desplazar a resultados
             searchResults.scrollIntoView({ behavior: 'smooth' });
         }
         
@@ -856,7 +884,6 @@
             currentSearchTerm = '';
         }
         
-        // Permitir búsqueda con Enter
         webSearchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 performWebSearch();
@@ -868,15 +895,15 @@
         // ================================================
         
         document.addEventListener('DOMContentLoaded', () => {
-            // Validar SAS
-            const urlParams = new URLSearchParams(SAS_URL.split('?')[1]);
-            const expiryTime = new Date(urlParams.get('se'));
-            if (new Date() > expiryTime) {
-                showError('⚠️ El enlace SAS ha expirado. Solicita uno nuevo.');
-            }
+            // Validar SAS al cargar
+            validateSAS();
             
             // Mostrar ejemplo de búsqueda
             webSearchInput.value = 'Azure Functions tutorial';
+            
+            // Mostrar estado de SAS
+            console.log('SAS URL:', SAS_URL ? '✅ Configurada' : '❌ No configurada');
+            console.log('SAS Válido hasta:', new Date('2026-01-31T11:13:24Z').toLocaleString());
         });
     </script>
 </body>
