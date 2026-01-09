@@ -399,7 +399,7 @@
                 // URL completa con nombre de blob
                 const baseUrl = SAS_URL.split('?')[0];
                 const queryParams = SAS_URL.split('?')[1];
-                const uploadUrl = `${baseUrl}/${blobName}?${queryParams}`;
+                const uploadUrl = `${baseUrl}/${encodeURIComponent(blobName)}?${queryParams}`;
                 
                 console.log('Subiendo a:', uploadUrl);
                 
