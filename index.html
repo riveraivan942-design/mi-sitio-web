@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 Portal Azure - Uploader, Buscador Web y Productos</title>
+    <title>🔍 Buscador Web Gratuito con Azure</title>
     <style>
         :root {
-            --primary: #0078d4;
-            --primary-dark: #005a9e;
-            --secondary: #28a745;
-            --tertiary: #9c27b0;
+            --primary: #28a745;
+            --primary-dark: #20c997;
             --background: #f8fafc;
-            --text: #1e293b;
         }
         
         * {
@@ -22,24 +19,30 @@
         
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--background);
-            color: var(--text);
-            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #d1e7dd 100%);
+            min-height: 100vh;
+            color: #1e293b;
         }
         
-        /* HEADER PRINCIPAL */
-        .main-header {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 50px 20px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 60px 20px;
-            text-align: center;
-            border-radius: 0 0 30px 30px;
+            border-radius: 20px;
             margin-bottom: 40px;
             position: relative;
             overflow: hidden;
         }
         
-        .main-header::before {
+        .header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -53,799 +56,628 @@
         .header-content {
             position: relative;
             z-index: 2;
-            max-width: 1000px;
-            margin: 0 auto;
         }
         
-        .main-title {
-            font-size: 3.5rem;
+        .title {
+            font-size: 3rem;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 20px;
-            flex-wrap: wrap;
         }
         
-        .main-subtitle {
-            font-size: 1.3rem;
+        .subtitle {
+            font-size: 1.2rem;
             opacity: 0.95;
-            margin-bottom: 30px;
             max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 25px;
         }
         
-        /* STATS BADGES */
-        .stats-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .stat-badge {
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            padding: 15px 25px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* SEARCH SECTION */
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            border: 2px solid #d1e7dd;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 20px 25px;
+            border: 3px solid var(--primary);
             border-radius: 15px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-dark);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+        }
+        
+        .search-button {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0 45px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            min-width: 200px;
+            white-space: nowrap;
         }
         
-        .stat-icon {
-            font-size: 1.5rem;
+        .search-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(40, 167, 69, 0.3);
         }
         
-        /* APP GRID */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto 50px;
-            padding: 0 20px;
+        /* QUICK SEARCH */
+        .quick-search {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
         }
         
-        /* APP CARD */
-        .app-card {
-            background: white;
+        .quick-tag {
+            background: #d1e7dd;
+            color: var(--primary);
+            padding: 8px 16px;
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            border: 3px solid transparent;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .quick-tag:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* RESULTS */
+        .results-header {
             display: flex;
-            flex-direction: column;
-        }
-        
-        .app-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .app-card-upload {
-            border-color: var(--primary);
-        }
-        
-        .app-card-web {
-            border-color: var(--secondary);
-        }
-        
-        .app-card-products {
-            border-color: var(--tertiary);
-        }
-        
-        .app-card-header {
-            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e2e8f0;
         }
         
-        .app-icon {
-            font-size: 2.5rem;
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .icon-upload {
-            background: linear-gradient(135deg, #0078d4, #005a9e);
-            color: white;
-        }
-        
-        .icon-web {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-        }
-        
-        .icon-products {
-            background: linear-gradient(135deg, #9c27b0, #673ab7);
-            color: white;
-        }
-        
-        .app-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-        
-        .app-description {
-            color: #64748b;
-            margin-bottom: 25px;
-            flex-grow: 1;
-        }
-        
-        /* APP FEATURES */
-        .app-features {
-            margin: 20px 0;
-            padding-left: 20px;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            color: #475569;
-        }
-        
-        .feature-icon {
-            color: var(--primary);
-            font-weight: bold;
-        }
-        
-        /* APP ACTIONS */
-        .app-actions {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .action-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 12px;
+        .results-count {
+            font-size: 1.3rem;
             font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 120, 212, 0.3);
-        }
-        
-        .btn-secondary {
-            background: white;
             color: var(--primary);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 2px solid #d1e7dd;
+            transition: all 0.3s;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(40, 167, 69, 0.15);
             border-color: var(--primary);
         }
         
-        .btn-secondary:hover {
+        .result-source {
+            display: inline-block;
+            background: #d1e7dd;
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .result-snippet {
+            color: #495057;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .result-url {
+            color: #6c757d;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+        
+        .result-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .result-link:hover {
             background: var(--primary);
             color: white;
         }
         
-        /* QUICK ACCESS */
-        .quick-access {
-            max-width: 1400px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
+        /* LOADING */
+        .loading-container {
+            text-align: center;
+            padding: 60px 40px;
+            grid-column: 1 / -1;
         }
         
-        .quick-access-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        .spinner {
+            border: 5px solid #d1e7dd;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
         }
         
-        .quick-item {
-            background: white;
-            padding: 25px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* INFO BOXES */
+        .info-box {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
             border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
+            color: #856404;
         }
         
-        .quick-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .quick-item-1:hover { border-color: var(--primary); }
-        .quick-item-2:hover { border-color: var(--secondary); }
-        .quick-item-3:hover { border-color: var(--tertiary); }
-        
-        .quick-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-        
-        /* FOOTER */
-        .main-footer {
-            background: white;
-            padding: 60px 20px;
-            text-align: center;
+        /* NAVIGATION */
+        .navigation {
+            margin-top: 40px;
+            padding-top: 30px;
             border-top: 1px solid #e2e8f0;
-            margin-top: 50px;
         }
         
-        .tech-stack {
+        .nav-buttons {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
             gap: 15px;
-            margin: 30px 0;
+            flex-wrap: wrap;
         }
         
-        .tech-badge {
-            background: #f8fafc;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
-            color: var(--primary);
-            border: 1px solid #e2e8f0;
+        .nav-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-home {
+            background: #0078d4;
+            color: white;
+        }
+        
+        .btn-upload {
+            background: #0078d4;
+            color: white;
+        }
+        
+        .btn-products {
+            background: #9c27b0;
+            color: white;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
         
         /* RESPONSIVE */
-        @media (max-width: 1200px) {
-            .app-grid {
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            }
-        }
-        
         @media (max-width: 768px) {
-            .main-title {
-                font-size: 2.5rem;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .main-subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .stat-badge {
-                min-width: 100%;
-            }
-            
-            .app-grid {
-                grid-template-columns: 1fr;
-                padding: 0 15px;
-            }
-            
-            .quick-access-grid {
-                grid-template-columns: 1fr;
-            }
+            .title { font-size: 2.2rem; }
+            .search-box { flex-direction: column; }
+            .search-button { padding: 20px; justify-content: center; }
+            .results-grid { grid-template-columns: 1fr; }
+            .nav-buttons { flex-direction: column; }
+            .nav-btn { justify-content: center; }
         }
-        
-        /* ANIMATIONS */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        .delay-1 { animation-delay: 0.1s; opacity: 0; }
-        .delay-2 { animation-delay: 0.2s; opacity: 0; }
-        .delay-3 { animation-delay: 0.3s; opacity: 0; }
-        .delay-4 { animation-delay: 0.4s; opacity: 0; }
-        .delay-5 { animation-delay: 0.5s; opacity: 0; }
     </style>
 </head>
 <body>
-    <!-- HEADER PRINCIPAL -->
-    <header class="main-header">
-        <div class="header-content">
-            <h1 class="main-title">
-                <span>🚀</span>
-                Portal Azure - Soluciones Integradas
-            </h1>
-            <p class="main-subtitle">
-                Una plataforma completa que integra upload de videos a Azure Storage, 
-                búsqueda web en tiempo real y buscador inteligente de productos.
-            </p>
-            
-            <div class="stats-container">
-                <div class="stat-badge fade-in delay-1">
-                    <span class="stat-icon">📤</span>
-                    <div>
-                        <div>Upload Videos</div>
-                        <small>SAS Token · 100MB límite</small>
-                    </div>
-                </div>
-                
-                <div class="stat-badge fade-in delay-2">
-                    <span class="stat-icon">🔍</span>
-                    <div>
-                        <div>Búsqueda Web</div>
-                        <small>Bing API · DuckDuckGo</small>
-                    </div>
-                </div>
-                
-                <div class="stat-badge fade-in delay-3">
-                    <span class="stat-icon">🏪</span>
-                    <div>
-                        <div>Productos</div>
-                        <small>50+ items · 5 categorías</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- GRID DE APLICACIONES -->
-    <div class="app-grid">
-        <!-- TARJETA 1: UPLOAD DE VIDEOS -->
-        <div class="app-card app-card-upload fade-in delay-1">
-            <div class="app-card-header">
-                <div class="app-icon icon-upload">
-                    📤
-                </div>
-                <h2 class="app-title">Upload Videos</h2>
-            </div>
-            
-            <p class="app-description">
-                Sube videos directamente a Azure Blob Storage usando SAS tokens. 
-                Interfaz drag & drop con progreso en tiempo real.
-            </p>
-            
-            <div class="app-features">
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Upload con SAS Token seguro</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Drag & drop de archivos</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Barra de progreso en tiempo real</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Límite 100MB por archivo</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Soporte MP4, AVI, MOV, WMV</span>
-                </div>
-            </div>
-            
-            <div class="app-actions">
-                <a href="subir-video.html" class="action-button btn-primary">
-                    <span>📤</span>
-                    Ir al Uploader de Videos
-                </a>
-                <a href="blob-viewer.html" class="action-button btn-secondary">
-                    <span>📊</span>
-                    Ver Videos Subidos
-                </a>
-            </div>
-        </div>
-
-        <!-- TARJETA 2: BUSCADOR WEB -->
-        <div class="app-card app-card-web fade-in delay-2">
-            <div class="app-card-header">
-                <div class="app-icon icon-web">
-                    🔍
-                </div>
-                <h2 class="app-title">Buscador Web</h2>
-            </div>
-            
-            <p class="app-description">
-                Busca información en Internet usando Bing Search API y DuckDuckGo. 
-                Resultados en tiempo real con cache inteligente.
-            </p>
-            
-            <div class="app-features">
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Bing Search API (1,000/mes gratis)</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>DuckDuckGo como fallback</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Cache local para reducir API calls</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Búsquedas rápidas predefinidas</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Resultados con snippet y enlaces</span>
-                </div>
-            </div>
-            
-            <div class="app-actions">
-                <a href="buscador-web.html" class="action-button btn-primary" style="background: linear-gradient(90deg, var(--secondary), #20c997);">
-                    <span>🌐</span>
-                    Ir al Buscador Web
-                </a>
-                <a href="#web-demo" class="action-button btn-secondary" onclick="showWebDemo()" style="border-color: var(--secondary); color: var(--secondary);">
-                    <span>▶️</span>
-                    Ver Demostración
-                </a>
-            </div>
-        </div>
-
-        <!-- TARJETA 3: BUSCADOR DE PRODUCTOS -->
-        <div class="app-card app-card-products fade-in delay-3">
-            <div class="app-card-header">
-                <div class="app-icon icon-products">
-                    🏪
-                </div>
-                <h2 class="app-title">Buscador de Productos</h2>
-            </div>
-            
-            <p class="app-description">
-                Sistema de búsqueda de productos con filtros avanzados. 
-                Base de datos de 50+ productos en 5 categorías diferentes.
-            </p>
-            
-            <div class="app-features">
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>50+ productos de ejemplo</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>5 categorías diferentes</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Filtros por marca, precio, stock</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Búsqueda en tiempo real</span>
-                </div>
-                <div class="feature-item">
-                    <span class="feature-icon">✓</span>
-                    <span>Diseño de tarjetas interactivas</span>
-                </div>
-            </div>
-            
-            <div class="app-actions">
-                <a href="buscar-productos.html" class="action-button btn-primary" style="background: linear-gradient(90deg, var(--tertiary), #673ab7);">
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="title">
                     <span>🔍</span>
-                    Ir al Buscador de Productos
-                </a>
-                <a href="#products-demo" class="action-button btn-secondary" onclick="showProductsDemo()" style="border-color: var(--tertiary); color: var(--tertiary);">
-                    <span>📱</span>
-                    Ver Catálogo
-                </a>
+                    Buscador Web Gratuito
+                </h1>
+                <p class="subtitle">
+                    Busca información en Internet usando Bing Search API (1,000 búsquedas/mes gratis) 
+                    y DuckDuckGo como alternativa.
+                </p>
+                <div>
+                    <span class="stats-badge">⚡ Bing Search API</span>
+                    <span class="stats-badge">🆓 1,000 búsquedas/mes gratis</span>
+                    <span class="stats-badge">🔄 DuckDuckGo Fallback</span>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- ACCESO RÁPIDO -->
-    <div class="quick-access">
-        <h2 style="text-align: center; margin-bottom: 30px; color: var(--text); font-size: 2rem;">
-            ⚡ Acceso Rápido
-        </h2>
         
-        <div class="quick-access-grid">
-            <div class="quick-item quick-item-1" onclick="window.location.href='subir-video.html'">
-                <div class="quick-icon">📤</div>
-                <h3 style="margin-bottom: 10px; color: var(--primary);">Subir Video</h3>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    Sube un video a Azure Storage en segundos
-                </p>
+        <!-- SEARCH SECTION -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" 
+                       id="searchInput" 
+                       class="search-input" 
+                       placeholder="🔍 ¿Qué quieres buscar? (noticias, tutoriales, información...)"
+                       autocomplete="off">
+                <button id="searchButton" class="search-button">
+                    <span>🌐</span>
+                    Buscar en la Web
+                </button>
             </div>
             
-            <div class="quick-item quick-item-2" onclick="window.location.href='buscador-web.html'">
-                <div class="quick-icon">🌐</div>
-                <h3 style="margin-bottom: 10px; color: var(--secondary);">Buscar en Web</h3>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    Encuentra información en Internet
-                </p>
-            </div>
-            
-            <div class="quick-item quick-item-3" onclick="window.location.href='buscar-productos.html'">
-                <div class="quick-icon">🏪</div>
-                <h3 style="margin-bottom: 10px; color: var(--tertiary);">Buscar Productos</h3>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    Explora nuestro catálogo de productos
-                </p>
-            </div>
-            
-            <div class="quick-item" onclick="window.location.href='blob-viewer.html'">
-                <div class="quick-icon">📊</div>
-                <h3 style="margin-bottom: 10px; color: #ff8c00;">Ver Archivos</h3>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    Visualiza videos subidos a Azure
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="main-footer">
-        <h3 style="color: var(--primary); margin-bottom: 20px; font-size: 1.8rem;">
-            🛠️ Tecnologías Utilizadas
-        </h3>
-        
-        <div class="tech-stack">
-            <span class="tech-badge">🔷 Azure Blob Storage</span>
-            <span class="tech-badge">🔍 Azure AI Search</span>
-            <span class="tech-badge">🌐 Static Web Apps</span>
-            <span class="tech-badge">⚡ JavaScript</span>
-            <span class="tech-badge">🔑 SAS Tokens</span>
-            <span class="tech-badge">📊 Table Storage</span>
-        </div>
-        
-        <div style="margin-top: 40px; padding: 25px; background: #f8fafc; border-radius: 15px; max-width: 800px; margin-left: auto; margin-right: auto;">
-            <h4 style="color: #475569; margin-bottom: 15px;">📈 Estado del Sistema</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: left;">
-                <div>
-                    <div style="font-weight: 600; color: var(--primary);">Uploader</div>
-                    <div style="color: #64748b; font-size: 0.9rem;">🟢 Operativo</div>
-                </div>
-                <div>
-                    <div style="font-weight: 600; color: var(--secondary);">Buscador Web</div>
-                    <div style="color: #64748b; font-size: 0.9rem;">🟢 Operativo</div>
-                </div>
-                <div>
-                    <div style="font-weight: 600; color: var(--tertiary);">Productos</div>
-                    <div style="color: #64748b; font-size: 0.9rem;">🟢 50+ productos</div>
-                </div>
-                <div>
-                    <div style="font-weight: 600; color: #ff8c00;">Storage</div>
-                    <div style="color: #64748b; font-size: 0.9rem;">🟢 Conectado</div>
-                </div>
+            <!-- QUICK SEARCH -->
+            <div class="quick-search">
+                <span style="font-weight: 600; color: #64748b;">Búsquedas rápidas:</span>
+                <span class="quick-tag" onclick="quickSearch('Azure servicios gratuitos')">Azure Gratis</span>
+                <span class="quick-tag" onclick="quickSearch('Inteligencia artificial noticias')">Noticias IA</span>
+                <span class="quick-tag" onclick="quickSearch('Tutorial Azure Storage')">Tutorial Azure</span>
+                <span class="quick-tag" onclick="quickSearch('Microsoft Copilot')">Microsoft Copilot</span>
+                <span class="quick-tag" onclick="quickSearch('Desarrollo web')">Desarrollo Web</span>
+                <span class="quick-tag" onclick="quickSearch('OpenAI ChatGPT')">OpenAI ChatGPT</span>
             </div>
         </div>
         
-        <div style="margin-top: 40px; color: #94a3b8; font-size: 0.9rem;">
-            <p>© 2024 Portal Azure - Soluciones Integradas | 
-                <a href="subir-video.html" style="color: var(--primary); text-decoration: none;">Upload</a> • 
-                <a href="buscador-web.html" style="color: var(--secondary); text-decoration: none;">Buscar Web</a> • 
-                <a href="buscar-productos.html" style="color: var(--tertiary); text-decoration: none;">Productos</a>
+        <!-- INFO BOX -->
+        <div class="info-box">
+            <strong>⚠️ Configura tu API Key:</strong> Para usar Bing Search API, necesitas una clave gratuita.
+            Sin ella, el sistema usará DuckDuckGo automáticamente.
+            <a href="https://www.microsoft.com/en-us/bing/apis/bing-web-search-api" 
+               target="_blank" 
+               style="color: #0078d4; text-decoration: none; font-weight: 600;">
+               Obtén tu clave aquí
+            </a>
+        </div>
+        
+        <!-- RESULTS -->
+        <div class="results-header">
+            <div id="resultsCount" class="results-count">
+                🔍 Escribe algo para buscar en Internet...
+            </div>
+        </div>
+        
+        <div id="loading" class="loading-container" style="display: none;">
+            <div class="spinner"></div>
+            <p style="font-size: 1.1rem; color: #64748b;">Buscando en la web...</p>
+        </div>
+        
+        <div id="resultsGrid" class="results-grid">
+            <!-- Los resultados aparecerán aquí -->
+        </div>
+        
+        <div id="noResults" class="loading-container" style="display: none;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🌐</div>
+            <h3 style="color: #64748b; margin-bottom: 15px;">No se encontraron resultados</h3>
+            <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">
+                Intenta con otros términos o verifica tu conexión a Internet.
             </p>
         </div>
-    </footer>
-
-    <!-- MODAL PARA DEMOSTRACIONES -->
-    <div id="demoModal" style="
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    ">
-        <div style="
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        ">
-            <button onclick="closeDemoModal()" style="
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                background: #f1f5f9;
-                border: none;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                font-size: 1.5rem;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">×</button>
-            
-            <div id="demoContent"></div>
+        
+        <!-- NAVIGATION -->
+        <div class="navigation">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #475569;">
+                ⚡ Otras Herramientas del Portal
+            </h3>
+            <div class="nav-buttons">
+                <a href="index.html" class="nav-btn btn-home">
+                    🏠 Volver al Inicio
+                </a>
+                <a href="subir-video.html" class="nav-btn btn-upload">
+                    📤 Subir Videos
+                </a>
+                <a href="buscar-productos.html" class="nav-btn btn-products">
+                    🏪 Buscar Productos
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
         // ================================================
-        // FUNCIONES DE DEMOSTRACIÓN
+        // CONFIGURACIÓN - API KEYS
+        // ================================================
+        const BING_API_KEY = ""; // Tu clave Bing API aquí
+        const BING_ENDPOINT = "https://api.bing.microsoft.com/v7.0/search";
+        
+        // Cache en localStorage
+        const SEARCH_CACHE = {
+            set: (key, data, ttl = 3600000) => {
+                const item = {
+                    data: data,
+                    expiry: Date.now() + ttl
+                };
+                localStorage.setItem(`search_${key}`, JSON.stringify(item));
+            },
+            get: (key) => {
+                const itemStr = localStorage.getItem(`search_${key}`);
+                if (!itemStr) return null;
+                
+                const item = JSON.parse(itemStr);
+                if (Date.now() > item.expiry) {
+                    localStorage.removeItem(`search_${key}`);
+                    return null;
+                }
+                return item.data;
+            }
+        };
+        
+        // ================================================
+        // ELEMENTOS DEL DOM
+        // ================================================
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        
+        // ================================================
+        // FUNCIONES DE BÚSQUEDA
         // ================================================
         
-        function showWebDemo() {
-            const modal = document.getElementById('demoModal');
-            const content = document.getElementById('demoContent');
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                showMessage('Por favor, escribe algo para buscar', 'warning');
+                return;
+            }
             
-            content.innerHTML = `
-                <h2 style="color: var(--secondary); margin-bottom: 20px; font-size: 2rem;">
-                    🔍 Demostración: Buscador Web
-                </h2>
-                
-                <div style="background: #f8fafc; padding: 25px; border-radius: 15px; margin-bottom: 25px;">
-                    <h3 style="margin-bottom: 15px; color: #475569;">Características principales:</h3>
-                    <ul style="color: #64748b; line-height: 1.8; padding-left: 20px;">
-                        <li><strong>Búsqueda en tiempo real:</strong> Usa Bing Search API para resultados precisos</li>
-                        <li><strong>Fallback inteligente:</strong> Si Bing falla, usa DuckDuckGo automáticamente</li>
-                        <li><strong>Cache local:</strong> Almacena resultados para reducir llamadas API</li>
-                        <li><strong>Búsquedas rápidas:</strong> Botones predefinidos para consultas comunes</li>
-                        <li><strong>Resultados enriquecidos:</strong> Incluye snippet, fuente y enlaces directos</li>
-                    </ul>
-                </div>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
-                    <button onclick="window.location.href='buscador-web.html'" style="
-                        background: linear-gradient(90deg, var(--secondary), #20c997);
-                        color: white;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        font-weight: 600;
-                        font-size: 1.1rem;
-                        cursor: pointer;
-                        flex: 1;
-                        min-width: 200px;
-                    ">
-                        🌐 Probar Buscador Web
-                    </button>
-                    
-                    <button onclick="closeDemoModal()" style="
-                        background: #f1f5f9;
-                        color: #64748b;
-                        border: 2px solid #e2e8f0;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        font-weight: 600;
-                        font-size: 1.1rem;
-                        cursor: pointer;
-                        flex: 1;
-                        min-width: 200px;
-                    ">
-                        ✕ Cerrar
-                    </button>
-                </div>
-            `;
+            // Mostrar loading
+            loading.style.display = 'block';
+            resultsGrid.innerHTML = '';
+            noResults.style.display = 'none';
+            resultsCount.textContent = '🔍 Buscando...';
             
-            modal.style.display = 'flex';
+            try {
+                // Verificar cache primero
+                const cachedResults = SEARCH_CACHE.get(query);
+                if (cachedResults) {
+                    resultsCount.textContent = `⚡ ${cachedResults.length} resultados (de cache)`;
+                    displayResults(cachedResults);
+                    loading.style.display = 'none';
+                    return;
+                }
+                
+                // Intentar con Bing API
+                let results = [];
+                let source = 'bing';
+                
+                if (BING_API_KEY && BING_API_KEY !== "") {
+                    results = await searchWithBing(query);
+                }
+                
+                // Si Bing no da resultados, usar DuckDuckGo
+                if (results.length === 0) {
+                    source = 'duckduckgo';
+                    results = await searchWithDuckDuckGo(query);
+                }
+                
+                // Guardar en cache si hay resultados
+                if (results.length > 0) {
+                    SEARCH_CACHE.set(query, results);
+                }
+                
+                // Mostrar resultados
+                resultsCount.textContent = `🌐 ${results.length} resultados encontrados (fuente: ${source})`;
+                displayResults(results);
+                
+                if (results.length === 0) {
+                    noResults.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error en búsqueda:', error);
+                resultsCount.textContent = '❌ Error en la búsqueda';
+                showMessage('Error al buscar. Intenta de nuevo.', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
         }
         
-        function showProductsDemo() {
-            const modal = document.getElementById('demoModal');
-            const content = document.getElementById('demoContent');
-            
-            // Mostrar algunos productos de ejemplo
-            const sampleProducts = [
-                { nombre: "Zapatillas Nike Air Max 270", precio: 149.99, categoria: "Calzado", stock: 22 },
-                { nombre: "Audífonos Sony WH-1000XM4", precio: 349.99, categoria: "Electrónica", stock: 25 },
-                { nombre: "Silla Ergonómica Herman Miller", precio: 1499.99, categoria: "Oficina", stock: 4 }
-            ];
-            
-            content.innerHTML = `
-                <h2 style="color: var(--tertiary); margin-bottom: 20px; font-size: 2rem;">
-                    🏪 Demostración: Buscador de Productos
-                </h2>
+        async function searchWithBing(query, numResults = 8) {
+            try {
+                const headers = { "Ocp-Apim-Subscription-Key": BING_API_KEY };
+                const params = {
+                    "q": query,
+                    "count": numResults,
+                    "responseFilter": "Webpages",
+                    "textDecorations": true,
+                    "textFormat": "HTML",
+                    "safeSearch": "Moderate",
+                    "setLang": "es"
+                };
                 
-                <div style="background: #f8fafc; padding: 25px; border-radius: 15px; margin-bottom: 25px;">
-                    <h3 style="margin-bottom: 15px; color: #475569;">Productos de ejemplo:</h3>
-                    
-                    ${sampleProducts.map(product => `
-                        <div style="
-                            background: white;
-                            padding: 20px;
-                            border-radius: 10px;
-                            margin-bottom: 15px;
-                            border-left: 4px solid var(--tertiary);
-                        ">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h4 style="color: #1e293b; margin-bottom: 5px;">${product.nombre}</h4>
-                                <span style="background: #e3f2fd; color: var(--primary); padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;">
-                                    ${product.categoria}
-                                </span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.9rem;">
-                                <span>Precio: <strong>$${product.precio.toFixed(2)}</strong></span>
-                                <span>Stock: <strong>${product.stock} unidades</strong></span>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
+                const response = await fetch(`${BING_ENDPOINT}?${new URLSearchParams(params)}`, { headers });
                 
-                <div style="color: #64748b; margin-bottom: 25px;">
-                    <p><strong>📊 Base de datos completa:</strong> 50+ productos en 5 categorías</p>
-                    <p><strong>🔍 Filtros avanzados:</strong> Por marca, precio, categoría y stock</p>
-                    <p><strong>⚡ Búsqueda en tiempo real:</strong> Resultados instantáneos</p>
-                </div>
+                if (!response.ok) {
+                    throw new Error(`Bing API error: ${response.status}`);
+                }
                 
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
-                    <button onclick="window.location.href='buscar-productos.html'" style="
-                        background: linear-gradient(90deg, var(--tertiary), #673ab7);
-                        color: white;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        font-weight: 600;
-                        font-size: 1.1rem;
-                        cursor: pointer;
-                        flex: 1;
-                        min-width: 200px;
-                    ">
-                        🏪 Explorar Catálogo Completo
-                    </button>
-                    
-                    <button onclick="closeDemoModal()" style="
-                        background: #f1f5f9;
-                        color: #64748b;
-                        border: 2px solid #e2e8f0;
-                        padding: 15px 30px;
-                        border-radius: 10px;
-                        font-weight: 600;
-                        font-size: 1.1rem;
-                        cursor: pointer;
-                        flex: 1;
-                        min-width: 200px;
-                    ">
-                        ✕ Cerrar
-                    </button>
-                </div>
-            `;
-            
-            modal.style.display = 'flex';
+                const data = await response.json();
+                const results = [];
+                
+                if (data.webPages && data.webPages.value) {
+                    data.webPages.value.forEach(item => {
+                        results.push({
+                            title: item.name || '',
+                            url: item.url || '',
+                            snippet: item.snippet || '',
+                            source: 'bing'
+                        });
+                    });
+                }
+                
+                return results;
+            } catch (error) {
+                console.error('Bing search error:', error);
+                return [];
+            }
         }
         
-        function closeDemoModal() {
-            document.getElementById('demoModal').style.display = 'none';
+        async function searchWithDuckDuckGo(query, numResults = 5) {
+            try {
+                // Usar API no oficial de DuckDuckGo
+                const response = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1`);
+                const data = await response.json();
+                
+                const results = [];
+                
+                // Resultado principal
+                if (data.AbstractText) {
+                    results.push({
+                        title: data.Heading || query,
+                        url: data.AbstractURL || '',
+                        snippet: data.AbstractText,
+                        source: 'duckduckgo'
+                    });
+                }
+                
+                // Resultados relacionados
+                if (data.RelatedTopics) {
+                    data.RelatedTopics.slice(0, numResults - 1).forEach(topic => {
+                        if (topic.Text && topic.FirstURL) {
+                            results.push({
+                                title: topic.Text.split(' - ')[0] || 'Resultado',
+                                url: topic.FirstURL,
+                                snippet: topic.Text,
+                                source: 'duckduckgo'
+                            });
+                        }
+                    });
+                }
+                
+                return results;
+            } catch (error) {
+                console.error('DuckDuckGo search error:', error);
+                return [];
+            }
         }
         
-        // Cerrar modal con ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeDemoModal();
+        function displayResults(results) {
+            resultsGrid.innerHTML = '';
+            
+            if (results.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            results.forEach((result, index) => {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card';
+                resultCard.style.animationDelay = `${index * 0.1}s`;
+                
+                resultCard.innerHTML = `
+                    <div class="result-source">${result.source}</div>
+                    <h3 class="result-title">${result.title}</h3>
+                    <p class="result-snippet">${result.snippet}</p>
+                    <a href="${result.url}" target="_blank" class="result-url">${result.url}</a>
+                    <a href="${result.url}" target="_blank" class="result-link">
+                        <span>🌐</span>
+                        Visitar Sitio Web
+                    </a>
+                `;
+                
+                resultsGrid.appendChild(resultCard);
+            });
+        }
+        
+        // ================================================
+        // FUNCIONES AUXILIARES
+        // ================================================
+        
+        function quickSearch(query) {
+            searchInput.value = query;
+            performSearch();
+        }
+        
+        function showMessage(message, type = 'info') {
+            // Puedes implementar un sistema de notificaciones aquí
+            alert(`${type.toUpperCase()}: ${message}`);
+        }
+        
+        // ================================================
+        // EVENT LISTENERS
+        // ================================================
+        
+        searchButton.addEventListener('click', performSearch);
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
             }
         });
         
@@ -854,49 +686,30 @@
         // ================================================
         
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Portal Azure cargado correctamente');
+            console.log('Buscador Web cargado');
             
-            // Agregar animaciones a los elementos
-            const cards = document.querySelectorAll('.app-card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
+            // Verificar API Key
+            if (!BING_API_KEY || BING_API_KEY === "") {
+                console.warn('Bing API Key no configurada. Usando DuckDuckGo.');
+                const infoBox = document.querySelector('.info-box');
+                if (infoBox) {
+                    infoBox.innerHTML = `
+                        <strong>⚠️ Bing API no configurada:</strong> 
+                        El sistema está usando DuckDuckGo para búsquedas.
+                        Para mejores resultados, configura tu Bing API Key.
+                    `;
+                    infoBox.style.background = '#f8d7da';
+                    infoBox.style.borderColor = '#f5c6cb';
+                    infoBox.style.color = '#721c24';
+                }
+            }
             
-            // Verificar URLs de las páginas
-            const pages = ['subir-video.html', 'buscador-web.html', 'buscar-productos.html', 'blob-viewer.html'];
-            pages.forEach(page => {
-                fetch(page)
-                    .then(response => {
-                        if (!response.ok) {
-                            console.warn(`⚠️ Página no encontrada: ${page}`);
-                        }
-                    })
-                    .catch(error => {
-                        console.warn(`⚠️ Error al verificar ${page}:`, error);
-                    });
-            });
-        });
-        
-        // ================================================
-        // FUNCIONES ADICIONALES
-        // ================================================
-        
-        function checkSystemStatus() {
-            // Esta función podría hacer ping a los diferentes servicios
-            console.log('Verificando estado del sistema...');
-            
-            // Simular verificación
+            // Mostrar ejemplo de búsqueda
             setTimeout(() => {
-                console.log('✅ Todos los sistemas operativos');
-                // Aquí podrías actualizar el estado en la interfaz
+                // Puedes mostrar una búsqueda de ejemplo
+                // quickSearch('Azure Storage Blob');
             }, 1000);
-        }
-        
-        // Verificar estado cada 5 minutos
-        setInterval(checkSystemStatus, 5 * 60 * 1000);
-        
-        // Verificar al cargar
-        checkSystemStatus();
+        });
     </script>
 </body>
 </html>
